@@ -1,0 +1,23 @@
+.trend-charts-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.custom-tooltip {
+  background-color: var(--bg-panel-hover);
+  border: 1px solid var(--border-glass-hover);
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.mb-4 { margin-bottom: 1rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-1 { margin-bottom: 0.25rem; }
+.p-4 { padding: 1rem; }
+.gap-4 { gap: 1rem; }
+.font-bold { font-weight: bold; }
+.text-sm { font-size: 0.875rem; }
+.text-xl { font-size: 1.25rem; }
+.h-full { height: 100%; }
+.w-full { width: 100%; }

@@ -1,0 +1,902 @@
+[
+  {
+    "id": 1,
+    "level": 1,
+    "type": "SMS",
+    "sender": "WINNER",
+    "message": "CONGRATULATNS!!! You have WON KSH 500,000 in the SAFARICOM MOBILE LOTTERY! To CLAIM, send KSH 500 activation fee to 0712345678. HURRY NOW!",
+    "is_scam": true,
+    "explanation": "This is a dead-obvious scam. Misspellings ('CONGRATULATNS'), all caps, an unsolicited lottery win, and asking for an 'activation fee' to claim a prize are classic red flags."
+  },
+  {
+    "id": 2,
+    "level": 1,
+    "type": "EMAIL",
+    "sender": "prince.umar@royalmail.org",
+    "message": "Subject: Urgent Business Proposal - Inheritance Fund.\nMy Dear Friend, I am Prince Umar from a royal family. I need your assistance to transfer $10.5 million from my late father's account. I will give you 20% commission. Reply urgently for details.",
+    "is_scam": true,
+    "explanation": "This is a classic Nigerian Prince scam. It promises a large sum of money for little effort, comes from an unofficial email address, and is an unsolicited business proposal from a stranger."
+  },
+  {
+    "id": 3,
+    "level": 1,
+    "type": "WHATSAPP",
+    "sender": "Unknown Number",
+    "message": "Hello, You won a brand new Samsung phone from our Anniversary Draw! Click this link --> bit.ly/free-phone2024 to CLAIM your prize!!!",
+    "is_scam": true,
+    "explanation": "This is a lottery scam. You haven't entered any draw, the sender is unknown, and the message contains an urgent call to action with a suspicious, shortened link."
+  },
+  {
+    "id": 4,
+    "level": 1,
+    "type": "SMS",
+    "sender": "BANK ALERT",
+    "message": "URGENT! Your Bank Account Has Been SUSPENDED DUE TO FRAUDULENT ACTIVITIES. Call 07XX-XXXXXX NOW TO RE-ACTIVATE!",
+    "is_scam": true,
+    "explanation": "This is an obvious phishing attempt. The message uses all caps for urgency, doesn't specify a bank, and asks you to call an unofficial mobile number for a 'security' issue."
+  },
+  {
+    "id": 5,
+    "level": 1,
+    "type": "EMAIL",
+    "sender": "jobs@career-global.net",
+    "message": "Subject: JOB OFFER! Highly Paid Remote Position - No Interview!\nDear Applicant, You have been selected for a lucrative remote position. No interview needed! Send KES 1,500 for mandatory background check to secure your spot. Reply for payment details.",
+    "is_scam": true,
+    "explanation": "This is a fake job offer scam. Reputable companies do not offer jobs without interviews, promise exceptionally high pay for no effort, or demand upfront fees for 'background checks'."
+  },
+  {
+    "id": 6,
+    "level": 1,
+    "type": "SMS",
+    "sender": "M-PESA",
+    "message": "Confirmed. You have received KES 1,000.00 from JOHN MWANGI 0712345678 on 25/07/2024 at 10:30 AM. New M-PESA balance is KES 5,000.00. Transaction cost KES 0.00. Funds for John's lunch.",
+    "is_scam": false,
+    "explanation": "This is a legitimate M-Pesa confirmation message. It follows the correct format, includes sender details, amount, date, time, and your current balance, indicating a successful transaction."
+  },
+  {
+    "id": 7,
+    "level": 1,
+    "type": "SMS",
+    "sender": "SAFARICOM",
+    "message": "You have purchased KES 100 Airtime. Your Safaricom balance is KES 120. Thank you for using Safaricom.",
+    "is_scam": false,
+    "explanation": "This is a legitimate Safaricom airtime purchase confirmation. It clearly states the action taken, the amount, and your updated balance from an official sender."
+  },
+  {
+    "id": 8,
+    "level": 1,
+    "type": "SMS",
+    "sender": "M-PESA",
+    "message": "Confirmed. You paid KES 50.00 to JUMIA on 25/07/2024 at 11:15 AM. New M-PESA balance is KES 4,950.00. Transaction cost KES 0.00.",
+    "is_scam": false,
+    "explanation": "This is a legitimate M-Pesa payment confirmation. It details the recipient, amount, date, time, and the updated M-Pesa balance, indicating a successful payment."
+  },
+  {
+    "id": 9,
+    "level": 1,
+    "type": "SMS",
+    "sender": "Safaricom",
+    "message": "Your M-PESA account statement request for the last 6 months has been sent to your email address. Check your inbox. Ref: S240725.123456.",
+    "is_scam": false,
+    "explanation": "This is a legitimate Safaricom message confirming an M-Pesa statement request. It provides a reference number and instructs you to check your email, which is a standard procedure."
+  },
+  {
+    "id": 10,
+    "level": 1,
+    "type": "SMS",
+    "sender": "KPLC Prepaid",
+    "message": "Token: 1234-5678-9012-3456 for meter 0123456789. Units: 50.00. KES 1000.00. Thank you for choosing Kenya Power.",
+    "is_scam": false,
+    "explanation": "This is a legitimate KPLC token delivery message. It contains the correct token format, meter number, units, and amount, which are all indicators of an authentic purchase."
+  },
+  {
+    "id": 11,
+    "level": 2,
+    "type": "SMS",
+    "sender": "SafaricomWin",
+    "message": "CONGRATS! You've WON KES 10,000 in the Safaricom Annual Draw! To claim, visit safaricom-promo.xyz/claim. Offer expires in 24hrs!",
+    "is_scam": true,
+    "explanation": "This is a prize scam. The sender ID 'SafaricomWin' is suspicious, the URL 'safaricom-promo.xyz' is not Safaricom's official domain, and the urgency ('expires in 24hrs') is a common tactic."
+  },
+  {
+    "id": 12,
+    "level": 2,
+    "type": "EMAIL",
+    "sender": "support@kra-itax.info",
+    "message": "Subject: Urgent: KRA iTax Account Update Required\nDear Taxpayer, Your KRA iTax account information needs urgent update to avoid penalties. Click here to verify your details: https://kra-itax.info/verify. Failure to do so will result in account suspension.",
+    "is_scam": true,
+    "explanation": "This is a phishing email. The sender's email domain 'kra-itax.info' is not the official KRA domain. It creates urgency and threatens account suspension to trick you into clicking a malicious link."
+  },
+  {
+    "id": 13,
+    "level": 2,
+    "type": "WHATSAPP",
+    "sender": "Unknown Number",
+    "message": "Hey, it's me from the school reunion! Do you remember me? Click this link to see our old photos: reunion.photo.xyz",
+    "is_scam": true,
+    "explanation": "This is a social engineering scam. The sender pretends to be someone you know from a reunion, but the unknown number and suspicious link ('reunion.photo.xyz') are red flags for malware or phishing."
+  },
+  {
+    "id": 14,
+    "level": 2,
+    "type": "SMS",
+    "sender": "Bank Alert",
+    "message": "URGENT Security Notice! Your Equity Bank account has been flagged for suspicious activity. Call security immediately on 07XX-XXXXXX to prevent permanent lockout.",
+    "is_scam": true,
+    "explanation": "This is a phishing SMS. While it names Equity Bank, the sender ID 'Bank Alert' is generic, and legitimate banks do not typically ask you to call a generic mobile number for security issues."
+  },
+  {
+    "id": 15,
+    "level": 2,
+    "type": "EMAIL",
+    "sender": "visagrants@americandream.org",
+    "message": "Subject: Congratulations! You've been selected for a USA Visa Lottery!\nDear Applicant, Your profile has been selected in the annual USA Visa Lottery. To process your visa, pay a non-refundable processing fee of $500 via Western Union. Reply with MTCN.",
+    "is_scam": true,
+    "explanation": "This is an advance-fee scam. Legitimate visa lotteries do not randomly select applicants without prior application or require payment via untraceable methods like Western Union from unofficial senders."
+  },
+  {
+    "id": 16,
+    "level": 2,
+    "type": "SMS",
+    "sender": "EquityBank",
+    "message": "Your Equity Bank account XXXXXXXXXX has a balance of KES 15,250.00 as of 25/07/2024 13:45.",
+    "is_scam": false,
+    "explanation": "This is a legitimate bank balance alert. It comes from an official sender ID 'EquityBank', specifies your account, and provides a clear balance with date and time."
+  },
+  {
+    "id": 17,
+    "level": 2,
+    "type": "SMS",
+    "sender": "KCB Bank",
+    "message": "Mini-Statement for Acct: XXXXXXXXXX: DR 500.00 Jumia Pay; CR 1200.00 M-PESA; DR 200.00 Airtime. Bal: KES 8,500.00.",
+    "is_scam": false,
+    "explanation": "This is a legitimate KCB Bank mini-statement. It provides recent transaction details and your current balance from the official bank sender ID, indicating regular banking activity."
+  },
+  {
+    "id": 18,
+    "level": 2,
+    "type": "SMS",
+    "sender": "SAFARICOM",
+    "message": "You have successfully purchased 100MB daily data bundle for KES 50. Valid until 26/07/2024. Dial *544# to check balance.",
+    "is_scam": false,
+    "explanation": "This is a legitimate Safaricom data bundle purchase confirmation. It clearly states the bundle details, cost, validity, and provides a valid USSD code for balance check."
+  },
+  {
+    "id": 19,
+    "level": 2,
+    "type": "SMS",
+    "sender": "KenyaPower",
+    "message": "Power has been restored in your area. We regret any inconvenience caused. Thank you for your patience. Ref: P240725.XYZ.",
+    "is_scam": false,
+    "explanation": "This is a legitimate power restoration alert from Kenya Power. It is a common notification sent after an outage, confirming services are back."
+  },
+  {
+    "id": 20,
+    "level": 2,
+    "type": "SMS",
+    "sender": "Co-op Bank",
+    "message": "Debit: KES 750.00 from Acct XXXXXXXXXX for Supermarket Purchase. Available Balance: KES 12,300.00 on 25/07/2024 14:00.",
+    "is_scam": false,
+    "explanation": "This is a legitimate Co-op Bank debit alert. It specifies the amount, reason, account, and updated balance, typical of a bank transaction notification."
+  },
+  {
+    "id": 21,
+    "level": 3,
+    "type": "SMS",
+    "sender": "07XX-XXXXXX",
+    "message": "Nimesend pesa by mistake! Ksh 5000. Kindly reverse to 07XX-XXXXXX. Haraka! Nitakupigia.",
+    "is_scam": true,
+    "explanation": "This is an M-Pesa reversal scam. The sender asks you to directly send money back, bypassing Safaricom's official reversal process. Legitimate reversals are initiated by the sender through Safaricom."
+  },
+  {
+    "id": 22,
+    "level": 3,
+    "type": "WHATSAPP",
+    "sender": "Unknown Number",
+    "message": "Hi Mum, it's me. My other phone got lost. Save this new number. I need some money urgently for something. Will explain later. My new num is 07XX-XXXXXX",
+    "is_scam": true,
+    "explanation": "This is a 'Hi Mum' scam. The sender claims to be a family member from a new, unknown number, creates urgency, and asks for money without clear explanation, common signs of impersonation."
+  },
+  {
+    "id": 23,
+    "level": 3,
+    "type": "EMAIL",
+    "sender": "security@google-login.com",
+    "message": "Subject: Your Google Account: Unusual Sign-in Activity Detected\nDear User, We detected a suspicious sign-in attempt on your Google account from an unrecognized device. Please verify your identity immediately by clicking here: accounts.google-login.com/security. Failure to do so will result in account lockout.",
+    "is_scam": true,
+    "explanation": "This is a phishing email. While the subject is alarming, the sender's domain 'google-login.com' is not Google's official domain. It attempts to create fear and urgency to trick you into revealing credentials."
+  },
+  {
+    "id": 24,
+    "level": 3,
+    "type": "SMS",
+    "sender": "JUMIA-Delivery",
+    "message": "You have a pending package from Jumia. Pay Ksh 250 delivery fee at jumia-delivery.biz before 5 PM to avoid return. Your order ID: JMDL-789.",
+    "is_scam": true,
+    "explanation": "This is a package delivery scam. The sender ID is generic, the URL 'jumia-delivery.biz' is not Jumia's official domain, and asking for a separate 'delivery fee' via an external link is suspicious."
+  },
+  {
+    "id": 25,
+    "level": 3,
+    "type": "WHATSAPP",
+    "sender": "Investment Kenya",
+    "message": "Exclusive investment opportunity! Double your money in 24 hours with our new crypto platform. Message for details. Limited slots!",
+    "is_scam": true,
+    "explanation": "This is an investment scam. It promises unrealistic returns ('double your money in 24 hours') and uses high-pressure tactics ('limited slots'), typical of pyramid schemes or fake investment opportunities."
+  },
+  {
+    "id": 26,
+    "level": 3,
+    "type": "SMS",
+    "sender": "M-PESA",
+    "message": "CD02TGBHGD Confirmed. You have sent KES 500.00 to JOHN DOE 0712345678 on 25/07/2024 at 15:00 PM. New M-PESA balance is KES 4,450.00. Transaction cost KES 11.00.",
+    "is_scam": false,
+    "explanation": "This is a legitimate M-Pesa receipt. It includes a transaction code, confirmation of sent funds, recipient details, and the updated balance, following the standard M-Pesa format."
+  },
+  {
+    "id": 27,
+    "level": 3,
+    "type": "SMS",
+    "sender": "SAFARICOM",
+    "message": "Your 500MB daily data bundle has been renewed for KES 99. Valid until 26/07/2024. Your data balance: 500MB.",
+    "is_scam": false,
+    "explanation": "This is a legitimate Safaricom data bundle renewal confirmation. It provides details of the renewed bundle, its cost, validity, and your current data balance from an official source."
+  },
+  {
+    "id": 28,
+    "level": 3,
+    "type": "SMS",
+    "sender": "NHIF",
+    "message": "Thank you for your NHIF contribution of KES 500.00 received on 25/07/2024. Your membership is active. For queries, dial *155#.",
+    "is_scam": false,
+    "explanation": "This is a legitimate NHIF contribution confirmation. It acknowledges the payment, confirms membership status, and provides a valid USSD code for further inquiries from the official NHIF sender."
+  },
+  {
+    "id": 29,
+    "level": 3,
+    "type": "SMS",
+    "sender": "HELB",
+    "message": "Dear student, your HELB loan application for FY 2023/2024 has been successfully submitted and is under review. Check portal for updates.",
+    "is_scam": false,
+    "explanation": "This is a legitimate HELB status update. It confirms the successful submission of a loan application and directs the user to the official portal for further updates, following standard procedure."
+  },
+  {
+    "id": 30,
+    "level": 3,
+    "type": "SMS",
+    "sender": "Nairobi Water",
+    "message": "Your Nairobi Water bill for July 2024 is KES 1,850.00. Due date: 15/08/2024. Pay via M-Pesa Paybill 444000. Account: [Your Account No].",
+    "is_scam": false,
+    "explanation": "This is a legitimate Nairobi Water bill notification. It correctly states the bill amount, due date, and provides the official M-Pesa Paybill number and your specific account number."
+  },
+  {
+    "id": 31,
+    "level": 4,
+    "type": "SMS",
+    "sender": "07XX-XXXXXX",
+    "message": "Hello, this is Linet. I accidentally sent Ksh 3,000 to your number. Please initiate the reversal by sending it back to 07XX-XXXXXX. Thank you.",
+    "is_scam": true,
+    "explanation": "This is an M-Pesa reversal scam, slightly better crafted. Although polite, it still requests you to send money directly to an unknown number, rather than following Safaricom's official reversal process."
+  },
+  {
+    "id": 32,
+    "level": 4,
+    "type": "SMS",
+    "sender": "SafaricomPromo",
+    "message": "Safaricom Bonanza! Dial *234# now to win FREE bundles and cash prizes! Limited time offer!",
+    "is_scam": true,
+    "explanation": "This is a fake promotion scam. The sender ID 'SafaricomPromo' is unofficial, and *234# is not a legitimate Safaricom USSD code for promotions of this nature. Official promotions are announced through official channels."
+  },
+  {
+    "id": 33,
+    "level": 4,
+    "type": "SMS",
+    "sender": "KPLC Tokens",
+    "message": "KPLC Token: Your pre-paid meter number 37XXXXXXXX is due for disconnection. Purchase tokens via our new portal: kplc-online.com/tokens to avoid service interruption.",
+    "is_scam": true,
+    "explanation": "This is a KPLC phishing scam. While it mentions disconnection, the URL 'kplc-online.com' is not Kenya Power's official website. Legitimate KPLC messages provide tokens directly or direct you to their official Paybill numbers."
+  },
+  {
+    "id": 34,
+    "level": 4,
+    "type": "EMAIL",
+    "sender": "security@safaricom-ke.net",
+    "message": "Subject: Urgent Security Notice - Your M-Pesa Account\nDear Customer, Your M-Pesa account needs re-verification due to a system upgrade. Click here to verify: mpesa.safaricom-ke.net/verify. Failure to comply will lead to service interruption.",
+    "is_scam": true,
+    "explanation": "This is an M-Pesa phishing email. The domain 'safaricom-ke.net' is a common spoofing tactic, not Safaricom's official domain. It attempts to trick you into verifying details on a fake site."
+  },
+  {
+    "id": 35,
+    "type": "WHATSAPP",
+    "sender": "Recruit Africa",
+    "message": "Saw your CV on LinkedIn, impressed! Our company needs a remote assistant. Salary KES 80k. No experience needed. Reply 'INFO' to apply. (This is a job offer)",
+    "is_scam": true,
+    "explanation": "This is an unsolicited job offer scam. High salary for a remote assistant with no experience, sent via WhatsApp, and asking for a simple 'INFO' reply, are all indicators of a recruitment scam or data harvesting.",
+    "level": 4
+  },
+  {
+    "id": 36,
+    "level": 4,
+    "type": "SMS",
+    "sender": "Kenya Power",
+    "message": "KPLC Token: Meter: 37XXXXXX Token: 1234-5678-9012-3456 Units: 50.00 KES 1000.00. Transaction ID: R240725.123456.",
+    "is_scam": false,
+    "explanation": "This is a legitimate KPLC token. It comes from the official 'Kenya Power' sender, includes the meter number, a valid token, units, and amount, confirming a successful token purchase."
+  },
+  {
+    "id": 37,
+    "level": 4,
+    "type": "SMS",
+    "sender": "Safaricom",
+    "message": "Your Bonga Points balance is 2,500. Dial *126# to redeem for bundles, airtime, or devices.",
+    "is_scam": false,
+    "explanation": "This is a legitimate Safaricom Bonga Points balance alert. It comes from the official sender and provides the correct USSD code for redemption, indicating a valid service notification."
+  },
+  {
+    "id": 38,
+    "level": 4,
+    "type": "SMS",
+    "sender": "EquityBank",
+    "message": "Mobile Banking transaction successful. You sent KES 1,500.00 to JOHN MWANIKI 07XXXXXXXX. Ref: M7890. Available balance: KES 8,000.00.",
+    "is_scam": false,
+    "explanation": "This is a legitimate Equity Bank mobile banking confirmation. It details the recipient, amount, reference, and updated balance, confirming a successful mobile banking transaction."
+  },
+  {
+    "id": 39,
+    "level": 4,
+    "type": "SMS",
+    "sender": "KCB M-PESA",
+    "message": "Your KCB M-PESA loan repayment of KES 500.00 has been received. Your outstanding loan balance is KES 2,000.00. Thank you.",
+    "is_scam": false,
+    "explanation": "This is a legitimate KCB M-Pesa loan repayment confirmation. It confirms the payment received and updates your outstanding loan balance from the official KCB M-Pesa sender."
+  },
+  {
+    "id": 40,
+    "level": 4,
+    "type": "SMS",
+    "sender": "NHIF",
+    "message": "Your annual NHIF statement for 2023 is now available. Log in to the NHIF portal or dial *155# to view.",
+    "is_scam": false,
+    "explanation": "This is a legitimate NHIF notification. It informs you that your annual statement is ready and provides official methods (portal, USSD code) to access it."
+  },
+  {
+    "id": 41,
+    "level": 5,
+    "type": "EMAIL",
+    "sender": "security@equitybank-ke.secure.com",
+    "message": "Subject: IMMEDIATE ACTION REQUIRED: Your Equity Bank Account Suspension\nDear Valued Customer, Your Equity Bank account has been temporarily suspended due to unusual activity. Please verify your details at https://equitybank-ke.secure.login to reactivate and avoid permanent closure.",
+    "is_scam": true,
+    "explanation": "This is a phishing email. The sender's domain 'equitybank-ke.secure.com' is not Equity Bank's official domain. It creates urgency and threatens account closure to trick you into clicking a malicious link."
+  },
+  {
+    "id": 42,
+    "level": 5,
+    "type": "EMAIL",
+    "sender": "refunds@kra-refunds.com",
+    "message": "Subject: KRA Tax Refund Notification - File Ref: KRA/REFUND/2024/XX\nDear Taxpayer, You are eligible for a tax refund of KES 15,400. To process, click on the secure link: itax.kra-refunds.com and submit your banking details.",
+    "is_scam": true,
+    "explanation": "This is a KRA tax refund scam. The sender's email domain 'kra-refunds.com' is not official. KRA does not process refunds through unsolicited emails or ask for banking details via external links."
+  },
+  {
+    "id": 43,
+    "level": 5,
+    "type": "SMS",
+    "sender": "HELB Loan",
+    "message": "HELB Loan Notice: Your repayment schedule is past due. To avoid penalties, update your details and make payment here: helb-portal.org/login. Action required by 24hrs.",
+    "is_scam": true,
+    "explanation": "This is a HELB phishing scam. The URL 'helb-portal.org' is not the official HELB portal. It creates urgency and threatens penalties to pressure you into logging in and revealing your credentials."
+  },
+  {
+    "id": 44,
+    "level": 5,
+    "type": "WHATSAPP",
+    "sender": "JKUAT Admissions",
+    "message": "Hi, it's Peter from JKUAT Admissions. Your application needs urgent verification. Send KES 1,500 via M-Pesa to 07XX-XXXXXX for document processing to secure your spot.",
+    "is_scam": true,
+    "explanation": "This is an education scam. Official university admissions do not typically contact applicants via WhatsApp from an unknown number, nor do they request M-Pesa payments for 'document processing' to secure a spot."
+  },
+  {
+    "id": 45,
+    "level": 5,
+    "type": "EMAIL",
+    "sender": "security@ncba-bank.co.ke.alerts",
+    "message": "Subject: NCBA Bank Security Alert: Unauthorized Login Attempt\nWe detected an unauthorized login attempt on your NCBA account from an unknown device. If this wasn't you, click here to secure your account: ncba-bank.co.ke.security/login",
+    "is_scam": true,
+    "explanation": "This is a phishing email. The sender's domain 'ncba-bank.co.ke.alerts' and the link 'ncba-bank.co.ke.security' are deceptive subdomains. Legitimate banks direct you to their official website, not a different domain."
+  },
+  {
+    "id": 46,
+    "level": 5,
+    "type": "EMAIL",
+    "sender": "noreply@kra.go.ke",
+    "message": "Subject: KRA iTax - Income Tax Return Acknowledgment\nDear Taxpayer, Your 2023 Income Tax Return has been successfully submitted and acknowledged. Acknowledgment Number: KRA/2024/XXXXX. Download receipt from iTax portal. Do not reply to this email.",
+    "is_scam": false,
+    "explanation": "This is a legitimate KRA iTax acknowledgment. It comes from the official 'kra.go.ke' domain, provides an acknowledgment number, and correctly instructs you to download the receipt from the iTax portal."
+  },
+  {
+    "id": 47,
+    "level": 5,
+    "type": "EMAIL",
+    "sender": "info@helb.co.ke",
+    "message": "Subject: HELB Loan Statement Notification\nDear Loan Beneficiary, Your latest HELB loan statement for the academic year 2023/2024 is now available on the student portal. Visit helb.co.ke to access. Please ensure timely repayment.",
+    "is_scam": false,
+    "explanation": "This is a legitimate HELB notification. It comes from the official 'helb.co.ke' domain and directs you to the official student portal to access your statement, which is a standard procedure."
+  },
+  {
+    "id": 48,
+    "level": 5,
+    "type": "EMAIL",
+    "sender": "customerservice@britam.com",
+    "message": "Subject: Britam Insurance Policy Renewal Reminder\nDear Customer, Your Britam Insurance policy [Policy No: BPXXXXX] is due for renewal on 15/08/2024. Please contact your agent or visit our nearest branch for assistance. Thank you for choosing Britam.",
+    "is_scam": false,
+    "explanation": "This is a legitimate Britam Insurance policy renewal reminder. It comes from an official email address, specifies your policy number, and provides clear instructions for renewal, typical of insurance communication."
+  },
+  {
+    "id": 49,
+    "level": 5,
+    "type": "SMS",
+    "sender": "UniversityofNbi",
+    "message": "Your UoN fees payment of KES 35,000 has been received successfully. Receipt No: UON/2024/XXXXX. Thank you, University of Nairobi.",
+    "is_scam": false,
+    "explanation": "This is a legitimate university fees payment confirmation. It comes from the official 'UniversityofNbi' sender, confirms the payment amount, and provides a receipt number, indicating a valid transaction."
+  },
+  {
+    "id": 50,
+    "level": 5,
+    "type": "SMS",
+    "sender": "Safaricom PLC",
+    "message": "You have successfully registered for M-PESA Fuliza. Your Fuliza limit is KES 2,500.00. For terms and conditions, dial *234*0#.",
+    "is_scam": false,
+    "explanation": "This is a legitimate Safaricom M-Pesa Fuliza registration confirmation. It clearly states the service activated, your limit, and provides a valid USSD code for more information."
+  },
+  {
+    "id": 51,
+    "level": 6,
+    "type": "EMAIL",
+    "sender": "support@equitybank-ke.com",
+    "message": "Subject: Equity Bank - Important Security Update Required\nDear Customer, We are upgrading our security systems. Please update your account details by clicking: https://online.equitybank-ke.com.login.php to ensure uninterrupted access. Your account will be locked if not updated within 24 hours.",
+    "is_scam": true,
+    "explanation": "This is a sophisticated phishing email. The sender's email domain 'equitybank-ke.com' and the URL 'equitybank-ke.com.login.php' are very subtle variations of the legitimate domain, designed to trick users into revealing login details on a fake page."
+  },
+  {
+    "id": 52,
+    "level": 6,
+    "type": "SMS",
+    "sender": "Safaricom App",
+    "message": "Safaricom M-Pesa App Update: New security features added. Click https://safaricom.co.ke.app-update.xyz/ to download the latest version for continued service. Mandatory update.",
+    "is_scam": true,
+    "explanation": "This is a sophisticated phishing SMS. The sender ID 'Safaricom App' seems official, but the URL 'safaricom.co.ke.app-update.xyz' is a malicious subdomain designed to look legitimate, often leading to malware or credential harvesting."
+  },
+  {
+    "id": 53,
+    "level": 6,
+    "type": "EMAIL",
+    "sender": "noreply@nhif-sha-portal.gov.ke",
+    "message": "Subject: NHIF/SHA Registration Verification - Action Required\nDear Applicant, Your recent NHIF/SHA registration requires final verification to activate your benefits. Click on the link to complete your profile: https://nhif-sha-portal.gov.ke.verify-now. Please complete within 48 hours.",
+    "is_scam": true,
+    "explanation": "This is a phishing email targeting government services. While 'nhif-sha-portal.gov.ke' looks official, the '.verify-now' subdomain within the link suggests a malicious phishing site. Government portals rarely send such direct 'verify now' links."
+  },
+  {
+    "id": 54,
+    "level": 6,
+    "type": "WHATSAPP",
+    "sender": "John (friend's number)",
+    "message": "Hey, this is your friend John. Remember that KCB account issue? My bank manager wants you to call him on 07XX-XXXXXX to verify details for a new product. He's expecting your call. It's urgent.",
+    "is_scam": true,
+    "explanation": "This is a social engineering scam. The sender impersonates a friend and creates a fabricated scenario (KCB account issue) to get you to call an unknown number, where a scammer will try to extract personal information."
+  },
+  {
+    "id": 55,
+    "level": 6,
+    "type": "EMAIL",
+    "sender": "security@co-opbankkenya.com",
+    "message": "Subject: Co-op Bank Security Alert - Recent unusual activity\nWe detected an attempt to change your online banking password. If this was not you, please secure your account immediately via our secure link: co-opbankkenya.com/secure_login. Your account access might be suspended.",
+    "is_scam": true,
+    "explanation": "This is a phishing email with subtle spoofing. 'co-opbankkenya.com' looks official but might redirect to a phishing page. Official banks direct you to log in via their known, secure website, not a direct 'secure_login' link from an email."
+  },
+  {
+    "id": 56,
+    "level": 6,
+    "type": "SMS",
+    "sender": "M-PESA",
+    "message": "CD02TGBHGD Confirmed. You have sent KES 1,500.00 to JOHN KAMAU 07XXXXXXXX on 25/07/2024 at 10:00 AM. New M-PESA balance is KES X,XXX.XX. Transaction cost KES 22.00.",
+    "is_scam": false,
+    "explanation": "This is a legitimate M-Pesa transaction confirmation. It contains all the expected details: transaction code, recipient, amount, date, time, and updated balance, confirming a successful transfer."
+  },
+  {
+    "id": 57,
+    "level": 6,
+    "type": "EMAIL",
+    "sender": "info@sha.go.ke",
+    "message": "Subject: SHA Enrollment Confirmation\nDear Jane Doe, This confirms your successful enrollment into the Social Health Authority (SHA). Your SHA number is SHA/KE/XXXXXX. Welcome to better health coverage!",
+    "is_scam": false,
+    "explanation": "This is a legitimate SHA enrollment confirmation. It comes from the official 'sha.go.ke' domain, addresses you by name, and provides an official SHA number, indicating a genuine registration."
+  },
+  {
+    "id": 58,
+    "level": 6,
+    "type": "EMAIL",
+    "sender": "finance@jkuat.ac.ke",
+    "message": "Subject: JKUAT Fees Payment Receipt\nDear Student, Your payment of KES 50,000 for Semester Two (2023/2024) fees has been successfully processed. Receipt is available on the student portal. JKUAT Finance Office.",
+    "is_scam": false,
+    "explanation": "This is a legitimate JKUAT fees payment confirmation. It comes from the official 'jkuat.ac.ke' domain, specifies the payment details, and directs to the official student portal for the receipt."
+  },
+  {
+    "id": 59,
+    "level": 6,
+    "type": "SMS",
+    "sender": "NCBA Bank",
+    "message": "Your account XXXXXX1234 was credited with KES 12,000.00 on 25/07/2024 at 16:30. Available balance: KES X,XXX.XX. Ref: CR56789.",
+    "is_scam": false,
+    "explanation": "This is a legitimate NCBA Bank credit alert. It comes from the official sender, specifies the credited amount, account, date, time, and updated balance, confirming an incoming transaction."
+  },
+  {
+    "id": 60,
+    "level": 6,
+    "type": "EMAIL",
+    "sender": "noreply@kcbgroup.com",
+    "message": "Subject: KCB Bank - Mobile Banking Login Notification\nThis is to inform you that there was a login to your KCB Mobile Banking account on 25/07/2024 16:45 from device 'Android Phone'. If this was not you, please contact customer care.",
+    "is_scam": false,
+    "explanation": "This is a legitimate KCB Bank security notification. It comes from the official 'kcbgroup.com' domain and informs you of a login, advising action if it was unauthorized, which is a standard security practice."
+  },
+  {
+    "id": 61,
+    "level": 7,
+    "type": "EMAIL",
+    "sender": "careers@safaricom-plc.org",
+    "message": "Subject: Job Offer: Senior Project Manager - Safaricom PLC\nDear [Name], Following our review of your profile, Safaricom PLC is pleased to offer you the position of Senior Project Manager. Salary KES 350,000/month. Find contract attached and send KES 2,500 for background check. This offer is time-sensitive.",
+    "is_scam": true,
+    "explanation": "This is a fake job offer scam. While it names Safaricom, the sender's domain 'safaricom-plc.org' is not official. Legitimate companies do not ask for upfront 'background check' fees after an unsolicited job offer, especially via email."
+  },
+  {
+    "id": 62,
+    "level": 7,
+    "type": "EMAIL",
+    "sender": "recruitment@kra-interviews.com",
+    "message": "Subject: Interview Invitation - KRA Tax Officer Position\nDear [Name], You have been shortlisted for an interview at KRA. Interview will be held online. Click here to confirm your slot and download the meeting link: kra-recruitments.com/interview. Date: 10/08/2024.",
+    "is_scam": true,
+    "explanation": "This is an interview phishing scam. The sender's domain 'kra-interviews.com' and the link 'kra-recruitments.com' are not official KRA domains. KRA conducts recruitment through their official channels, not via suspicious external links."
+  },
+  {
+    "id": 63,
+    "level": 7,
+    "type": "WHATSAPP",
+    "sender": "HR Equity Bank",
+    "message": "Hello [Name], this is HR from Equity Bank. We saw your impressive LinkedIn profile. We're hiring for a Business Development Executive. Please fill this form for an expedited application: forms.equitybank-careers.org/apply.",
+    "is_scam": true,
+    "explanation": "This is an unsolicited job scam using WhatsApp. While it names Equity Bank, HR departments typically do not initiate recruitment via WhatsApp from an unknown number, and the form link 'equitybank-careers.org' is suspicious."
+  },
+  {
+    "id": 64,
+    "level": 7,
+    "type": "EMAIL",
+    "sender": "procurement-uon.ke@outlook.com",
+    "message": "Subject: RFQ for IT Equipment - University of Nairobi\nDear Supplier, The University of Nairobi is seeking bids for IT equipment. See attached RFQ document and provide your best quotation. Reply to this email by 05/08/2024. Urgent.",
+    "is_scam": true,
+    "explanation": "This is a fake procurement scam. The sender uses an 'outlook.com' email for a formal university procurement request, which is highly unprofessional and indicates impersonation. Official RFQs come from official university domains."
+  },
+  {
+    "id": 65,
+    "level": 7,
+    "type": "EMAIL",
+    "sender": "info@helb-restructure.co.ke",
+    "message": "Subject: HELB Loan Restructuring Offer - Urgent\nDear [Name], HELB is offering a one-time loan restructuring for eligible beneficiaries. To benefit, you must login and verify your eligibility here: helb-restructure.co.ke/offer by 26/07/2024.",
+    "is_scam": true,
+    "explanation": "This is a HELB phishing email. The domain 'helb-restructure.co.ke' is not the official HELB domain. It creates urgency around a 'limited-time offer' to pressure users into clicking a malicious link and providing credentials."
+  },
+  {
+    "id": 66,
+    "level": 7,
+    "type": "EMAIL",
+    "sender": "hr@kcbgroup.com",
+    "message": "Subject: Job Offer: Junior Accountant - KCB Bank\nDear [Name], Following your interview, KCB Bank is pleased to offer you the position of Junior Accountant. Further details, including your start date and compensation package, are attached. Please respond by 01/08/2024.",
+    "is_scam": false,
+    "explanation": "This is a legitimate job offer. It comes from the official 'kcbgroup.com' domain, addresses you by name after an interview, and includes expected details like start date and compensation, characteristic of a genuine offer."
+  },
+  {
+    "id": 67,
+    "level": 7,
+    "type": "EMAIL",
+    "sender": "recruit@safaricom.co.ke",
+    "message": "Subject: Safaricom Interview Invitation - Technical Support\nDear [Name], We would like to invite you for an interview for the Technical Support role. Details regarding time, location, and required documents are attached. Please confirm your availability by 26/07/2024.",
+    "is_scam": false,
+    "explanation": "This is a legitimate interview invitation. It comes from the official 'safaricom.co.ke' domain, specifies the role, and provides details in an attachment, which is standard practice for recruitment."
+  },
+  {
+    "id": 68,
+    "level": 7,
+    "type": "EMAIL",
+    "sender": "records@uonbi.ac.ke",
+    "message": "Subject: University of Nairobi - Academic Transcript Request Confirmation\nDear Alumnus, Your request for academic transcript has been received and is being processed. You will be notified upon completion. Reference number: UON/TRANSCRIPT/2024/001.",
+    "is_scam": false,
+    "explanation": "This is a legitimate confirmation from the University of Nairobi. It comes from the official 'uonbi.ac.ke' domain, acknowledges a specific request, and provides a reference number, which is a standard administrative communication."
+  },
+  {
+    "id": 69,
+    "level": 7,
+    "type": "EMAIL",
+    "sender": "procurement@kplc.co.ke",
+    "message": "Subject: Kenya Power Procurement Notice - Transformers\nDear Valued Supplier, Kenya Power is inviting tenders for the supply of various transformers. Details and tender documents are available on our e-procurement portal. Submission deadline: 15/08/2024.",
+    "is_scam": false,
+    "explanation": "This is a legitimate procurement notice. It comes from the official 'kplc.co.ke' domain, specifies the tender, and directs suppliers to the official e-procurement portal, typical of genuine procurement processes."
+  },
+  {
+    "id": 70,
+    "level": 7,
+    "type": "EMAIL",
+    "sender": "info@co-opbank.co.ke",
+    "message": "Subject: Co-op Bank - Account Statement Available\nDear Customer, Your monthly Co-op Bank account statement for June 2024 is now available for download on your Co-opNet portal. Log in securely to view. Do not reply to this email.",
+    "is_scam": false,
+    "explanation": "This is a legitimate Co-op Bank notification. It comes from the official 'co-opbank.co.ke' domain and informs you that your statement is ready, directing you to their secure portal, which is a standard banking communication."
+  },
+  {
+    "id": 71,
+    "level": 8,
+    "type": "WHATSAPP",
+    "sender": "Unknown Number",
+    "message": "Hi [Name], it's your cousin Kevin. I'm in big trouble, got into an accident and they've arrested me. I need KES 10,000 bail money urgently to be released. Please send to 07XX-XXXXXX. Don't call my parents yet!",
+    "is_scam": true,
+    "explanation": "This is an urgent family distress scam. The sender impersonates a cousin, creates an emotional emergency, asks for money via an unknown number, and specifically asks not to contact parents, which are all classic social engineering tactics."
+  },
+  {
+    "id": 72,
+    "level": 8,
+    "type": "EMAIL",
+    "sender": "john.kimani.landlord@gmail.com",
+    "message": "Subject: Urgent: Change of Rent Payment Account - Your Landlord\nDear Tenant, Due to an issue with my previous bank, kindly make your rent payment for August to the new account: Equity Bank, Acc No: XXXXXXXXXX, Acc Name: J. Kimani. This is effective immediately. Thank you, John Kimani (Landlord).",
+    "is_scam": true,
+    "explanation": "This is a payment redirection scam. The landlord's email uses a generic 'gmail.com' address, which is suspicious for official communication. An unexpected and urgent change in bank account details should always be verified through an independent, known channel (e.g., a phone call to the landlord)."
+  },
+  {
+    "id": 73,
+    "level": 8,
+    "type": "EMAIL",
+    "sender": "[Colleague's Spoofed Email]",
+    "message": "Subject: Urgent Invoice Payment - Tech Solutions Ltd\nHi [Name], Please expedite payment for the attached invoice from 'Tech Solutions Ltd'. They've updated their account details to KCB Bank Acc No: YYYYYYYYYY. Make payment today. Thanks, [Colleague's Name].",
+    "is_scam": true,
+    "explanation": "This is a business email compromise (BEC) scam. The email impersonates a colleague and provides new, unverified bank details for a known vendor, attempting to redirect funds. Always verify changes in payment instructions via a separate, trusted communication method."
+  },
+  {
+    "id": 74,
+    "level": 8,
+    "type": "SMS",
+    "sender": "Safaricom_Alert",
+    "message": "Safaricom Security Alert: A new SIM card was requested for your number 07XXXXXXXX. To cancel, reply 'NO' immediately. To confirm, reply 'YES'.",
+    "is_scam": true,
+    "explanation": "This is a SIM swap social engineering tactic. Replying 'YES' or 'NO' might either trigger a SIM swap or confirm your active status, allowing scammers to proceed. Safaricom typically doesn't ask for such replies for security alerts."
+  },
+  {
+    "id": 75,
+    "level": 8,
+    "type": "WHATSAPP",
+    "sender": "NHIF_Officer",
+    "message": "Hello [Name], this is Ken from NHIF. Your new SHA registration has encountered an error. To avoid deactivation, kindly provide your ID number and M-Pesa PIN for verification. This is for your security.",
+    "is_scam": true,
+    "explanation": "This is an identity theft scam. No legitimate government official or service will ever ask for your M-Pesa PIN. The request for sensitive personal information is a clear indicator of a scam."
+  },
+  {
+    "id": 76,
+    "level": 8,
+    "type": "WHATSAPP",
+    "sender": "Kevin (Cousin)",
+    "message": "Hey [Name], it's Kevin. Just wanted to confirm our plans for the weekend. Are we still on for lunch on Saturday at Java?",
+    "is_scam": false,
+    "explanation": "This is a legitimate personal message. It comes from a known contact (your cousin Kevin) and discusses routine social plans, which is typical for family group chats."
+  },
+  {
+    "id": 77,
+    "level": 8,
+    "type": "EMAIL",
+    "sender": "john.kimani@landlord.com",
+    "message": "Subject: Rent Payment Reminder - Apartment 5B, Westlands\nDear Tenant, This is a friendly reminder that your rent of KES 25,000 for August is due on 01/08/2024. Please use the usual Equity Bank account. Regards, John Kimani (Landlord).",
+    "is_scam": false,
+    "explanation": "This is a legitimate rent reminder. It comes from a professional-looking email (even if not a public domain), reminds you of a regular payment, and specifies the 'usual' bank account, indicating no suspicious changes."
+  },
+  {
+    "id": 78,
+    "level": 8,
+    "type": "EMAIL",
+    "sender": "accounts@yourcompany.co.ke",
+    "message": "Subject: Invoice No. INV-2024-001 from [Your Company Name]\nDear Client, Please find attached Invoice No. INV-2024-001 for services rendered. Payment due by 15/08/2024. Our KCB Bank details remain unchanged. Regards, [Your Name/Company].",
+    "is_scam": false,
+    "explanation": "This is a legitimate invoice email. It comes from your official company domain, attaches a specific invoice, states payment terms, and explicitly confirms that bank details remain unchanged, which builds trust."
+  },
+  {
+    "id": 79,
+    "level": 8,
+    "type": "SMS",
+    "sender": "Safaricom",
+    "message": "Your SIM card verification with ID XXXXXXXXX was successful. No changes made. For inquiries, dial 100 or visit a Safaricom shop.",
+    "is_scam": false,
+    "explanation": "This is a legitimate Safaricom confirmation. It confirms a verification process without requesting sensitive information and provides official contact channels, indicating a genuine security message."
+  },
+  {
+    "id": 80,
+    "level": 8,
+    "type": "EMAIL",
+    "sender": "noreply@kra.go.ke",
+    "message": "Subject: KRA - New iTax Message\nDear Taxpayer, You have a new message in your iTax inbox regarding your tax compliance. Please log in to your iTax portal to view it. Do not reply to this email.",
+    "is_scam": false,
+    "explanation": "This is a legitimate KRA notification. It comes from the official 'kra.go.ke' domain and directs you to log into your iTax portal, which is the secure and correct way to access official KRA communications."
+  },
+  {
+    "id": 81,
+    "level": 9,
+    "type": "EMAIL",
+    "sender": "security@equitybankgroup-ke.com",
+    "message": "Subject: Urgent Security Notification: Your Equity Bank Account Activity\nDear Customer, We detected suspicious activities linked to your Equity Bank account. For your security, we've temporarily restricted access. To restore, please click on our secure portal: https://www.equitybankgroup-ke.com/verify-account",
+    "is_scam": true,
+    "explanation": "This is a near-perfect corporate impersonation. The sender's domain 'equitybankgroup-ke.com' and the link are subtly different from the official 'equitybank.co.ke'. This small difference is a critical red flag for a phishing attempt."
+  },
+  {
+    "id": 82,
+    "level": 9,
+    "type": "EMAIL",
+    "sender": "alerts@co-opbank.co.ke",
+    "message": "Subject: Co-op Bank - Transaction Verification Required\nDear Valued Customer, A large transaction of KES 250,000 from your account to an international beneficiary is pending. Please verify or cancel by clicking: https://online.co-opbank.co.ke.secure-payment.link",
+    "is_scam": true,
+    "explanation": "This is a highly sophisticated phishing attempt. While the sender appears legitimate, the URL 'online.co-opbank.co.ke.secure-payment.link' uses a deceptive subdomain structure ('secure-payment.link' as the true domain) to trick users into believing it's an official Co-op Bank link."
+  },
+  {
+    "id": 83,
+    "level": 9,
+    "type": "EMAIL",
+    "sender": "ceo@kplc.co.ke",
+    "message": "Subject: Board Meeting Agenda - KPLC 01/08/2024\nDear Board Member, Please find the updated agenda and pre-read materials for the upcoming Board Meeting attached. Note: Meeting link has changed to meet.kplc-online.com/boardroom. Best Regards, [Real CEO's Name], Kenya Power.",
+    "is_scam": true,
+    "explanation": "This is a spear phishing attack impersonating a CEO. Although the sender's email looks correct, the meeting link 'meet.kplc-online.com' uses a slightly different, potentially malicious domain (kplc-online.com vs kplc.co.ke), aiming to capture login credentials."
+  },
+  {
+    "id": 84,
+    "level": 9,
+    "type": "EMAIL",
+    "sender": "security@safaricom.co.ke",
+    "message": "Subject: M-Pesa Fraud Detection - Account Security Review\nDear Customer, Our M-Pesa fraud detection system has flagged unusual activity on your account. To prevent indefinite suspension, please update your details here: https://safaricom.co.ke/mpesa-security/review. Immediate action is required.",
+    "is_scam": true,
+    "explanation": "This is a well-crafted phishing email. While the sender domain is correct, the specific path '/mpesa-security/review' might lead to a sophisticated phishing page. Safaricom usually directs users to log into their official portal or app, not directly through a link in an email for 'updates' under threat of suspension."
+  },
+  {
+    "id": 85,
+    "level": 9,
+    "type": "EMAIL",
+    "sender": "payments@ncba.co.ke",
+    "message": "Subject: Wire Transfer Confirmation - NCBA Bank\nDear Client, Your wire transfer request for $10,000 to ABC Corp has been processed. Find attached swift copy for your records. Any discrepancies should be reported to payments@ncba-bank-intl.com within 24 hours.",
+    "is_scam": true,
+    "explanation": "This is a payment fraud attempt. While the initial sender's email is correct, the email subtly introduces a different, unofficial contact email 'payments@ncba-bank-intl.com' for reporting discrepancies, which could be used to intercept communications or redirect queries."
+  },
+  {
+    "id": 86,
+    "level": 9,
+    "type": "EMAIL",
+    "sender": "security@equitybank.co.ke",
+    "message": "Subject: Important Security Notification: Your Equity Bank Account Activity\nDear Customer, We detected suspicious activities linked to your Equity Bank account. For your security, please log in directly to your official Equity Bank online banking portal, www.equitybank.co.ke, to review. Do not use links from this email.",
+    "is_scam": false,
+    "explanation": "This is a legitimate security notification. It comes from the official 'equitybank.co.ke' domain and correctly instructs you to navigate directly to the official website (not a clickable link), which is a key indicator of authenticity."
+  },
+  {
+    "id": 87,
+    "level": 9,
+    "type": "EMAIL",
+    "sender": "alerts@co-opbank.co.ke",
+    "message": "Subject: Co-op Bank - Transaction Verification\nDear Valued Customer, A large transaction of KES 250,000 to an international beneficiary is pending for your review. Please log into your Co-opNet portal at co-opbank.co.ke to approve or reject. This action is required by 01/08/2024.",
+    "is_scam": false,
+    "explanation": "This is a legitimate banking notification. It comes from the official 'co-opbank.co.ke' domain, accurately describes a pending transaction, and directs you to the official portal for action, without requiring clicks on embedded links."
+  },
+  {
+    "id": 88,
+    "level": 9,
+    "type": "EMAIL",
+    "sender": "ceo@kplc.co.ke",
+    "message": "Subject: KPLC Board Meeting Agenda - 01/08/2024\nDear Board Member, Please find the updated agenda and pre-read materials for the upcoming Board Meeting attached. The meeting will be held via our secure corporate video conferencing platform. Best Regards, [Real CEO's Name], Kenya Power.",
+    "is_scam": false,
+    "explanation": "This is a legitimate corporate communication. It comes from the official CEO's email and clearly states the meeting platform without providing a suspicious, external link, which is expected for secure board communications."
+  },
+  {
+    "id": 89,
+    "level": 9,
+    "type": "EMAIL",
+    "sender": "security@safaricom.co.ke",
+    "message": "Subject: M-Pesa Security Alert - Login Notification\nDear Customer, This is a notification that your M-Pesa account was logged into via MySafaricom App from a new device (Xiaomi Redmi Note 10) on 25/07/2024 at 17:00. If this was not you, please contact Safaricom customer care via 100 or visit safaricom.co.ke.",
+    "is_scam": false,
+    "explanation": "This is a legitimate Safaricom security alert. It comes from the official 'safaricom.co.ke' domain, provides specific login details, and directs you to official contact channels if unauthorized, indicating a genuine alert."
+  },
+  {
+    "id": 90,
+    "level": 9,
+    "type": "EMAIL",
+    "sender": "global.payments@ncba.co.ke",
+    "message": "Subject: Wire Transfer Confirmation - NCBA Bank\nDear Client, Your wire transfer request for $10,000 to ABC Corp has been processed successfully. Find attached swift copy for your records. For inquiries, contact global.payments@ncba.co.ke. Ref: SWT2024001.",
+    "is_scam": false,
+    "explanation": "This is a legitimate wire transfer confirmation. It comes from the official 'ncba.co.ke' domain, confirms a specific transaction, attaches a swift copy, and provides a legitimate contact email for queries, typical of bank payment confirmations."
+  },
+  {
+    "id": 91,
+    "level": 10,
+    "type": "SMS",
+    "sender": "Safaricom Care",
+    "message": "Hello, this is Safaricom Customer Care, calling to verify recent changes to your SIM card. We noticed an attempt to activate a new line with your ID. To confirm it's you, please provide the one-time password (OTP) we just sent to your phone. We need this immediately to block the fraudulent attempt.",
+    "is_scam": true,
+    "explanation": "This is a SIM swap social engineering scam. No legitimate Safaricom agent will ever ask you to read out an OTP over the phone. OTPs are meant for your personal use to verify your identity, not for agents to 'confirm' changes."
+  },
+  {
+    "id": 92,
+    "level": 10,
+    "type": "WHATSAPP",
+    "sender": "[Boss's Number]",
+    "message": "(Voice message transcript) \"Hey [Name], it's your boss [Boss's Name]. I'm stuck in a critical meeting and urgently need you to approve payment for 'Vendor X's' invoice. They just sent an updated KCB bank account to my personal email. Please use the new KCB account number XXXXXXXXXX and confirm once done. It's critical.\"",
+    "is_scam": true,
+    "explanation": "This is a deepfake voice or impersonation scam combined with payment redirection. The message creates extreme urgency, bypasses normal payment protocols (new bank account via personal email), and comes with a voice that might sound like your boss, making it highly deceptive."
+  },
+  {
+    "id": 93,
+    "level": 10,
+    "type": "EMAIL",
+    "sender": "accounts@safaricom-vendor-solutions.com",
+    "message": "Subject: IMMEDIATE PAYMENT REQUIRED: Invoice #INV-2024-010 - Safaricom Vendor\nDear Accounts, Our payment terms for Invoice #INV-2024-010 have been updated. Please send funds to our new NCBA Bank account, Acc No: XXXXXXXXXX, Acc Name: Safaricom Vendor Solutions. This is critical for continuity. Thanks, [Vendor Contact Name] (from a compromised vendor email).",
+    "is_scam": true,
+    "explanation": "This is a sophisticated business email compromise (BEC) scam. The email appears to come from a legitimate vendor's email (possibly compromised) but provides new, fraudulent bank details for payment. Always independently verify changes in payment instructions with the vendor through a known, trusted channel."
+  },
+  {
+    "id": 94,
+    "level": 10,
+    "type": "EMAIL",
+    "sender": "audits@kra-tax-settlement.org",
+    "message": "Subject: KRA - Final Tax Audit Notification - URGENT SETTLEMENT REQUIRED\nDear Taxpayer, A final audit of your 2023 tax records has revealed discrepancies resulting in an outstanding balance of KES 150,000. Our legal team will proceed with enforcement if payment isn't made within 24 hours. Pay via our secure portal: kra-tax-settlement.org/pay. Urgent!",
+    "is_scam": true,
+    "explanation": "This is an expert-level tax fraud scam. The email uses a highly threatening tone, a very short deadline, and directs you to a fake payment portal 'kra-tax-settlement.org'. KRA communicates tax arrears through official iTax notifications or letters, not threatening emails with external payment links."
+  },
+  {
+    "id": 95,
+    "level": 10,
+    "type": "EMAIL",
+    "sender": "noreply@uonbi.ac.ke",
+    "message": "Subject: University of Nairobi - Important System Upgrade Notification\nDear Student, Our student information system is undergoing a critical upgrade. All students MUST re-register their login credentials by midnight tonight to avoid permanent account deactivation. Use this link: students.uonbi-upgrade.com/re-register.",
+    "is_scam": true,
+    "explanation": "This is a highly urgent and threatening phishing scam. While the sender appears official, the domain in the link ('uonbi-upgrade.com') is a malicious imitation. No university would threaten 'permanent deactivation' or demand re-registration within hours via an email link for a system upgrade."
+  },
+  {
+    "id": 96,
+    "level": 10,
+    "type": "SMS",
+    "sender": "Safaricom",
+    "message": "Hello, this is Safaricom Customer Care. For security purposes, we've detected unusual activity related to your M-Pesa account. We require you to visit the nearest Safaricom shop with your original ID to verify your identity. Do NOT share any PINs or OTPs over the phone.",
+    "is_scam": false,
+    "explanation": "This is a legitimate Safaricom security directive. It correctly advises you to visit a physical shop for verification, explicitly warns against sharing PINs/OTPs over the phone, and provides no suspicious links or urgent demands for information, making it trustworthy."
+  },
+  {
+    "id": 97,
+    "level": 10,
+    "type": "WHATSAPP",
+    "sender": "Boss (Office Group)",
+    "message": "Hi team, this is [Boss's Name]. Just a heads-up that we've had a minor update to our payment process for 'Vendor X'. Our finance team will send out official communication shortly with the new approved bank details. Please await official notification.",
+    "is_scam": false,
+    "explanation": "This is a legitimate proactive communication from your boss. It informs the team about an upcoming change in payment details, advises waiting for official communication, and provides a heads-up rather than demanding immediate action, which is a sign of good security practice."
+  },
+  {
+    "id": 98,
+    "level": 10,
+    "type": "EMAIL",
+    "sender": "accounts@safaricom.co.ke",
+    "message": "Subject: Payment Confirmation - Invoice #INV-2024-010 - Safaricom PLC\nDear [Vendor Name], Your payment for Invoice #INV-2024-010 of KES 250,000 has been processed and credited to your KCB Bank account XXXXXXXXXX. Thank you for your service. Ref: P20240725123.",
+    "is_scam": false,
+    "explanation": "This is a legitimate payment confirmation from Safaricom. It comes from the official 'safaricom.co.ke' domain, specifies the invoice, amount, and the recipient's credited bank account, which is a standard and verifiable financial communication."
+  },
+  {
+    "id": 99,
+    "level": 10,
+    "type": "EMAIL",
+    "sender": "noreply@kra.go.ke",
+    "message": "Subject: KRA - Tax Compliance Certificate Ready\nDear Taxpayer, Your Tax Compliance Certificate (TCC) for the year 2024 is now available on your iTax portal. Log in to download your certificate. Do not reply to this email. Ref: TCC/2024/0001.",
+    "is_scam": false,
+    "explanation": "This is a legitimate KRA notification. It originates from the official 'kra.go.ke' domain and correctly instructs you to access your TCC by logging into the iTax portal, which is the secure and official method for such documents."
+  },
+  {
+    "id": 100,
+    "level": 10,
+    "type": "EMAIL",
+    "sender": "security@equitybank.co.ke",
+    "message": "Subject: Urgent Security Alert: Unusual Login Detected - Equity Bank\nDear Customer, We detected an unusual login to your Equity Bank online banking account on 25/07/2024 at 23:00 from IP address [IP Address]. If this was not you, please change your password immediately and contact customer care at 0763 000 000 or visit www.equitybank.co.ke.",
+    "is_scam": false,
+    "explanation": "This is a legitimate proactive security alert from Equity Bank. It comes from the official 'equitybank.co.ke' domain, provides specific details about the login, and directs you to official channels (customer care or official website) for resolution, which is a secure and trustworthy practice."
+  }
+]

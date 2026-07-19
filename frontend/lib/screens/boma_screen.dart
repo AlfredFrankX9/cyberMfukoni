@@ -1,0 +1,759 @@
+import 'dart:ui';
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:app_settings/app_settings.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'protection_guides_screen.dart';
+
+class BomaScreen extends StatefulWidget {
+  const BomaScreen({super.key});
+
+  @override
+  State<BomaScreen> createState() => _BomaScreenState();
+}
+
+class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
+  int _overallScore = 0;
+  late AnimationController _scoreController;
+  late Animation<double> _scoreAnimation;
+  final LocalAuthentication _localAuth = LocalAuthentication();
+  bool _isCheckingDevice = true;
+
+  // Each item has:
+  //   'autoDetect': true  → value is read from the device (cannot be manually toggled)
+  //   'autoDetect': false → user self-reports (can be manually toggled)
+  //   'settingsType'      → which system settings page to open when tapped
+  final List<Map<String, dynamic>> _securityChecklist = [
+    {
+      'title': 'Screen Lock Enabled',
+      'subtitle': 'Use PIN, fingerprint, or face unlock',
+      'icon': Icons.lock,
+      'completed': false,
+      'category': 'Device',
+      'autoDetect': true,
+      'settingsType': 'lockAndPassword',
+    },
+    {
+      'title': 'Biometric Authentication',
+      'subtitle': 'Fingerprint or face recognition set up',
+      'icon': Icons.fingerprint,
+      'completed': false,
+      'category': 'Device',
+      'autoDetect': true,
+      'settingsType': 'security',
+    },
+    {
+      'title': 'Two-Factor Authentication',
+      'subtitle': 'Enable 2FA on all important accounts',
+      'icon': Icons.verified_user,
+      'completed': false,
+      'category': 'Account',
+      'autoDetect': false,
+      'settingsType': null,
+    },
+    {
+      'title': 'M-Pesa PIN Security',
+      'subtitle': 'Change your M-Pesa PIN regularly',
+      'icon': Icons.phone_android,
+      'completed': false,
+      'category': 'Banking',
+      'autoDetect': false,
+      'settingsType': null,
+    },
+    {
+      'title': 'App Permissions Review',
+      'subtitle': 'Check which apps have access to your data',
+      'icon': Icons.apps,
+      'completed': false,
+      'category': 'Privacy',
+      'autoDetect': false,
+      'settingsType': 'appSettings',
+    },
+    {
+      'title': 'Password Manager',
+      'subtitle': 'Use unique passwords for each account',
+      'icon': Icons.password,
+      'completed': false,
+      'category': 'Account',
+      'autoDetect': false,
+      'settingsType': null,
+    },
+    {
+      'title': 'Software Updates',
+      'subtitle': 'Keep your OS and apps up to date',
+      'icon': Icons.system_update,
+      'completed': false,
+      'category': 'Device',
+      'autoDetect': false,
+      'settingsType': 'deviceInfo',
+    },
+    {
+      'title': 'SIM PIN Lock',
+      'subtitle': 'Protect against SIM swap attacks',
+      'icon': Icons.sim_card,
+      'completed': false,
+      'category': 'Banking',
+      'autoDetect': false,
+      'settingsType': 'security',
+    },
+    {
+      'title': 'Social Media Privacy',
+      'subtitle': 'Review and restrict public profile info',
+      'icon': Icons.people,
+      'completed': false,
+      'category': 'Privacy',
+      'autoDetect': false,
+      'settingsType': null,
+    },
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _scoreController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    _scoreAnimation = Tween<double>(begin: 0, end: 0).animate(
+      CurvedAnimation(parent: _scoreController, curve: Curves.easeOutCubic),
+    );
+    _checkDeviceSecurity();
+  }
+
+  @override
+  void dispose() {
+    _scoreController.dispose();
+    super.dispose();
+  }
+
+  /// Queries the device for real security state and updates the checklist.
+  /// local_auth only works on Android & iOS — on desktop we skip gracefully.
+  Future<void> _checkDeviceSecurity() async {
+    final bool isMobile = defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS;
+
+    if (!isMobile) {
+      // Desktop: local_auth plugin is not available, skip native checks
+      setState(() {
+        _isCheckingDevice = false;
+        _recalculateScore();
+      });
+      return;
+    }
+
+    try {
+      // 1. Is the device secured with a PIN / pattern / password?
+      final bool isDeviceSupported = await _localAuth.isDeviceSupported();
+
+      // 2. Are biometrics (fingerprint / face) enrolled?
+      final List<BiometricType> availableBiometrics =
+          await _localAuth.getAvailableBiometrics();
+      final bool hasBiometrics = availableBiometrics.isNotEmpty;
+
+      setState(() {
+        // Update the auto-detect items
+        for (var item in _securityChecklist) {
+          if (item['title'] == 'Screen Lock Enabled') {
+            item['completed'] = isDeviceSupported;
+          }
+          if (item['title'] == 'Biometric Authentication') {
+            item['completed'] = hasBiometrics;
+          }
+        }
+        _isCheckingDevice = false;
+        _recalculateScore();
+      });
+    } catch (e) {
+      debugPrint('Device security check failed: $e');
+      setState(() {
+        _isCheckingDevice = false;
+        _recalculateScore();
+      });
+    }
+  }
+
+  void _recalculateScore() {
+    final completed =
+        _securityChecklist.where((item) => item['completed'] == true).length;
+    final newScore =
+        ((completed / _securityChecklist.length) * 100).round();
+
+    _scoreAnimation = Tween<double>(
+      begin: _overallScore.toDouble(),
+      end: newScore.toDouble(),
+    ).animate(
+      CurvedAnimation(parent: _scoreController, curve: Curves.easeOutCubic),
+    );
+    _overallScore = newScore;
+    _scoreController.forward(from: 0);
+  }
+
+  void _toggleChecklist(int index) {
+    final item = _securityChecklist[index];
+
+    // Auto-detected items cannot be manually toggled — open settings instead
+    if (item['autoDetect'] == true && item['completed'] == false) {
+      _openSettings(item['settingsType'] as String?);
+      return;
+    }
+    // Auto-detected items that are already completed should not be un-toggled
+    if (item['autoDetect'] == true && item['completed'] == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('✅ This setting is already enabled on your device'),
+          backgroundColor: const Color(0xFF00FF40).withOpacity(0.9),
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      );
+      return;
+    }
+
+    // Manual items can be freely toggled
+    setState(() {
+      _securityChecklist[index]['completed'] =
+          !_securityChecklist[index]['completed'];
+      _recalculateScore();
+    });
+  }
+
+  bool get _isWindows => defaultTargetPlatform == TargetPlatform.windows;
+
+  void _openSettings(String? settingsType) {
+    if (_isWindows) {
+      _openWindowsSettings(settingsType);
+      return;
+    }
+    // Mobile (Android / iOS)
+    switch (settingsType) {
+      case 'lockAndPassword':
+        AppSettings.openAppSettings(type: AppSettingsType.lockAndPassword);
+        break;
+      case 'security':
+        AppSettings.openAppSettings(type: AppSettingsType.security);
+        break;
+      case 'appSettings':
+        AppSettings.openAppSettings(type: AppSettingsType.settings);
+        break;
+      case 'deviceInfo':
+        AppSettings.openAppSettings(type: AppSettingsType.device);
+        break;
+      default:
+        _showManualTip();
+    }
+  }
+
+  /// Opens the corresponding Windows Settings page via ms-settings: URI.
+  void _openWindowsSettings(String? settingsType) {
+    final Map<String, String> windowsSettingsMap = {
+      'lockAndPassword': 'ms-settings:signinoptions',
+      'security': 'ms-settings:signinoptions',
+      'appSettings': 'ms-settings:appsfeatures',
+      'deviceInfo': 'ms-settings:windowsupdate',
+    };
+
+    final uri = windowsSettingsMap[settingsType];
+    if (uri != null) {
+      launchUrl(Uri.parse(uri));
+    } else {
+      _showManualTip();
+    }
+  }
+
+  void _showManualTip() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text(
+            'Enable this manually, then mark it as done here.'),
+        backgroundColor: const Color(0xFFFFD600).withOpacity(0.9),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+  }
+
+  Color _getScoreColor(double score) {
+    if (score >= 80) return const Color(0xFF00FF40);
+    if (score >= 50) return const Color(0xFFFFD600);
+    return const Color(0xFFFF1744);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          // Background ambient light
+          Positioned(
+            top: 100,
+            left: -100,
+            child: Container(
+              width: 400,
+              height: 400,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFF00FF40).withOpacity(0.12),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+          
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(),
+                  const SizedBox(height: 24),
+                  _buildScoreCard(),
+                  const SizedBox(height: 32),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 8.0),
+                    child: Text('SECURITY CHECKLIST', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, letterSpacing: 1.5, color: Colors.white70)),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildChecklist(),
+                  const SizedBox(height: 32),
+                  _buildProtectionGuidesTile(),
+                  const SizedBox(height: 100), // padding for bottom nav
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: const Color(0xFF00FF40).withOpacity(0.15),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFF00FF40).withOpacity(0.3)),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF00FF40).withOpacity(0.2),
+                blurRadius: 12,
+              ),
+            ],
+          ),
+          child: const Icon(Icons.security, color: Color(0xFF00FF40), size: 26),
+        ),
+        const SizedBox(width: 16),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'BOMA',
+              style: GoogleFonts.inter(
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 2,
+                shadows: [Shadow(color: const Color(0xFF00FF40).withOpacity(0.5), blurRadius: 10)],
+              ),
+            ),
+            Text(
+              'Protection Center',
+              style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.5)),
+            ),
+          ],
+        ),
+        const Spacer(),
+        // Rescan button
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              setState(() => _isCheckingDevice = true);
+              _checkDeviceSecurity();
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF00FF40).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFF00FF40).withOpacity(0.3)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _isCheckingDevice
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Color(0xFF00FF40),
+                          ),
+                        )
+                      : const Icon(Icons.refresh, color: Color(0xFF00FF40), size: 18),
+                  const SizedBox(width: 6),
+                  Text(
+                    _isCheckingDevice ? 'Scanning...' : 'Re-scan',
+                    style: const TextStyle(
+                      color: Color(0xFF00FF40),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildScoreCard() {
+    return AnimatedBuilder(
+      animation: _scoreAnimation,
+      builder: (context, child) {
+        final currentScore = _scoreAnimation.value;
+        final scoreColor = _getScoreColor(currentScore);
+
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(28),
+              decoration: BoxDecoration(
+                color: scoreColor.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: scoreColor.withOpacity(0.3), width: 1.5),
+                boxShadow: [
+                  BoxShadow(color: scoreColor.withOpacity(0.1), blurRadius: 30),
+                ],
+              ),
+              child: Column(
+                children: [
+                  Text('DEVICE SAFETY SCORE', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white.withOpacity(0.5), letterSpacing: 2)),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: 140,
+                    height: 140,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Background circle
+                        SizedBox(
+                          width: 140, height: 140,
+                          child: CircularProgressIndicator(
+                            value: 1.0,
+                            strokeWidth: 10,
+                            backgroundColor: Colors.transparent,
+                            color: Colors.white.withOpacity(0.05),
+                          ),
+                        ),
+                        // Foreground glowing circle
+                        SizedBox(
+                          width: 140, height: 140,
+                          child: CircularProgressIndicator(
+                            value: currentScore / 100,
+                            strokeWidth: 10,
+                            strokeCap: StrokeCap.round,
+                            backgroundColor: Colors.transparent,
+                            color: scoreColor,
+                          ),
+                        ),
+                        // Inner glow
+                        Container(
+                          width: 100, height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: [BoxShadow(color: scoreColor.withOpacity(0.2), blurRadius: 20)],
+                          ),
+                        ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              currentScore.round().toString(),
+                              style: TextStyle(
+                                fontSize: 42,
+                                fontWeight: FontWeight.w900,
+                                color: scoreColor,
+                                shadows: [Shadow(color: scoreColor.withOpacity(0.5), blurRadius: 10)]
+                              ),
+                            ),
+                            Text('/ 100', style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.4))),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    currentScore >= 80 ? 'Well Protected' : currentScore >= 50 ? 'Needs Improvement' : 'At Risk',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: scoreColor,
+                      shadows: [Shadow(color: scoreColor.withOpacity(0.3), blurRadius: 5)],
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    '${_securityChecklist.where((i) => i['completed'] == true).length} of ${_securityChecklist.length} tasks completed',
+                    style: TextStyle(fontSize: 13, color: Colors.white.withOpacity(0.5)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildChecklist() {
+    return Column(
+      children: List.generate(_securityChecklist.length, (index) {
+        final item = _securityChecklist[index];
+        final isCompleted = item['completed'] as bool;
+        final isAutoDetect = item['autoDetect'] as bool;
+        final hasSettingsPage = item['settingsType'] != null;
+        
+        return TweenAnimationBuilder<double>(
+          tween: Tween(begin: 0, end: 1),
+          duration: Duration(milliseconds: 400 + (index * 100)),
+          curve: Curves.easeOutCubic,
+          builder: (context, value, child) {
+            return Opacity(
+              opacity: value,
+              child: Transform.translate(
+                offset: Offset(0, 20 * (1 - value)),
+                child: child,
+              ),
+            );
+          },
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  decoration: BoxDecoration(
+                    color: isCompleted ? const Color(0xFF00FF40).withOpacity(0.08) : const Color(0xFF222633),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: isCompleted ? const Color(0xFF00FF40).withOpacity(0.3) : Colors.white.withOpacity(0.05),
+                    ),
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => _toggleChecklist(index),
+                      borderRadius: BorderRadius.circular(16),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: isCompleted ? const Color(0xFF00FF40).withOpacity(0.2) : Colors.white.withOpacity(0.05),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(item['icon'] as IconData, size: 22, color: isCompleted ? const Color(0xFF00FF40) : Colors.white54),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          item['title'] as String,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            color: isCompleted ? Colors.white : Colors.white70,
+                                            decoration: isCompleted ? TextDecoration.lineThrough : null,
+                                            decorationColor: Colors.white30,
+                                          ),
+                                        ),
+                                      ),
+                                      if (isAutoDetect)
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF00E5FF).withOpacity(0.15),
+                                            borderRadius: BorderRadius.circular(6),
+                                          ),
+                                          child: Text(
+                                            'AUTO',
+                                            style: TextStyle(
+                                              fontSize: 9,
+                                              fontWeight: FontWeight.w800,
+                                              color: const Color(0xFF00E5FF).withOpacity(0.8),
+                                              letterSpacing: 0.5,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    item['subtitle'] as String,
+                                    style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.4)),
+                                  ),
+                                  // Show "Open Settings" hint for incomplete auto-detected items
+                                  if (isAutoDetect && !isCompleted && hasSettingsPage)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 6),
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.open_in_new, size: 12, color: const Color(0xFFFF9100).withOpacity(0.8)),
+                                          const SizedBox(width: 4),
+                                          Expanded(
+                                            child: Text(
+                                              'Tap to open device settings',
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w500,
+                                                color: const Color(0xFFFF9100).withOpacity(0.8),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            // For auto-detect items that are not completed, show a settings icon
+                            // For manual items, show the normal checkbox
+                            if (isAutoDetect && !isCompleted)
+                              Container(
+                                width: 28, height: 28,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: const Color(0xFFFF9100).withOpacity(0.15),
+                                  border: Border.all(
+                                    color: const Color(0xFFFF9100).withOpacity(0.5),
+                                    width: 2,
+                                  ),
+                                ),
+                                child: const Icon(Icons.settings, size: 16, color: Color(0xFFFF9100)),
+                              )
+                            else
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                width: 28, height: 28,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isCompleted ? const Color(0xFF00FF40) : Colors.transparent,
+                                  border: Border.all(
+                                    color: isCompleted ? const Color(0xFF00FF40) : Colors.white.withOpacity(0.3),
+                                    width: 2,
+                                  ),
+                                  boxShadow: isCompleted ? [
+                                    BoxShadow(color: const Color(0xFF00FF40).withOpacity(0.4), blurRadius: 8)
+                                  ] : [],
+                                ),
+                                child: isCompleted
+                                    ? const Icon(Icons.check, size: 18, color: Colors.black)
+                                    : null,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildProtectionGuidesTile() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProtectionGuidesScreen()),
+              );
+            },
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+              decoration: BoxDecoration(
+                color: const Color(0xFF222633),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFF00FF40).withOpacity(0.2)),
+                boxShadow: [
+                  BoxShadow(color: const Color(0xFF00FF40).withOpacity(0.05), blurRadius: 20),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF00FF40).withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(color: const Color(0xFF00FF40).withOpacity(0.2), blurRadius: 8),
+                      ],
+                    ),
+                    child: const Icon(Icons.menu_book_rounded, size: 26, color: Color(0xFF00FF40)),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Protection Guides',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${ProtectionGuidesScreen.guides.length} guides to keep you safe',
+                          style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.5)),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(Icons.chevron_right, color: Colors.white.withOpacity(0.4), size: 28),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

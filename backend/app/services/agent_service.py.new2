@@ -1,0 +1,161 @@
+import json
+import logging
+import random
+from pathlib import Path
+from google import genai
+from google.genai import types
+from app.core.config import settings
+
+logger = logging.getLogger(__name__)
+
+client = genai.Client(api_key=settings.GEMINI_API_KEY)
+
+FALLBACKS: dict[str, list[str]] = {}
+FALLBACK_DEFAULTS: dict[str, list[str]] = {
+    "fallback_generic": [
+        "I’m sorry, I’m having trouble generating an answer right now. Please try again in a moment.",
+        "I can’t reach the AI engine at the moment. If you need help right away, try rephrasing your question."
+    ],
+    "greetings": [
+        "Hello! I’m The Guardian, your cybersecurity assistant. How can I help you today?",
+        "Hi there! I can help with security questions, scams, or anything related to staying safe online."
+    ],
+    "command_short_help": [
+        "Ask me about cybersecurity risks, scams, suspicious messages, or how to protect your accounts.",
+        "Try asking about phishing, SIM swap scams, malware, or how to stay safe with mobile money."
+    ]
+}
+
+
+def _load_fallbacks() -> None:
+    global FALLBACKS
+    try:
+        fallback_path = Path(__file__).resolve().parents[2] / "agent_fallbacks.json"
+        if fallback_path.exists():
+            with fallback_path.open("r", encoding="utf-8") as f:
+                FALLBACKS = json.load(f)
+            logger.info("Loaded agent fallbacks from %s", fallback_path)
+        else:
+            logger.warning("No agent_fallbacks.json found at %s; using built-in fallback defaults", fallback_path)
+    except Exception:
+        logger.exception("Failed to load agent_fallbacks.json; using built-in fallback defaults")
+
+
+_load_fallbacks()
+
+SYSTEM_PROMPT = """
+You are an expert AI Cybersecurity Assistant called 'The Guardian' for the 'Cyber Mfukoni' platform.
+
+Answer EVERY user message as helpfully and completely as you can, the way a top-tier assistant would.
+You are not limited to cybersecurity topics — if a user asks something unrelated, still answer it well.
+But cybersecurity is your specialty: whenever a question touches on it (directly or indirectly), go deeper —
+educate, explain how the scam/threat works, point out concrete red flags, and recommend specific safe actions.
+
+You have particular expertise in threats relevant to Kenya, e.g.:
+- M-Pesa and mobile money scams (fake reversals, agent impersonation, SIM swaps)
+- "Hi Mum" / family-impersonation social engineering
+- Safaricom SIM-swap fraud
+- KRA tax refund phishing
+- Fake bank verification calls/SMS
+
+Formatting guidelines:
+- Keep answers structured and easy to scan: short paragraphs, bullet points, bold for key terms.
+- Use emojis sparingly to flag warnings or key points (e.g. ⚠️, 🔒) — don't overdo it.
+- If a user describes a suspicious message/call, walk through the specific red flags and what to do next
+  (e.g. don't click, verify via the official app/number, report to Safaricom/KRA/your bank).
+- If you genuinely don't have enough information to assess a situation, ask a clarifying question instead
+  of guessing.
+"""
+
+
+def _build_contents(message: str, history: list[dict] | None = None) -> list[types.Content]:
+    contents: list[types.Content] = []
+    if history:
+        for turn in history:
+            role = "model" if turn.get("role") == "agent" else "user"
+            text = (turn.get("content") or "").strip()
+            if text:
+                contents.append(types.Content(role=role, parts=[types.Part(text=text)]))
+    contents.append(types.Content(role="user", parts=[types.Part(text=message.strip())]))
+    return contents
+
+
+def _fallback_choices(category: str | None = None) -> list[str]:
+    if category:
+        choices = FALLBACKS.get(category) or FALLBACK_DEFAULTS.get(category)
+        if choices:
+            return choices
+    return FALLBACKS.get("fallback_generic") or FALLBACK_DEFAULTS["fallback_generic"]
+
+
+def get_fallback_response(message: str) -> str:
+    text = (message or "").lower().strip()
+    if not text:
+        return random.choice(_fallback_choices("fallback_generic"))
+
+    if any(greeting in text for greeting in ["hi", "hello", "hey", "welcome", "good morning", "good afternoon", "good evening"]):
+        return random.choice(_fallback_choices("greetings"))
+
+    keyword_to_category = {
+        "phish": "phishing",
+        "scam": "phishing",
+        "fraud": "phishing",
+        "password": "passwords",
+        "pass": "passwords",
+        "2fa": "two_factor_auth",
+        "two-factor": "two_factor_auth",
+        "malware": "malware_and_virus",
+        "virus": "malware_and_virus",
+        "ransom": "ransomware",
+        "sim": "sim_swap",
+        "m-pesa": "sim_swap",
+        "mpesa": "sim_swap",
+        "link": "suspicious_link",
+        "social": "social_engineering",
+        "identity": "identity_theft",
+        "wifi": "public_wifi",
+        "vpn": "vpn",
+        "backup": "backup_and_recovery",
+        "iot": "iot_security",
+        "children": "children_online_safety",
+        "email": "email_security",
+        "browser": "browser_hijack_and_ads",
+        "stolen": "device_theft",
+        "recovery": "account_recovery",
+        "oauth": "oauth_and_third_party_apps",
+        "leak": "credentials_leak",
+        "help": "command_short_help",
+    }
+
+    for keyword, category in keyword_to_category.items():
+        if keyword in text:
+            return random.choice(_fallback_choices(category))
+
+    return random.choice(_fallback_choices("fallback_generic"))
+
+
+async def generate_agent_response(message: str, history: list[dict] | None = None) -> str:
+    if not message or not message.strip():
+        return "Please type a question or describe what you'd like help with."
+
+    try:
+        response = await client.aio.models.generate_content(
+            model="gemini-3.5-flash",
+            contents=_build_contents(message, history),
+            config=types.GenerateContentConfig(
+                system_instruction=SYSTEM_PROMPT,
+                temperature=0.6,
+                max_output_tokens=1024,
+            ),
+        )
+
+        text = (response.text or "").strip() if response else ""
+        if not text:
+            logger.warning("Gemini returned an empty response for message: %r", message)
+            return get_fallback_response(message)
+
+        return text
+
+    except Exception:
+        logger.exception("Failed to generate agent response from Gemini")
+        return get_fallback_response(message)

@@ -1,0 +1,506 @@
+CYBER MFUKONI - APPLICATION CONTEXT & ARCHITECTURE SUMMARY
+
+1. PROJECT OVERVIEW
+
+
+Name: Cyber Mfukoni
+Purpose: A comprehensive cybersecurity awareness, training, and threat-detection platform specifically tailored for the Kenyan demographic. It aims to protect users from mobile money scams (M-Pesa), phishing, and social engineering.
+Target Audience: Kenyan mobile and internet users.
+Theme/Aesthetics: Dark mode cyberpunk/glassmorphism theme. Heavy use of neon cyan (#00FFCC) and neon purple (#AA00FF), frosted glass effects, 3D tilts, floating orbs, and smooth staggered animations.
+
+
+2. TECHNOLOGY STACK
+
+
+Frontend: Flutter (Dart).
+
+Uses Provider for state management (AuthService).
+Heavy emphasis on custom animations (AnimationController, BackdropFilter for glassmorphism).
+
+
+
+Backend: FastAPI (Python) running via Uvicorn.
+
+Endpoints prefixed with /api/...
+Uses google-genai SDK for Gemini AI integration.
+
+
+
+Database/Storage: Uses mock databases and static JSON files for certain fallback data, with structure ready for production databases via SQLAlchemy/Pydantic.
+AI Integration: Powered by Google's Gemini models for text analysis, chatbot interactions, threat classification, and scam scoring.
+Scheduling: APScheduler for background/cron-style jobs (e.g. daily news ingestion — see Section 3A).
+External News Sources: GNews API / NewsAPI.org for live article ingestion, optionally supplemented by RSS feeds from local outlets and KE-CIRT/CC advisories.
+
+
+3. CORE MODULES & SCREENS
+
+A. Intel Feed (intel_feed_screen.dart / intel_service.py)
+
+
+Functionality: Displays a real-time feed of active cybersecurity threats in Kenya (e.g., KRA phishing, M-Pesa reversal scams).
+UI: A vertically scrolling list of glassmorphic threat cards. Cards include severity badges (CRITICAL, HIGH, MEDIUM) and specific scam indicators. Tapping a card opens the original source article in the device browser.
+
+
+Revised Architecture (replaces on-demand AI generation)
+
+The original approach had Gemini generate threat news directly, which produced stale, occasionally hallucinated stories with no real images or working source links, and was prone to timeouts. This has been replaced with a scheduled fetch-and-cache pipeline:
+
+
+Ingestion (daily, backend-side, not per-request)
+
+APScheduler background job runs every 12–24 hours.
+Queries GNews/NewsAPI with Kenya-relevant keywords: "M-Pesa scam", "Kenya phishing", "Kenya cybersecurity", "KRA scam", etc.
+Each result already includes title, description, urlToImage, url (source link), source name, and publishedAt — no scraping required.
+Optionally supplemented by RSS feeds (feedparser) from local news outlets and KE-CIRT/CC.
+
+
+
+
+
+python   from apscheduler.schedulers.background import BackgroundScheduler
+   import httpx
+
+   def fetch_and_cache_intel():
+       keywords = ["M-Pesa scam", "Kenya phishing", "Kenya cybersecurity", "KRA scam"]
+       articles = []
+       for kw in keywords:
+           resp = httpx.get("https://gnews.io/api/v4/search", params={
+               "q": kw, "lang": "en", "country": "ke",
+               "max": 10, "token": GNEWS_API_KEY
+           })
+           articles.extend(resp.json().get("articles", []))
+       save_to_db(deduplicate(articles))
+
+   scheduler = BackgroundScheduler()
+   scheduler.add_job(fetch_and_cache_intel, 'interval', hours=12)
+   scheduler.start()
+
+
+Storage
+
+Fetched articles are deduplicated and stored in a DB table (not just static JSON):
+
+
+
+
+
+python   class IntelArticle(Base):
+       id: int
+       title: str
+       summary: str
+       image_url: str
+       source_url: str       # card redirect target
+       source_name: str
+       severity: str          # CRITICAL / HIGH / MEDIUM
+       published_at: datetime
+       fetched_at: datetime
+
+
+AI's role narrows to classification, not generation
+
+Gemini is used only to assign a severity tag or generate a short "why this matters" note for each real article — a small, fast, low-risk call that cannot hallucinate fake scams, unlike full content generation.
+
+
+
+Serving
+
+The Flutter app calls a single cached endpoint; no live API/AI call happens per user request, which also resolves the original 60s timeout issue.
+
+
+
+
+
+python   @app.get("/api/intel/feed")
+   def get_feed():
+       return db.query(IntelArticle).order_by(IntelArticle.published_at.desc()).limit(30).all()
+
+
+Frontend behavior
+
+Card image renders from image_url (cached network image widget).
+Tapping a card opens source_url in an external browser via url_launcher:
+
+
+
+
+
+dart   onTap: () => launchUrl(Uri.parse(article.sourceUrl), mode: LaunchMode.externalApplication),
+
+
+This avoids re-hosting/republishing original article content (also reduces copyright exposure) and gives users a direct path to verify the source.
+
+
+Why this fixes the original problem:
+
+
+Real articles, real images, real clickable source links — no AI-invented threats.
+No per-request AI/API latency — feed is pre-fetched and cached, so loads are instant.
+One scheduled job serves all users daily, instead of generating content per session.
+
+
+B. Chonjo Game (chonjo_game_screen.dart / game_service.py)
+
+
+Functionality: A Tinder-style swipe game to train users on identifying scams. Users swipe right for SCAM and left for LEGIT.
+Data Source: Uses a static 100-question dataset (backend/chonjo_questions_bank.json) covering 10 levels of progressive difficulty (from obvious typos to sophisticated spear-phishing).
+UI: 3D swipeable cards styled to look exactly like real SMS, WhatsApp, and Email interfaces. Includes an animated XP score counter and a glassmorphic results screen.
+
+
+C. Mulika (mulika_screen.dart / mulika_service.py)
+
+
+Functionality: An AI-powered scam detection engine. Users paste suspicious text, SMS, or URLs, and the AI analyzes it for red flags.
+UI: Features a sci-fi scanning effect over the text input. The results card shows a 0-100% scam probability dial, a risk rating (e.g., "High Risk"), identified red flags, and an AI explanation.
+
+
+D. Boma (boma_screen.dart)
+
+
+Functionality: A personal protection center and security dashboard.
+UI: Features a large, glowing "Device Safety Score" dial (0-100). Includes an interactive security checklist (e.g., "Enable 2FA", "SIM PIN Lock") and a grid of educational protection guides.
+
+
+E. Agent AI (agent_screen.dart / agent_service.py)
+
+
+Functionality: A conversational AI chatbot specialized in cybersecurity advice, incident response (e.g., "I got hacked"), and best practices.
+UI: A chat interface with frosted glass message bubbles, typing indicators, and quick-action chips for common questions.
+
+
+4. CRITICAL FIXES & ARCHITECTURAL DECISIONS MADE
+
+
+AI Timeout Management: Encountered Flutter 60s timeout issues when AI generation took too long. Fixed by injecting http_options={'timeout': 20000} (20s) into the Gemini client across all backend services (game_service.py, intel_service.py, mulika_service.py, agent_service.py).
+Static Fallback Data: Due to Gemini latency/rate limits, the Chonjo game was refactored to load from a high-quality, pre-generated static JSON file (chonjo_questions_bank.json) instead of generating questions dynamically on the fly. This ensures instant loading times for the game.
+Frontend Fallbacks: All Flutter screens have try-catch blocks on their API calls. If the backend is unreachable or times out, the UI gracefully falls back to hardcoded mock data so the app remains usable.
+UI Overhaul: Centralized UI effects into lib/widgets/glass_widgets.dart to maintain consistency across the app without code duplication.
+Intel Feed Overhaul: Replaced AI-generated threat news with a scheduled GNews/NewsAPI ingestion pipeline (APScheduler + cached DB table), eliminating hallucinated content, broken/missing images, and per-request timeouts. Gemini's role in this module is now limited to severity classification, not content generation. (See Section 3A for full detail.)
+
+
+5. FILE LOCATIONS
+
+
+Frontend Root: C:\Users\alvae\Desktop\Projects\cyberMfukoni\frontend
+Backend Root: C:\Users\alvae\Desktop\Projects\cyberMfukoni\backend
+Chonjo Data Bank: backend/chonjo_questions_bank.json
+Main App Entry: frontend/lib/main.dart
+
+
+
+import 'package:flutter/material.dart';
+import 'chonjo_game_screen.dart';
+
+enum LevelStatus { locked, current, completed }
+
+class _LevelNode {
+  final int id;
+  final Offset position; // fractional (0-1) position over the background image
+  final Color glowColor;
+  LevelStatus status;
+
+  _LevelNode({
+    required this.id,
+    required this.position,
+    required this.glowColor,
+    required this.status,
+  });
+}
+
+class ChonjoLevelsScreen extends StatefulWidget {
+  /// How many levels the player has unlocked so far (1 = only Level 1 open).
+  /// Defaults to 10 (all unlocked) to match a fully-open level map.
+  final int unlockedCount;
+
+  const ChonjoLevelsScreen({super.key, this.unlockedCount = 10});
+
+  @override
+  State<ChonjoLevelsScreen> createState() => _ChonjoLevelsScreenState();
+}
+
+class _ChonjoLevelsScreenState extends State<ChonjoLevelsScreen> with TickerProviderStateMixin {
+  static const Color kCyberGreen = Color(0xFF00FF66);
+
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnim;
+
+  late List<_LevelNode> _nodes;
+
+  // Positions calibrated to sit ON the staircase rails in the reference art.
+  // Lower rail: 1-5 left→right; Upper rail: 6-10 left→right
+  static const List<Offset> _positions = [
+    Offset(0.290, 0.920), // 1 – far left, lower rail
+    Offset(0.410, 0.900), // 2 – lower-left, lower rail
+    Offset(0.550, 0.800), // 3 – centre-left, lower rail
+    Offset(0.700, 0.690), // 4 – centre-right, lower rail
+    Offset(0.820, 0.500), // 5 – far right, lower rail
+    Offset(0.150, 0.450), // 6 – far left, upper rail
+    Offset(0.300, 0.500), // 7 – centre-left, upper rail
+    Offset(0.460, 0.440), // 8 – centre, upper rail
+    Offset(0.620, 0.370), // 9 – centre-right, upper rail
+    Offset(0.790, 0.180), // 10 – far right, upper rail
+  ];
+
+  static const List<Color> _glowColors = [
+    Color(0xFF2196F3), // 1 blue
+    Color(0xFF4CAF50), // 2 green
+    Color(0xFFFF9800), // 3 orange
+    Color(0xFF9C27B0), // 4 purple
+    Color(0xFFFF1744), // 5 red
+    Color(0xFF00E5FF), // 6 cyan
+    Color(0xFFFF9800), // 7 orange
+    Color(0xFFE91E8C), // 8 pink
+    Color(0xFF2196F3), // 9 blue
+    Color(0xFF4CAF50), // 10 green
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(reverse: true);
+    _pulseAnim = Tween<double>(begin: 0.55, end: 1.0).animate(CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut));
+
+    _nodes = List.generate(10, (i) {
+      final id = i + 1;
+      LevelStatus status;
+      if (id < widget.unlockedCount) {
+        status = LevelStatus.completed;
+      } else if (id == widget.unlockedCount) {
+        status = LevelStatus.current;
+      } else {
+        status = LevelStatus.locked;
+      }
+      return _LevelNode(id: id, position: _positions[i], glowColor: _glowColors[i], status: status);
+    });
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  void _onLevelTap(_LevelNode node) {
+    if (node.status == LevelStatus.locked) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => ChonjoGameScreen(initialLevel: node.id)),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          // Globe / world background
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/levelbackground.webp',
+              fit: BoxFit.cover,
+            ),
+          ),
+          Positioned.fill(
+            child: Container(color: Colors.black.withOpacity(0.18)),
+          ),
+
+          SafeArea(
+            child: Column(
+              children: [
+                _buildHeader(),
+                Expanded(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final size = Size(constraints.maxWidth, constraints.maxHeight);
+                      return Stack(
+                        children: [
+                          for (final node in _nodes) _buildNode(node, size),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16, top: 4),
+                  child: Text(
+                    'Tap a level to begin',
+                    style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.55), fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Logo + brand text, exactly as in the reference screenshots
+          Image.asset('assets/images/logo.webp', height: 48),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'The',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: kCyberGreen,
+                  height: 1.1,
+                  shadows: [Shadow(color: kCyberGreen.withOpacity(0.7), blurRadius: 8)],
+                ),
+              ),
+              Text(
+                'GUARDIAN',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.5,
+                  color: kCyberGreen,
+                  height: 1.0,
+                  shadows: [Shadow(color: kCyberGreen.withOpacity(0.7), blurRadius: 12)],
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          // Close / back button — circular as in image 1
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.black.withOpacity(0.55),
+                border: Border.all(color: Colors.white.withOpacity(0.18)),
+              ),
+              child: Icon(Icons.close, color: Colors.white.withOpacity(0.8), size: 18),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNode(_LevelNode node, Size size) {
+    final center = Offset(node.position.dx * size.width, node.position.dy * size.height);
+    const double d = 96; // bigger nodes to match reference
+    final bool isLocked = node.status == LevelStatus.locked;
+    final bool isCurrent = node.status == LevelStatus.current;
+    final Color glow = isLocked ? Colors.white.withOpacity(0.15) : node.glowColor;
+
+    // XP rewards per level
+    final List<String> xpLabels = ['', '250XP', '500XP', '800XP', '1200XP', '1700XP', '2500XP', '3500XP', '5000XP', ''];
+    final String xpLabel = node.id <= 9 && node.id >= 2 ? xpLabels[node.id - 1] : '';
+
+    return Positioned(
+      left: center.dx - d / 2,
+      top: center.dy - d / 2,
+      child: GestureDetector(
+        onTap: () => _onLevelTap(node),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AnimatedBuilder(
+              animation: _pulseAnim,
+              builder: (context, child) {
+                final pulse = isCurrent ? _pulseAnim.value : 1.0;
+                return Container(
+                  width: d,
+                  height: d,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.black.withOpacity(isLocked ? 0.60 : 0.30),
+                    border: Border.all(color: glow, width: isCurrent ? 3.5 : 2.5),
+                    boxShadow: isLocked
+                        ? null
+                        : [
+                            BoxShadow(
+                              color: glow.withOpacity(isCurrent ? 0.75 * pulse : 0.50),
+                              blurRadius: isCurrent ? 32 * pulse : 20,
+                              spreadRadius: isCurrent ? 4 * pulse : 2,
+                            ),
+                          ],
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      ClipOval(
+                        child: Opacity(
+                          opacity: isLocked ? 0.30 : 1.0,
+                          child: SizedBox(
+                            width: d,
+                            height: d,
+                            child: Image.asset(
+                              'assets/images/level${node.id}.webp',
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Number badge — top-left corner
+                      Positioned(
+                        top: -1,
+                        left: -1,
+                        child: Container(
+                          width: 26,
+                          height: 26,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.black.withOpacity(0.90),
+                            border: Border.all(color: glow, width: 1.8),
+                          ),
+                          child: Text(
+                            '${node.id}',
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      // Lock overlay
+                      if (isLocked)
+                        Container(
+                          width: d,
+                          height: d,
+                          decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black.withOpacity(0.30)),
+                          child: const Icon(Icons.lock_rounded, color: Colors.white60, size: 28),
+                        ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            // XP label beneath the node (matches reference screenshots)
+            if (xpLabel.isNotEmpty) ...[
+              const SizedBox(height: 3),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.55),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  xpLabel,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: isLocked ? Colors.white38 : Colors.white.withOpacity(0.85),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}

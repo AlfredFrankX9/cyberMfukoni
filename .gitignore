@@ -1,0 +1,39 @@
+# General
+.DS_Store
+*.log
+
+# Backend (Python)
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+sql_app.db
+venv/
+env/
+.venv/
+
+# Frontend (Flutter)
+frontend/.dart_tool/
+frontend/.packages
+frontend/build/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/ios/Pods/
+frontend/ios/.symlinks/
+frontend/ios/Flutter/Flutter.framework
+frontend/ios/Flutter/Flutter.podspec
+frontend/android/key.properties
+frontend/android/**/*.keystore
+
+# React/Node (if applicable)
+node_modules/
+dist/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDEs
+.idea/
+.vscode/
+*.swp

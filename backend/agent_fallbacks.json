@@ -1,0 +1,270 @@
+{
+  "greetings": [
+    "Hi! I\u2019m The Guardian. How can I help you with cybersecurity today?",
+    "Hello — welcome to Cyber Mfukoni. Ask me about scams, passwords, or device safety.",
+    "Hey there! I can explain threats, give quick tips, or help with incident steps.",
+    "Welcome back! If you’re not sure where to start, try: \"What is phishing?\"",
+    "Hi there! I can help you spot scams, secure your accounts, or answer cybersecurity questions.",
+    "Good to see you! Ask me anything about online safety, fraud, or device protection.",
+    "Hello! I’m your Guardian assistant. Tell me what cyber risk you want help with today.",
+    "Hi! Have a suspicious message? I can help you check it and suggest what to do next.",
+    "Welcome! Need help with passwords, SIM swap fraud, or online scams? I’m here for that.",
+    "Hey! If you want safe browsing tips or account security advice, just ask me.",
+    "Hello — I’m ready to help with phishing, mobile money scams, or any cybersecurity concern."
+  ],
+
+  "fallback_generic": [
+    "Sorry, I couldn't process that fully. Could you rephrase or give an example?",
+    "I didn't catch that — can you give a short example or ask a different way?",
+    "I'm having trouble right now. Meanwhile, here are some general cybersecurity tips:\n- Keep software updated\n- Use unique passwords\n- Enable 2FA\n- Avoid unknown links",
+    "If you're unsure about a message, look for spelling errors, mismatched URLs, and urgent demands for money.",
+    "Never give a code or password to someone who contacts you unexpectedly, even if they claim to be from a bank.",
+    "If a website asks for your login details, confirm you're on the official site before typing anything.",
+    "When using public Wi-Fi, avoid logging into sensitive accounts unless you have a secure VPN.",
+    "If your phone loses signal suddenly, a SIM swap might be happening — contact your carrier right away.",
+    "For suspicious app behavior, uninstall the app and scan your phone with a trusted security tool.",
+    "If a call asks to transfer money or share your PIN, hang up and call the institution using a verified number.",
+    "A strong password is unique, long, and not reused across multiple sites.",
+    "Use an authenticator app instead of SMS when possible for better account protection.",
+    "A legitimate company will never pressure you to act immediately by threatening account closure.",
+    "Do not approve app permissions that request access to your contacts, camera, or location without a clear need.",
+    "If an email asks for your personal documents, verify the request with the company before sending anything.",
+    "Keep your operating system and apps updated to protect against known security vulnerabilities.",
+    "If you suspect a phishing email, delete it and report it to your email provider or employer.",
+    "If your online account login fails, try resetting your password from the official site rather than clicking email links.",
+    "For banking fraud, report the incident immediately and freeze or monitor the affected account.",
+    "Do not trust links or attachments from unknown senders, even if the message looks official.",
+    "If your device is behaving strangely, disconnect from the network and scan it for malware.",
+    "When in doubt, contact the company directly using a phone number from their website, not the message.",
+    "If you receive a package delivery message you didn't expect, do not click the tracking link — check with the carrier instead.",
+    "Never share your ID number or bank details on a website you don't trust.",
+    "If you think your account has been compromised, change your password from a trusted device immediately.",
+    "Enable screen lock and biometric authentication on your mobile device for an extra layer of protection.",
+    "If someone asks you to install remote access software, verify their identity first, as this can lead to account takeover.",
+    "Keep payment cards and mobile money PINs secret; legitimate support staff never ask for them.",
+    "If an SMS contains a one-time code you did not request, do not forward it to anyone.",
+    "Beware of fake verification calls claiming to be from your bank — ask for proof or call back on the official line.",
+    "Check account notifications and statements regularly to spot unauthorized transactions early.",
+    "If your email password is leaked, change that password immediately and update any accounts using the same credential.",
+    "A good backup routine can help you recover from ransomware or data loss without paying attackers.",
+    "When using a VPN, choose a trusted provider that does not keep logs and offers strong encryption.",
+    "If you receive a job offer requiring upfront payment or personal details, treat it as a potential scam.",
+    "Keep your social media privacy settings tight and do not accept friend requests from people you do not know.",
+    "If a website asks for unnecessary personal data, leave the page and use a safer alternative.",
+    "If you see a strange charge on your mobile money account, report it to your provider immediately.",
+    "If you receive a 'free gift' message that needs your bank details, it is likely a scam.",
+    "Do not connect to suspicious Wi-Fi networks without confirming they belong to a trusted provider.",
+    "If you lose a device that contains sensitive apps, change your passwords and use remote wipe if available.",
+    "If you notice unexpected app permissions, revoke them and delete any unfamiliar apps.",
+    "If an invoice or bill looks wrong, double-check the sender before paying.",
+    "If you are asked to verify identity through a link, visit the service directly instead of clicking the link.",
+    "If a message claims you won a prize, verify directly with the company before sharing any information.",
+    "If you receive a request to transfer money for 'security reasons', confirm with your bank first.",
+    "Keep your antivirus software active and updated, or use a reputable built-in security solution.",
+    "A secure password manager can help you keep unique credentials for every service.",
+    "If a friend asks for money through an unusual channel, confirm with them through a different method before sending funds.",
+    "If your SIM card stops working unexpectedly, contact your mobile network provider immediately.",
+    "If your device asks to install a certificate or key, make sure it is from a trusted source.",
+    "When installing software, use only official app stores or the developer's official website.",
+    "If an offer sounds too good to be true, it probably is — proceed with extreme caution.",
+    "If you suspect identity theft, keep a record of suspicious activity and report it to local police.",
+    "If a message asks you to share your MPESA PIN or OTP, do not share it under any circumstances.",
+    "If a technician asks for your password, do not share it. Legitimate technical support can access systems without your login.",
+    "If you are asked to log in after clicking a social media post, confirm the post is from an official account.",
+    "If your browser warns that a website is unsafe, close the tab and do not proceed.",
+    "If you get a security alert from an account you don't recognize, sign in directly and review recent activity.",
+    "If you receive a message with a 'click here to confirm' link, verify the sender before clicking.",
+    "If you are uncertain about a QR code, don't scan it until you confirm it is safe.",
+    "If your computer has pop-up warnings that look like antivirus alerts, they may be fake; scan with a real antivirus tool.",
+    "Never give your mobile money PIN to anyone claiming to help you recover funds.",
+    "If someone asks you to pay a fee upfront for a government or banking service, verify the request through official channels.",
+    "If an email lists a payment due date but you do not recognise the bill, contact the vendor directly.",
+    "If you want to secure an account, enable recovery options like backup email and phone number under your control.",
+    "If you have doubts about an app update, check the app store release notes and developer details.",
+    "If your message history is missing messages, the account may have been compromised — update your password and check devices.",
+    "If you suspect a fake website, do not enter any information; compare the domain name to the official domain.",
+    "If a payment request is from someone you know but seems unusual, confirm by calling them directly.",
+    "If you notice unknown devices signed into your account, sign out everywhere and change your password.",
+    "If you use the same password on multiple sites, change them to unique passwords as soon as possible.",
+    "If an offer requires immediate action to 'avoid cancellation', verify the claim before reacting.",
+    "When using shared computers, always log out and clear browsing data after finishing.",
+    "If you receive a password reset email you didn't request, do not click the link; instead check your account from the official site.",
+    "If your phone asks for admin access when installing an app, question whether the app really needs it.",
+    "If a message pretends to be from a friend asking for money, contact your friend through a different app to verify.",
+    "If a website uses a strange domain name, do not enter any personal details.",
+    "If you are asked to move money to a 'safe account', contact your bank to verify the request is legitimate.",
+    "If your computer suddenly slows down, it may be infected — scan for malware and uninstall unknown programs.",
+    "If you get a suspicious payment notification, check your account directly instead of trusting the notification alone.",
+    "If you are asked for biometric data, ensure the request is from a trusted app or service.",
+    "If you need to verify your identity, use official identity verification tools rather than links from messages.",
+    "If an app asks for SMS permissions without a clear reason, avoid installing it.",
+    "If someone promises you a refund for first paying a fee, that is often a scam tactic.",
+    "If a link redirects you to a login page without you initiating the action, be cautious and check the URL.",
+    "If you receive an unexpected invoice, contact the company by searching for their official contact details.",
+    "If you have questions about a suspicious email attachment, do not open it until it is verified.",
+    "If a message claims your account is compromised, sign in directly and check the official security notifications.",
+    "If a caller pressures you to act quickly, stop and verify independently before taking any steps.",
+    "If you notice unknown social media posts from your account, secure your account immediately and review app permissions.",
+    "If you are unsure whether a text is legitimate, ask for help from someone you trust before responding.",
+    "If you see a strange payment request on a marketplace app, contact the seller through the platform's verified chat.",
+    "If you receive an unexpected job or sales offer, research the company and verify its legitimacy.",
+    "If a notification claims you won a prize, do not provide personal information until you confirm the offer is real.",
+    "If an account recovery email seems suspicious, go to the service directly and check your account status.",
+    "If an attacker has your email and phone number, enable extra protections like 2FA and security alerts.",
+    "If you're managing family devices, help them understand not to share passwords or codes with anyone.",
+    "If you get a call from someone claiming to be your phone company, verify with the official number on the bill.",
+    "If you are being asked for remote access to your machine, do so only if you trust the person and understand why.",
+    "If an app asks for device admin permissions and it isn't a security app, think twice before allowing it.",
+    "If your work account is compromised, notify your employer's IT team immediately.",
+    "If any online service offers a free gift in exchange for your password, that is a strong sign of fraud.",
+    "If you are asked to upload identification documents, make sure the recipient is legitimate and the request is secure.",
+    "If a message says your bank account will be closed, call the bank directly instead of following any message instructions.",
+    "If you are unsure about a login page, open the browser and type the URL yourself instead of following a link.",
+    "If someone offers to recover lost money for a fee, it's often a recovery scam — beware.",
+    "If you want to keep your family safe, teach them not to share OTPs or passwords with anyone.",
+    "If you see a fraudulent invoice for a service you never used, report it to the company and your payment provider.",
+    "If a website asks for payment in cash or gift cards, it is almost certainly a scam.",
+    "If your device asks for an update and it looks suspicious, check the vendor's official update channels.",
+    "If you think an app is spying on you, uninstall it and review permissions and your device security settings.",
+    "If you get a strange friend request from someone you already know, confirm with them before accepting.",
+    "If you are sent a form to fill in personal data, verify the legitimacy of the sender first.",
+    "If you are uncertain about an online request, it's safer to stop and verify before you proceed."
+  ],
+
+  "phishing": [
+    "Phishing is when attackers impersonate people or services to steal info. Never click unfamiliar links, verify sender addresses, and avoid sharing sensitive data.",
+    "If a message asks for passwords, codes, or payments, treat it as suspicious. Contact the company using an official channel to verify.",
+    "Quick check: Does the message create urgency, ask for money, or contain strange URLs? These are common phishing signs."
+  ],
+
+  "passwords": [
+    "Use long, unique passwords for every account. Aim for at least 12 characters with a mix of letters, numbers, and symbols.",
+    "A password manager (e.g., Bitwarden) can generate and store strong passwords so you don\u2019t have to remember them.",
+    "If one account is breached, change that password everywhere it was reused and enable two-factor authentication."
+  ],
+
+  "two_factor_auth": [
+    "Enable two-factor authentication (2FA) for all important accounts; prefer app-based authenticators over SMS for stronger security.",
+    "If you must use SMS 2FA, combine it with strong passwords and consider registering recovery keys or backup codes safely.",
+    "Authenticator apps: Google Authenticator, Authy, and FreeOTP are common options. Store backup codes in a secure place."
+  ],
+
+  "malware_and_virus": [
+    "If you suspect malware: disconnect from the internet, run a reputable anti-malware scan, and avoid entering any credentials until the device is clean.",
+    "Keep backups of important files offline or in a secure cloud with versioning; this helps recover from malicious encryption (ransomware).",
+    "For Windows, use Defender or Malwarebytes for scanning; on Android, uninstall suspicious apps and check app permissions."
+  ],
+
+  "ransomware": [
+    "If files are encrypted and a ransom is demanded, do not pay without guidance from authorities — payment doesn't guarantee recovery.",
+    "Isolate the affected device, preserve logs, and contact local cybercrime authorities and your organization\u2019s IT/security team.",
+    "Restore from backups after confirming backups are not infected. Consider professional incident response help for large incidents."
+  ],
+
+  "sim_swap": [
+    "SIM-swap fraud occurs when attackers transfer your number to a new SIM to intercept codes. Contact your carrier immediately if you lose signal unexpectedly.",
+    "Ask your mobile provider to add a PIN or security lock on your account and avoid sharing identity details publicly.",
+    "Use app-based authenticators or hardware tokens for important accounts to reduce reliance on SMS codes."
+  ],
+
+  "suspicious_link": [
+    "Don't click the link. Instead, hover to inspect the URL (on desktop) or long-press to preview on mobile. If unsure, open the official site directly.",
+    "If you clicked a suspicious link, disconnect from the network, run a malware scan, and change passwords from a known-good device."
+  ],
+
+  "social_engineering": [
+    "Social engineering tricks people rather than systems. Attackers may pose as coworkers, support staff, or family members asking for sensitive actions.",
+    "Verify identity using a separate channel (call the official number) before acting on requests for money, credentials, or access."
+  ],
+
+  "identity_theft": [
+    "If you suspect identity theft, freeze your credit where applicable, report to local authorities, and notify businesses where fraud occurred.",
+    "Collect evidence (emails, messages), change passwords, and monitor bank/card statements for unauthorized transactions."
+  ],
+
+  "secure_browsing": [
+    "Use HTTPS (lock icon) when submitting sensitive information in websites. Keep your browser and extensions updated.",
+    "Consider browser extensions like uBlock Origin and HTTPS Everywhere; review extensions periodically and remove ones you don't trust."
+  ],
+
+  "public_wifi": [
+    "Avoid accessing banking or sensitive accounts on public Wi-Fi. Use a trusted VPN if you must connect on untrusted networks.",
+    "If you connect to public Wi-Fi, prefer sites with HTTPS and avoid file sharing or remote desktop sessions."
+  ],
+
+  "vpn": [
+    "A VPN encrypts your network traffic between your device and the VPN server. Use a reputable provider and avoid free services that may log data.",
+    "Be aware that a VPN protects your network path but not malicious sites or compromised devices. Combine VPN with good endpoint security."
+  ],
+
+  "backup_and_recovery": [
+    "Keep regular backups using the 3-2-1 rule: 3 copies, 2 different media, 1 offsite (or cloud). Test restores periodically.",
+    "Maintain backups that are immutable or versioned to protect against accidental deletion or ransomware."
+  ],
+
+  "app_permissions": [
+    "Review app permissions and remove ones that request unnecessary access (e.g., a flashlight app requesting contacts).",
+    "On mobile, restrict background access and remove apps you don't use. Keep OS and apps updated."
+  ],
+
+  "banking_fraud": [
+    "If you notice unauthorized banking transactions, contact your bank immediately to dispute charges and secure your accounts.",
+    "Change login credentials, enable 2FA, and consider placing alerts for large transactions on your account."
+  ],
+
+  "reporting_scams": [
+    "Report scams to your local consumer protection agency, your bank, and the mobile carrier. Preserve the original messages as evidence.",
+    "Many countries have dedicated cybercrime or anti-fraud reporting portals — file a report and follow their guidance."
+  ],
+
+  "iot_security": [
+    "Change default device passwords on routers, cameras, and other IoT devices. Keep firmware updated and isolate IoT on a separate network when possible.",
+    "Disable remote admin features you don't need and monitor devices for unusual traffic."
+  ],
+
+  "children_online_safety": [
+    "Use parental controls and talk to children about not sharing personal information or accepting friend requests from strangers.",
+    "Limit screen time, review app permissions, and teach children how to report inappropriate or suspicious contacts."
+  ],
+
+  "email_security": [
+    "Be cautious with attachments from unknown senders; scan them with antivirus before opening. Verify sender addresses closely (look for typos).",
+    "Use email providers with strong spam filters and enable advanced phishing protections where available."
+  ],
+
+  "browser_hijack_and_ads": [
+    "If your browser redirects often or shows unwanted ads, check for malicious extensions and clear browser data; run an anti-malware scan.",
+    "Reset browser settings and reinstall from the official source if problems persist."
+  ],
+
+  "device_theft": [
+    "If a device is stolen, change passwords for accounts logged in on the device, enable remote wipe (if available), and report theft to police.",
+    "Revoke device access from account security pages (Google, Apple, Microsoft) and alert your bank if sensitive apps were present."
+  ],
+
+  "account_recovery": [
+    "Use official account recovery flows and provide requested evidence; avoid recovery links received via messages unless they come from verified sources.",
+    "Set up recovery emails and phone numbers that you control and keep them updated."
+  ],
+
+  "oauth_and_third_party_apps": [
+    "Review third-party apps that have access to your accounts and revoke access to apps you don't recognize.",
+    "Prefer granular permissions and avoid granting full account access unless necessary."
+  ],
+
+  "credentials_leak": [
+    "If your credentials are leaked, change the affected password immediately, enable 2FA, and check other accounts for reuse.",
+    "Use https://haveibeenpwned.com to quickly check if your email appears in known breaches and follow their remediation guidance."
+  ],
+
+  "command_short_help": [
+    "You can try: 'What is phishing?', 'Password tips', 'I got hacked', 'SIM swap help', 'How to report a scam'.",
+    "Ask me for step-by-step help, e.g., 'How do I clean malware from Windows?' or 'What to do if my M-Pesa was hacked?'."
+  ],
+
+  "thanks_and_goodbye": [
+    "You're welcome — stay safe online!",
+    "Glad to help. If you need step-by-step help, ask me to walk you through it.",
+    "Take care! If something seems urgent, contact your bank or carrier immediately."
+  ]
+}
