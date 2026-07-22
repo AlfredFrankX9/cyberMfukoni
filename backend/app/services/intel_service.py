@@ -51,6 +51,12 @@ def classify_severity(title: str, summary: str) -> str:
 def fetch_and_cache_intel():
     print("[Intel] Starting background job to fetch cybersecurity news...")
     
+    # Touch the lock file to prevent rapid restarts from re-triggering the fetch
+    try:
+        open(".last_intel_fetch", "w").close()
+    except Exception:
+        pass
+    
     gnews_api_key = settings.GNEWS_API_KEY
     if not gnews_api_key:
         print("[Intel] GNEWS_API_KEY not set. Skipping fetch.")
@@ -205,7 +211,18 @@ def fetch_and_cache_intel():
 scheduler = BackgroundScheduler()
 
 def _already_fetched_today() -> bool:
-    """Check whether we've already cached a fetch for today (UTC)."""
+    """Check whether we've already cached a fetch for today (UTC) or recently attempted."""
+    import os
+    lock_file = ".last_intel_fetch"
+    try:
+        # Prevent uvicorn reload death-spiral by checking if we attempted a fetch in the last 6 hours
+        if os.path.exists(lock_file):
+            mtime = os.path.getmtime(lock_file)
+            if time.time() - mtime < 6 * 3600:
+                return True
+    except Exception:
+        pass
+
     db: Session = SessionLocal()
     try:
         latest = db.query(func.max(IntelArticle.fetched_at)).scalar()
