@@ -49,12 +49,8 @@ class _VaultScreenState extends State<VaultScreen>
   // device as the status bar height changes, which is why content was
   // peeking out from behind the tab bar on some screens.
   double _contentTopPadding(BuildContext context) {
-    const double tabBarBottomHeight = 60.0; // matches PreferredSize above
     const double breathingRoom = 16.0; // small gap so content isn't flush
-    return MediaQuery.of(context).padding.top +
-        kToolbarHeight +
-        tabBarBottomHeight +
-        breathingRoom;
+    return MediaQuery.of(context).padding.top + breathingRoom;
   }
 
   void _analyzePassword(String val) {

@@ -7,6 +7,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:installed_apps/app_info.dart';
 import 'package:installed_apps/installed_apps.dart';
+import 'package:crypto/crypto.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
+import 'package:flutter/services.dart';
 import '../services/api_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dashboard_screen.dart'; // fallback only, see _goBack()
@@ -310,8 +314,281 @@ class _MulikaScreenState extends State<MulikaScreen>
         );
         _scrollToBottom();
       }
+    } else if (_selectedDeviceTarget == 'Files') {
+      setState(() {
+        _terminalLines.add('[INFO] Opening File Picker...');
+      });
+      _scrollToBottom();
+
+      FilePickerResult? filePickerResult;
+      try {
+        filePickerResult = await FilePicker.platform.pickFiles(
+          allowMultiple: true,
+          withData: true,
+        );
+      } catch (e) {
+        setState(() {
+          _terminalLines.add('[ERROR] File picker failed: $e');
+          _isTerminalScanning = false;
+          _isAnalyzing = false;
+        });
+        _scrollToBottom();
+        return;
+      }
+
+      if (filePickerResult == null || filePickerResult.files.isEmpty) {
+        setState(() {
+          _terminalLines.add('[WARN] File scan cancelled by user.');
+          _isTerminalScanning = false;
+          _isAnalyzing = false;
+        });
+        _scrollToBottom();
+        return;
+      }
+
+      final files = filePickerResult.files;
+      setState(() {
+        _terminalLines.add('[OK] Selected ${files.length} file(s). Calculating hashes...');
+      });
+      _scrollToBottom();
+
+      List<Map<String, String>> fileHashes = [];
+      for (var file in files) {
+        final bytes = file.bytes;
+        if (bytes == null) {
+          setState(() {
+            _terminalLines.add('  [WARN] Skipping ${file.name}: bytes not readable.');
+          });
+          _scrollToBottom();
+          continue;
+        }
+
+        final hash = sha256.convert(bytes).toString();
+        fileHashes.add({
+          'name': file.name,
+          'hash': hash,
+        });
+        setState(() {
+          _terminalLines.add('  Hashed: ${file.name} -> ${hash.substring(0, 16)}...');
+        });
+        _scrollToBottom();
+      }
+
+      if (fileHashes.isEmpty) {
+        setState(() {
+          _terminalLines.add('[ERROR] No readable files found to scan.');
+          _isTerminalScanning = false;
+          _isAnalyzing = false;
+        });
+        _scrollToBottom();
+        return;
+      }
+
+      setState(() {
+        _terminalLines.add(' ');
+        _terminalLines.add('[NETWORK] Sending file hashes to VirusTotal API...');
+      });
+      _scrollToBottom();
+
+      try {
+        final response = await ApiService.post(
+          '/api/mulika/scan-files',
+          body: {'file_hashes': fileHashes},
+        );
+
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          setState(() {
+            _terminalLines.add('[OK] VirusTotal scan complete.');
+            _terminalLines.add(' ');
+            _isTerminalScanning = false;
+            _isAnalyzing = false;
+            _result = data['data'];
+          });
+          _scrollToBottom();
+          return;
+        } else if (response.statusCode == 503) {
+          setState(
+            () => _terminalLines.add(
+              '[WARN] VT API key not configured. Falling back to heuristic scan.',
+            ),
+          );
+          _scrollToBottom();
+        } else {
+          setState(
+            () => _terminalLines.add(
+              '[ERROR] Backend returned ${response.statusCode}. Using heuristic analysis.',
+            ),
+          );
+          _scrollToBottom();
+        }
+      } catch (e) {
+        setState(
+          () => _terminalLines.add(
+            '[ERROR] Network error: $e. Using local heuristic analysis.',
+          ),
+        );
+        _scrollToBottom();
+      }
+    } else if (_selectedDeviceTarget == 'Target Location') {
+      setState(() {
+        _terminalLines.add('[INFO] Select a Target Directory...');
+      });
+      _scrollToBottom();
+
+      String? selectedDirectory;
+      try {
+        selectedDirectory = await FilePicker.platform.getDirectoryPath();
+      } catch (e) {
+        setState(() {
+          _terminalLines.add('[ERROR] Directory picker failed: $e');
+          _isTerminalScanning = false;
+          _isAnalyzing = false;
+        });
+        _scrollToBottom();
+        return;
+      }
+
+      if (selectedDirectory == null) {
+        setState(() {
+          _terminalLines.add('[WARN] Directory selection cancelled.');
+          _isTerminalScanning = false;
+          _isAnalyzing = false;
+        });
+        _scrollToBottom();
+        return;
+      }
+
+      setState(() {
+        _terminalLines.add('[OK] Target Directory: $selectedDirectory');
+        _terminalLines.add('[SCAN] Deep enumerating directory tree...');
+      });
+      _scrollToBottom();
+
+      List<dynamic> files = [];
+      try {
+        if (!kIsWeb && Theme.of(context).platform == TargetPlatform.android) {
+          final channel = MethodChannel('com.example.frontend/shredder');
+          final result = await channel.invokeMethod('listDirectoryFiles', {'path': selectedDirectory});
+          if (result != null) {
+            files = result as List<dynamic>;
+          }
+        } else {
+          // Basic dart IO fallback for Desktop if needed
+          final dir = Directory(selectedDirectory);
+          if (dir.existsSync()) {
+            final entities = dir.listSync(recursive: true).take(100).toList();
+            for (var e in entities) {
+              if (e is File) {
+                files.add({'name': e.path.split(Platform.pathSeparator).last, 'path': e.path, 'size': e.lengthSync()});
+              }
+            }
+          }
+        }
+      } catch (e) {
+        setState(() {
+          _terminalLines.add('[ERROR] Failed to list directory contents: $e');
+        });
+        _scrollToBottom();
+      }
+
+      if (files.isEmpty) {
+        setState(() {
+          _terminalLines.add('[WARN] No files found in target directory.');
+          _isTerminalScanning = false;
+          _isAnalyzing = false;
+        });
+        _scrollToBottom();
+        return;
+      }
+
+      setState(() {
+        _terminalLines.add('[OK] Found ${files.length} files. Calculating hashes...');
+      });
+      _scrollToBottom();
+
+      List<Map<String, String>> fileHashes = [];
+      for (var f in files) {
+        final path = f['path'] as String;
+        final name = f['name'] as String;
+        
+        try {
+          final file = File(path);
+          // Only read up to 10MB per file to avoid memory issues on large files
+          if (file.lengthSync() < 10 * 1024 * 1024) {
+            final bytes = file.readAsBytesSync();
+            final hash = sha256.convert(bytes).toString();
+            fileHashes.add({'name': name, 'hash': hash});
+            setState(() {
+              _terminalLines.add('  Hashed: $name -> ${hash.substring(0, 16)}...');
+            });
+            _scrollToBottom();
+            await Future.delayed(const Duration(milliseconds: 10)); // Yield to UI
+          } else {
+             setState(() {
+              _terminalLines.add('  [SKIP] $name (File too large for fast hash)');
+            });
+            _scrollToBottom();
+          }
+        } catch (e) {
+          setState(() {
+             _terminalLines.add('  [WARN] Skipping $name: unreadable.');
+          });
+          _scrollToBottom();
+        }
+      }
+
+      if (fileHashes.isEmpty) {
+        setState(() {
+          _terminalLines.add('[ERROR] No readable files found to scan.');
+          _isTerminalScanning = false;
+          _isAnalyzing = false;
+        });
+        _scrollToBottom();
+        return;
+      }
+
+      setState(() {
+        _terminalLines.add(' ');
+        _terminalLines.add('[NETWORK] Sending file hashes to VirusTotal API...');
+      });
+      _scrollToBottom();
+
+      try {
+        final response = await ApiService.post(
+          '/api/mulika/scan-files',
+          body: {'file_hashes': fileHashes},
+        );
+
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          setState(() {
+            _terminalLines.add('[OK] Target Location scan complete.');
+            _terminalLines.add(' ');
+            _isTerminalScanning = false;
+            _isAnalyzing = false;
+            _result = data['data'];
+          });
+          _scrollToBottom();
+          return;
+        } else {
+          setState(
+            () => _terminalLines.add(
+              '[ERROR] Backend returned ${response.statusCode}. Using heuristic analysis.',
+            ),
+          );
+          _scrollToBottom();
+        }
+      } catch (e) {
+        setState(
+          () => _terminalLines.add(
+            '[ERROR] Network error: $e. Using local heuristic analysis.',
+          ),
+        );
+        _scrollToBottom();
+      }
     } else {
-      // For Files, Storage, Whole Phone, Target Location — show simulation terminal
+      // For Storage and Whole Phone — show simulation terminal
       List<String> mockItems = _getMockItemsForTarget(rand);
       for (int i = 0; i < mockItems.length; i++) {
         if (!mounted) return;

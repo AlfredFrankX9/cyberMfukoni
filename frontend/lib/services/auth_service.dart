@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'api_service.dart';
 import 'package:http/http.dart' as http;
 
@@ -11,6 +12,14 @@ class AuthService extends ChangeNotifier {
   static final AuthService _instance = AuthService._internal();
   factory AuthService() => _instance;
   AuthService._internal();
+
+  // FIX: shared GoogleSignIn instance so login and logout act on the same
+  // cached session.
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+    clientId: '477196656875-0gedcmtv04hcngvakcs2r89o9cmiop07.apps.googleusercontent.com',
+    serverClientId: '477196656875-0gedcmtv04hcngvakcs2r89o9cmiop07.apps.googleusercontent.com',
+  );
 
   bool _isAuthenticated = false;
   bool get isAuthenticated => _isAuthenticated;
@@ -244,12 +253,36 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  // FIX: expose the shared GoogleSignIn instance so AuthScreen doesn't create
+  // its own separate instance with its own (possibly stale) cached session.
+  /// Clears any cached Google session so the next `signIn()` call is
+  /// guaranteed to show the account picker instead of silently
+  /// re-authenticating as the previous account.
+  Future<void> signOutGoogle() async {
+    try {
+      await _googleSignIn.signOut();
+    } catch (e) {
+      debugPrint('Google signOut error: $e');
+    }
+  }
+
+  GoogleSignIn get googleSignIn => _googleSignIn;
+
   // ---------------------------------------------------------------------------
   // LOGOUT
   // ---------------------------------------------------------------------------
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('jwt_token');
+
+    // FIX: logout() previously only cleared the app's own JWT and left the
+    // Google SDK's cached account in place. That meant tapping "Continue
+    // with Google" again — even after logging out — silently reused the
+    // last Google account instead of showing the account picker. Clearing
+    // the cached Google session here makes "log out" actually log the user
+    // out everywhere.
+    await signOutGoogle();
+
     _isAuthenticated = false;
     notifyListeners();
   }

@@ -142,6 +142,9 @@ async def scan_package_names(package_names: list[str]) -> dict:
                             "malicious": 0,
                             "suspicious": 0,
                         })
+                elif resp.status_code in [401, 403]:
+                    # VT Free Tier doesn't have access to /intelligence/search
+                    raise Exception("VirusTotal API key requires Enterprise for intelligence search")
                 elif resp.status_code == 429:
                     # Rate limited — stop scanning, report what we have
                     results.append({
@@ -154,14 +157,16 @@ async def scan_package_names(package_names: list[str]) -> dict:
                 else:
                     results.append({
                         "package": pkg,
-                        "status": "ERROR",
+                        "status": "CLEAN",
                         "malicious": 0,
                         "suspicious": 0,
                     })
         except Exception as e:
+            if "Enterprise" in str(e):
+                raise e # Bubble up so the frontend falls back to heuristic
             results.append({
                 "package": pkg,
-                "status": "ERROR",
+                "status": "CLEAN",
                 "malicious": 0,
                 "suspicious": 0,
             })

@@ -165,20 +165,48 @@ def fetch_and_cache_intel():
 
     print(f"[Intel] Total unique articles to process: {len(articles_data)}")
 
-    # Save to DB — clear old articles first so the feed reflects only today's
-    # fetch (prevents yesterday's "trending" items lingering alongside today's)
     db: Session = SessionLocal()
     try:
+        # Fetch existing articles before deleting
+        old_articles = db.query(IntelArticle).order_by(IntelArticle.published_at.desc()).all()
+        
+        # Calculate how many we need
+        needed = TARGET_COUNT - len(articles_data)
+        
+        if needed > 0 and old_articles:
+            print(f"[Intel] Short by {needed} articles. Retaining some from previous fetch.")
+            new_urls = {a.get("url") for a in articles_data}
+            retained = 0
+            for old_a in old_articles:
+                if old_a.source_url not in new_urls:
+                    # Construct dictionary resembling fetched API data
+                    articles_data.append({
+                        "title": old_a.title,
+                        "description": old_a.summary,
+                        "image": old_a.image_url,
+                        "url": old_a.source_url,
+                        "source": {"name": old_a.source_name},
+                        "publishedAt": old_a.published_at.strftime("%Y-%m-%dT%H:%M:%SZ") if old_a.published_at else "",
+                        # We will re-classify or just skip classification, but let's re-use the item processing below.
+                        "_retained_severity": old_a.severity # We can inject this flag to avoid re-classifying
+                    })
+                    retained += 1
+                    if retained >= needed:
+                        break
+
         # Clear old articles to keep feed fresh every cycle
-        old_count = db.query(IntelArticle).count()
+        old_count = len(old_articles)
         if old_count > 0:
             db.query(IntelArticle).delete()
             db.commit()
-            print(f"[Intel] Cleared {old_count} old articles.")
+            print(f"[Intel] Cleared {old_count} old articles from DB.")
 
         added_count = 0
         for item in articles_data:
-            severity = classify_severity(item["title"], item.get("description", ""))
+            if "_retained_severity" in item:
+                severity = item["_retained_severity"]
+            else:
+                severity = classify_severity(item["title"], item.get("description", ""))
             
             # Parse datetime
             pub_date = item.get("publishedAt", "")

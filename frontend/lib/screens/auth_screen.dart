@@ -482,19 +482,48 @@ class _AuthScreenState extends State<AuthScreen> {
                       context,
                       listen: false,
                     );
-                    final error = await auth.googleLogin(
-                      'google_user',
-                      'user@gmail.com',
-                    );
-                    if (!mounted) return;
-                    setState(() => _isLoading = false);
-                    if (error != null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(error),
-                          backgroundColor: Colors.red.shade800,
-                        ),
+                    try {
+                      // FIX: use the shared GoogleSignIn instance from
+                      // AuthService (not a fresh local instance) and clear
+                      // any cached session first. Without this, signIn()
+                      // silently re-authenticates as the last account and
+                      // never shows the account picker — so after logging
+                      // out and tapping "Continue with Google" again, the
+                      // user has no way to pick a different account.
+                      final googleSignIn = auth.googleSignIn;
+                      await googleSignIn.signOut();
+                      final account = await googleSignIn.signIn();
+                      if (account == null) {
+                        // User cancelled the sign-in
+                        if (mounted) setState(() => _isLoading = false);
+                        return;
+                      }
+                      final displayName =
+                          account.displayName ?? account.email.split('@').first;
+                      final error = await auth.googleLogin(
+                        displayName,
+                        account.email,
                       );
+                      if (!mounted) return;
+                      setState(() => _isLoading = false);
+                      if (error != null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(error),
+                            backgroundColor: Colors.red.shade800,
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      if (mounted) {
+                        setState(() => _isLoading = false);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Google Sign-In failed: $e'),
+                            backgroundColor: Colors.red.shade800,
+                          ),
+                        );
+                      }
                     }
                   },
                   child: Center(

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -12,6 +13,11 @@ import 'mulika_screen.dart';
 import 'boma_screen.dart';
 import 'agent_screen.dart';
 import 'chonjo_intro_screen.dart';
+import 'permission_auditor_screen.dart';
+import 'secure_shredder_screen.dart';
+import 'smart_scan_screen.dart';
+import 'dns_filter_screen.dart';
+import 'secure_modules_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   final ValueChanged<int>? onNavigate;
@@ -78,10 +84,10 @@ class _DashboardScreenState extends State<DashboardScreen>
       onTap: () => _navigateTo(0),
     ),
     _ModuleDef(
-      title: 'Cyber Agent',
-      bgImage: 'assets/images/cyberAgentBackground.webp',
-      color: const Color(0xFF32CD32),
-      onTap: () => _navigateTo(5),
+      title: 'Secure',
+      bgImage: 'assets/images/secure.webp',
+      color: const Color(0xFF00FF40),
+      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SecureModulesScreen())),
     ),
   ];
 
@@ -235,6 +241,18 @@ class _DashboardScreenState extends State<DashboardScreen>
                               _buildHealthCard(),
                               const SizedBox(height: 30),
                               Text(
+                                'QUICK ACTIONS',
+                                style: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 2.0,
+                                  color: const Color(0xFFC0C0C0),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              _buildQuickActions(),
+                              const SizedBox(height: 30),
+                              Text(
                                 'SECURITY MODULES',
                                 style: GoogleFonts.inter(
                                   fontSize: 14,
@@ -245,6 +263,18 @@ class _DashboardScreenState extends State<DashboardScreen>
                               ),
                               const SizedBox(height: 16),
                               _buildModulesGrid(isWide, size),
+                              const SizedBox(height: 40),
+                              Text(
+                                'RECENT ACTIVITY',
+                                style: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 2.0,
+                                  color: const Color(0xFFC0C0C0),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              _buildActivityLog(),
                             ],
                           ),
                         ),
@@ -520,10 +550,10 @@ class _DashboardScreenState extends State<DashboardScreen>
       final availableWidth =
           size.width * 0.84; // matches 0.08 padding each side
       itemWidth = (availableWidth - 48) / 3; // 2 gaps of 24px
-      itemHeight = itemWidth * 0.95;
+      itemHeight = itemWidth * 0.85;
     } else {
       itemWidth = size.width - 40;
-      itemHeight = itemWidth * 0.95;
+      itemHeight = itemWidth * 0.75;
     }
 
     final defs = _moduleDefs;
@@ -542,7 +572,7 @@ class _DashboardScreenState extends State<DashboardScreen>
       clipBehavior: Clip.none,
       alignment: WrapAlignment.center,
       spacing: 24,
-      runSpacing: 50,
+      runSpacing: 24,
       children: cards
           .map(
             (card) =>
@@ -574,6 +604,112 @@ class _DashboardScreenState extends State<DashboardScreen>
           }
         }
       },
+    );
+  }
+
+  // ─── Quick Actions (infinite marquee) ───────────────────────────────────
+  Widget _buildQuickActions() {
+    final actions = [
+      _QuickActionData(
+        icon: Icons.radar,
+        label: 'SMART SCAN',
+        color: const Color(0xFF00FF40),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const SmartScanScreen()),
+        ),
+      ),
+      _QuickActionData(
+        icon: Icons.shield,
+        label: 'APP PERMISSIONS',
+        color: const Color(0xFF00FF40),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const PermissionAuditorScreen()),
+        ),
+      ),
+      _QuickActionData(
+        icon: Icons.delete_forever,
+        label: 'SECURE SHRED',
+        color: const Color(0xFF32CD32),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const SecureShredderScreen()),
+        ),
+      ),
+      _QuickActionData(
+        icon: Icons.vpn_lock,
+        label: 'DNS FILTER',
+        color: const Color(0xFF00FF40),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const DnsFilterScreen()),
+        ),
+      ),
+    ];
+
+    return SizedBox(
+      height: 50,
+      child: _InfiniteMarquee(actions: actions),
+    );
+  }
+
+  // ─── Activity Log ─────────────────────────────────────────────────────────
+  Widget _buildActivityLog() {
+    final List<Map<String, dynamic>> mockLogs = [
+      {'icon': Icons.check_circle, 'color': const Color(0xFF00FF40), 'text': 'System scan clear. No threats detected.', 'time': 'Just now'},
+      {'icon': Icons.vpn_lock, 'color': const Color(0xFF32CD32), 'text': 'Secure VPN connection established.', 'time': '2h ago'},
+      {'icon': Icons.warning_amber, 'color': const Color(0xFFFFC107), 'text': 'Suspicious ad-tracker blocked.', 'time': '5h ago'},
+    ];
+
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A1D27),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
+      ),
+      child: Column(
+        children: mockLogs.map((log) {
+          final isLast = mockLogs.last == log;
+          return Column(
+            children: [
+              ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: log['color'].withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(log['icon'], color: log['color'], size: 20),
+                ),
+                title: Text(
+                  log['text'],
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                trailing: Text(
+                  log['time'],
+                  style: GoogleFonts.inter(
+                    color: Colors.white54,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+              if (!isLast)
+                Divider(
+                  height: 1,
+                  color: Colors.white.withOpacity(0.05),
+                  indent: 70,
+                  endIndent: 24,
+                ),
+            ],
+          );
+        }).toList(),
+      ),
     );
   }
 }
@@ -696,6 +832,183 @@ class _ModuleCardWidgetState extends State<_ModuleCardWidget> {
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickActionData {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _QuickActionData({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+}
+
+class _InfiniteMarquee extends StatefulWidget {
+  final List<_QuickActionData> actions;
+  const _InfiniteMarquee({required this.actions});
+
+  @override
+  State<_InfiniteMarquee> createState() => _InfiniteMarqueeState();
+}
+
+class _InfiniteMarqueeState extends State<_InfiniteMarquee> {
+  late final ScrollController _scrollController;
+  bool _isPaused = false;
+  Timer? _resumeTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _startScrolling());
+  }
+
+  void _startScrolling() {
+    if (_isPaused || !_scrollController.hasClients) return;
+    
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final minScroll = _scrollController.position.minScrollExtent;
+    
+    final currentPosition = _scrollController.offset;
+    final remainingDistance = maxScroll - currentPosition;
+    
+    if (remainingDistance <= 0) {
+      _scrollController.jumpTo(minScroll);
+      _startScrolling();
+      return;
+    }
+    
+    final durationMs = (remainingDistance / 40) * 1000;
+    
+    _scrollController.animateTo(
+      maxScroll,
+      duration: Duration(milliseconds: durationMs.toInt()),
+      curve: Curves.linear,
+    ).then((_) {
+      if (mounted) {
+        _scrollController.jumpTo(minScroll);
+        _startScrolling();
+      }
+    });
+  }
+
+  void _pauseScrolling() {
+    if (_isPaused) return;
+    setState(() {
+      _isPaused = true;
+    });
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(_scrollController.offset);
+    }
+    _resetResumeTimer();
+  }
+
+  void _resetResumeTimer() {
+    _resumeTimer?.cancel();
+    _resumeTimer = Timer(const Duration(seconds: 5), () {
+      if (mounted && _isPaused) {
+        setState(() {
+          _isPaused = false;
+        });
+        _startScrolling();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _resumeTimer?.cancel();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final List<Widget> items = [];
+    
+    // Repeat items to allow smooth continuous scrolling
+    for (int loop = 0; loop < 8; loop++) {
+      for (int i = 0; i < widget.actions.length; i++) {
+        final action = widget.actions[i];
+        items.add(
+          GestureDetector(
+            onTap: () {
+              // Execute immediately on tap
+              action.onTap();
+              // Briefly pause to prevent accidental subsequent clicks if moving
+              _pauseScrolling();
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              decoration: BoxDecoration(
+                color: const Color(0xFF222633),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: action.color.withOpacity(0.3),
+                  width: 1.0,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: action.color.withOpacity(0.1),
+                    blurRadius: 10,
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(action.icon, color: action.color, size: 18),
+                  const SizedBox(width: 10),
+                  Text(
+                    action.label,
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+        items.add(const SizedBox(width: 12));
+      }
+    }
+
+    return GestureDetector(
+      onTapDown: (_) {
+        _pauseScrolling();
+      },
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          if (notification is ScrollStartNotification) {
+            _resumeTimer?.cancel();
+          } else if (notification is ScrollEndNotification) {
+            _resetResumeTimer();
+          }
+          return false;
+        },
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          scrollDirection: Axis.horizontal,
+          physics: _isPaused
+              ? const BouncingScrollPhysics()
+              : const NeverScrollableScrollPhysics(),
+          child: Row(
+            children: items,
           ),
         ),
       ),

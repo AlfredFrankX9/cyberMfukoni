@@ -56,13 +56,18 @@ class _IntelFeedScreenState extends State<IntelFeedScreen> {
         final data = json.decode(response.body);
         final scamsList = _assignFallbacks(data['data'] ?? []);
 
-        await prefs.setString('cached_intel_feed', json.encode(scamsList));
+        // If backend returned actual articles, use them
+        if (scamsList.isNotEmpty) {
+          await prefs.setString('cached_intel_feed', json.encode(scamsList));
 
-        setState(() {
-          _scams = scamsList;
-          _isLoading = false;
-        });
-        return;
+          setState(() {
+            _scams = scamsList;
+            _isLoading = false;
+          });
+          return;
+        }
+        // If backend returned empty, fall through to cache/mock below
+        debugPrint('API returned 200 but empty data, falling through to cache/mock');
       }
     } catch (e) {
       debugPrint('Failed to fetch real intel, attempting to load cache: $e');

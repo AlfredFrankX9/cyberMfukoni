@@ -1,0 +1,27 @@
+1. Threat Detection & Real-Time Prevention
+•	Behavioral Analysis & AI Scanning: Rather than relying solely on traditional signature databases, modern security tools use machine learning to flag unusual system calls or anomalous file behavior.
+•	Real-time Antivirus & Anti-Malware: Scans incoming downloads, executable files, and app installations for malicious payloads (trojans, ransomware, keyloggers). 
+•	Anti-Phishing & Web Shield: Blocks malicious URLs, flags spoofed login pages, and checks links in real time before you open them. 
+
+2. Network & Traffic Protection
+•	Built-in VPN (Virtual Private Network): Encrypts internet traffic over untrusted or public Wi-Fi networks to prevent Man-in-the-Middle (MitM) attacks. 
+•	Firewall & Connection Control: Monitors outbound and inbound network connections, letting users block specific apps from sending data externally. 
+•	DNS Filtering / Ad-Tracker Blocker: Filters out malicious domain names, tracking scripts, and cryptojacking code at the DNS level.
+
+3. Privacy & Data Guarding
+	•App Permission Auditor: Tracks which installed apps have access to sensitive hardware (camera, 	microphone, location, contacts) and flags risky permissions. (who's accessing camera, mic, 	location)
+	•Secure Shredder: A secure deletion tool that overwrites sectors so data can't be recovered. 
+	•Secure messaging/calling
+
+4. Mobile & Device Security
+	•Anti-Theft & Remote Wipe: Allows locating, locking, or wiping device data remotely if a 	phone or laptop is lost or stolen.
+
+5. Trust & UX differentiators
+	•One-tap actions when something's flagged (block, report, freeze)
+	•Transparent logging of what data the app itself collects
+
+6. Telemetry, Audit Logs & UX
+•	Clean Security Dashboard: Displays a clear "Security Health Score" alongside actionable recommendations.
+•	Audit & Incident Logs: Keeps local, tamper-proof event logs detailing blocked threats, scan history, and active connections for troubleshooting.
+
+

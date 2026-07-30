@@ -166,12 +166,10 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
       padding: EdgeInsets.only(
         left: 16,
         right: 16,
-        // Matches VaultScreen's AppBar (title row + 60px tab bar) exactly —
-        // see the same formula in vault_screen.dart's _contentTopPadding.
-        // Kept in sync manually since this screen has no reference to
-        // VaultScreen's State; if that AppBar's dimensions ever change,
-        // update both places.
-        top: MediaQuery.of(context).padding.top + kToolbarHeight + 60.0 + 16.0,
+        // Matches VaultScreen's AppBar. Scaffold automatically updates
+        // MediaQuery.padding.top to include the full AppBar height, 
+        // so we just add a small 16.0px breathing room.
+        top: MediaQuery.of(context).padding.top + 16.0,
         bottom: 100,
       ),
       child: Column(
