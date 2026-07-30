@@ -37,7 +37,7 @@ def classify_severity(title: str, summary: str) -> str:
         Return exactly ONE word (CRITICAL, HIGH, MEDIUM, or LOW).
         """
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-1.5-flash',
             contents=prompt
         )
         level = response.text.strip().upper()
