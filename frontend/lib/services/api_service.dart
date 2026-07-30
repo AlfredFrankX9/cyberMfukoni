@@ -8,7 +8,7 @@ class ApiService {
     if (kIsWeb) return 'http://127.0.0.1:8000';
     if (defaultTargetPlatform == TargetPlatform.android) {
       // Use the live Railway production backend
-      return 'https://cybermfukoni-production.up.railway.app';
+      return 'https://cybermfukoni-api-production.up.railway.app';
     }
     return 'http://127.0.0.1:8000';
   }
