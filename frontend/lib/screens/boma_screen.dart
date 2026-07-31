@@ -5,7 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:android_intent_plus/android_intent.dart';
 import 'protection_guides_screen.dart';
+import 'permission_auditor_screen.dart';
 
 class BomaScreen extends StatefulWidget {
   const BomaScreen({super.key});
@@ -22,9 +24,9 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
   bool _isCheckingDevice = true;
 
   // Each item has:
-  //   'autoDetect': true  → value is read from the device (cannot be manually toggled)
-  //   'autoDetect': false → user self-reports (can be manually toggled)
-  //   'settingsType'      → which system settings page to open when tapped
+  //   'autoDetect': true  → value is read from the device
+  //   'autoDetect': false → user self-reports
+  //   'actionType'        → the type of action to perform when tapped
   final List<Map<String, dynamic>> _securityChecklist = [
     {
       'title': 'Screen Lock Enabled',
@@ -33,7 +35,8 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
       'completed': false,
       'category': 'Device',
       'autoDetect': true,
-      'settingsType': 'lockAndPassword',
+      'actionType': 'settings',
+      'actionData': 'lockAndPassword',
     },
     {
       'title': 'Biometric Authentication',
@@ -42,7 +45,8 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
       'completed': false,
       'category': 'Device',
       'autoDetect': true,
-      'settingsType': 'security',
+      'actionType': 'settings',
+      'actionData': 'security',
     },
     {
       'title': 'Two-Factor Authentication',
@@ -51,7 +55,8 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
       'completed': false,
       'category': 'Account',
       'autoDetect': false,
-      'settingsType': null,
+      'actionType': 'url',
+      'actionData': 'https://myaccount.google.com/security',
     },
     {
       'title': 'M-Pesa PIN Security',
@@ -60,7 +65,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
       'completed': false,
       'category': 'Banking',
       'autoDetect': false,
-      'settingsType': null,
+      'actionType': 'stk',
     },
     {
       'title': 'App Permissions Review',
@@ -69,7 +74,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
       'completed': false,
       'category': 'Privacy',
       'autoDetect': false,
-      'settingsType': 'appSettings',
+      'actionType': 'permission_manager',
     },
     {
       'title': 'Password Manager',
@@ -78,7 +83,8 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
       'completed': false,
       'category': 'Account',
       'autoDetect': false,
-      'settingsType': null,
+      'actionType': 'url',
+      'actionData': 'https://passwords.google.com/',
     },
     {
       'title': 'Software Updates',
@@ -87,7 +93,8 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
       'completed': false,
       'category': 'Device',
       'autoDetect': false,
-      'settingsType': 'deviceInfo',
+      'actionType': 'url',
+      'actionData': 'market://details?id=com.google.android.gms', // Play Store trigger
     },
     {
       'title': 'SIM PIN Lock',
@@ -96,7 +103,8 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
       'completed': false,
       'category': 'Banking',
       'autoDetect': false,
-      'settingsType': 'security',
+      'actionType': 'settings',
+      'actionData': 'security',
     },
     {
       'title': 'Social Media Privacy',
@@ -105,7 +113,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
       'completed': false,
       'category': 'Privacy',
       'autoDetect': false,
-      'settingsType': null,
+      'actionType': 'social',
     },
   ];
 
@@ -128,14 +136,11 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  /// Queries the device for real security state and updates the checklist.
-  /// local_auth only works on Android & iOS — on desktop we skip gracefully.
   Future<void> _checkDeviceSecurity() async {
     final bool isMobile = defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS;
 
     if (!isMobile) {
-      // Desktop: local_auth plugin is not available, skip native checks
       setState(() {
         _isCheckingDevice = false;
         _recalculateScore();
@@ -144,16 +149,12 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
     }
 
     try {
-      // 1. Is the device secured with a PIN / pattern / password?
       final bool isDeviceSupported = await _localAuth.isDeviceSupported();
-
-      // 2. Are biometrics (fingerprint / face) enrolled?
       final List<BiometricType> availableBiometrics =
           await _localAuth.getAvailableBiometrics();
       final bool hasBiometrics = availableBiometrics.isNotEmpty;
 
       setState(() {
-        // Update the auto-detect items
         for (var item in _securityChecklist) {
           if (item['title'] == 'Screen Lock Enabled') {
             item['completed'] = isDeviceSupported;
@@ -190,34 +191,184 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
     _scoreController.forward(from: 0);
   }
 
-  void _toggleChecklist(int index) {
+  void _handleItemTap(int index) {
     final item = _securityChecklist[index];
 
-    // Auto-detected items cannot be manually toggled — open settings instead
-    if (item['autoDetect'] == true && item['completed'] == false) {
-      _openSettings(item['settingsType'] as String?);
-      return;
-    }
-    // Auto-detected items that are already completed should not be un-toggled
-    if (item['autoDetect'] == true && item['completed'] == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('✅ This setting is already enabled on your device'),
-          backgroundColor: const Color(0xFF00FF40).withOpacity(0.9),
-          behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-      );
+    // Auto-detected items open settings directly if incomplete
+    if (item['autoDetect'] == true) {
+      if (!item['completed']) {
+        _openSettings(item['actionData'] as String?);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('✅ This setting is already enabled on your device'),
+            backgroundColor: const Color(0xFF00FF40).withOpacity(0.9),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
       return;
     }
 
-    // Manual items can be freely toggled
-    setState(() {
-      _securityChecklist[index]['completed'] =
-          !_securityChecklist[index]['completed'];
-      _recalculateScore();
-    });
+    // Manual items show the action bottom sheet
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1E212B),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => _buildActionBottomSheet(ctx, index),
+    );
+  }
+
+  Widget _buildActionBottomSheet(BuildContext ctx, int index) {
+    final item = _securityChecklist[index];
+    final bool isCompleted = item['completed'] == true;
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 40, height: 4,
+            decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(2)),
+          ),
+          const SizedBox(height: 20),
+          Icon(item['icon'], size: 40, color: const Color(0xFF00FF40)),
+          const SizedBox(height: 12),
+          Text(item['title'], style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+          const SizedBox(height: 8),
+          Text(item['subtitle'], style: TextStyle(color: Colors.white.withOpacity(0.7)), textAlign: TextAlign.center),
+          const SizedBox(height: 24),
+          if (item['actionType'] != null)
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.launch, size: 18),
+                label: const Text('Launch & Configure'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00FF40).withOpacity(0.15),
+                  foregroundColor: const Color(0xFF00FF40),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(color: const Color(0xFF00FF40).withOpacity(0.3))
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  _performAction(item);
+                },
+              ),
+            ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              icon: Icon(isCompleted ? Icons.close : Icons.check, size: 18),
+              label: Text(isCompleted ? 'Mark as Incomplete' : 'Mark as Completed'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                side: BorderSide(color: Colors.white.withOpacity(0.2)),
+              ),
+              onPressed: () {
+                Navigator.pop(ctx);
+                setState(() {
+                  item['completed'] = !item['completed'];
+                  _recalculateScore();
+                });
+              },
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
+      ),
+    );
+  }
+
+  void _performAction(Map<String, dynamic> item) async {
+    final actionType = item['actionType'];
+    final actionData = item['actionData'];
+
+    if (actionType == 'url') {
+      final uri = Uri.parse(actionData);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not open link.')));
+      }
+    } else if (actionType == 'stk') {
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        final intent = const AndroidIntent(
+          action: 'android.intent.action.MAIN',
+          package: 'com.android.stk',
+        );
+        try {
+          await intent.launch();
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('SIM Toolkit app not found.')));
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Not supported on this device.')));
+      }
+    } else if (actionType == 'permission_manager') {
+       Navigator.push(context, MaterialPageRoute(builder: (_) => const PermissionAuditorScreen()));
+    } else if (actionType == 'settings') {
+       _openSettings(actionData);
+    } else if (actionType == 'social') {
+       _showSocialMediaPicker();
+    }
+  }
+
+  void _showSocialMediaPicker() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1E212B),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        final socials = [
+          {'name': 'WhatsApp', 'package': 'com.whatsapp', 'icon': Icons.chat},
+          {'name': 'Instagram', 'package': 'com.instagram.android', 'icon': Icons.camera_alt},
+          {'name': 'Facebook', 'package': 'com.facebook.katana', 'icon': Icons.facebook},
+          {'name': 'X / Twitter', 'package': 'com.twitter.android', 'icon': Icons.alternate_email},
+          {'name': 'TikTok', 'package': 'com.zhiliaoapp.musically', 'icon': Icons.music_note},
+        ];
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Select App to Configure', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+              const SizedBox(height: 16),
+              ...socials.map((s) => ListTile(
+                leading: Icon(s['icon'] as IconData, color: Colors.white70),
+                title: Text(s['name'] as String, style: const TextStyle(color: Colors.white)),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  if (defaultTargetPlatform == TargetPlatform.android) {
+                    final intent = AndroidIntent(
+                      action: 'android.intent.action.MAIN',
+                      package: s['package'] as String,
+                    );
+                    try {
+                      await intent.launch();
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${s['name']} is not installed on this device.')));
+                    }
+                  }
+                },
+              )),
+              const SizedBox(height: 12),
+            ],
+          ),
+        );
+      }
+    );
   }
 
   bool get _isWindows => defaultTargetPlatform == TargetPlatform.windows;
@@ -246,7 +397,6 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
     }
   }
 
-  /// Opens the corresponding Windows Settings page via ms-settings: URI.
   void _openWindowsSettings(String? settingsType) {
     final Map<String, String> windowsSettingsMap = {
       'lockAndPassword': 'ms-settings:signinoptions',
@@ -266,12 +416,10 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
   void _showManualTip() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text(
-            'Enable this manually, then mark it as done here.'),
+        content: const Text('Enable this manually, then mark it as done here.'),
         backgroundColor: const Color(0xFFFFD600).withOpacity(0.9),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
@@ -288,7 +436,6 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          // Background ambient light
           Positioned(
             top: 100,
             left: -100,
@@ -306,7 +453,6 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
               ),
             ),
           ),
-          
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -325,7 +471,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                   _buildChecklist(),
                   const SizedBox(height: 32),
                   _buildProtectionGuidesTile(),
-                  const SizedBox(height: 100), // padding for bottom nav
+                  const SizedBox(height: 100),
                 ],
               ),
             ),
@@ -345,10 +491,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: const Color(0xFF00FF40).withOpacity(0.3)),
             boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF00FF40).withOpacity(0.2),
-                blurRadius: 12,
-              ),
+              BoxShadow(color: const Color(0xFF00FF40).withOpacity(0.2), blurRadius: 12),
             ],
           ),
           child: const Icon(Icons.security, color: Color(0xFF00FF40), size: 26),
@@ -373,7 +516,6 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
           ],
         ),
         const Spacer(),
-        // Rescan button
         Material(
           color: Colors.transparent,
           child: InkWell(
@@ -394,12 +536,8 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                 children: [
                   _isCheckingDevice
                       ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Color(0xFF00FF40),
-                          ),
+                          width: 16, height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF00FF40)),
                         )
                       : const Icon(Icons.refresh, color: Color(0xFF00FF40), size: 18),
                   const SizedBox(width: 6),
@@ -447,33 +585,24 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                   Text('DEVICE SAFETY SCORE', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white.withOpacity(0.5), letterSpacing: 2)),
                   const SizedBox(height: 24),
                   SizedBox(
-                    width: 140,
-                    height: 140,
+                    width: 140, height: 140,
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        // Background circle
                         SizedBox(
                           width: 140, height: 140,
                           child: CircularProgressIndicator(
-                            value: 1.0,
-                            strokeWidth: 10,
-                            backgroundColor: Colors.transparent,
-                            color: Colors.white.withOpacity(0.05),
+                            value: 1.0, strokeWidth: 10,
+                            backgroundColor: Colors.transparent, color: Colors.white.withOpacity(0.05),
                           ),
                         ),
-                        // Foreground glowing circle
                         SizedBox(
                           width: 140, height: 140,
                           child: CircularProgressIndicator(
-                            value: currentScore / 100,
-                            strokeWidth: 10,
-                            strokeCap: StrokeCap.round,
-                            backgroundColor: Colors.transparent,
-                            color: scoreColor,
+                            value: currentScore / 100, strokeWidth: 10,
+                            strokeCap: StrokeCap.round, backgroundColor: Colors.transparent, color: scoreColor,
                           ),
                         ),
-                        // Inner glow
                         Container(
                           width: 100, height: 100,
                           decoration: BoxDecoration(
@@ -487,10 +616,8 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                             Text(
                               currentScore.round().toString(),
                               style: TextStyle(
-                                fontSize: 42,
-                                fontWeight: FontWeight.w900,
-                                color: scoreColor,
-                                shadows: [Shadow(color: scoreColor.withOpacity(0.5), blurRadius: 10)]
+                                fontSize: 42, fontWeight: FontWeight.w900,
+                                color: scoreColor, shadows: [Shadow(color: scoreColor.withOpacity(0.5), blurRadius: 10)]
                               ),
                             ),
                             Text('/ 100', style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.4))),
@@ -503,10 +630,8 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                   Text(
                     currentScore >= 80 ? 'Well Protected' : currentScore >= 50 ? 'Needs Improvement' : 'At Risk',
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: scoreColor,
-                      shadows: [Shadow(color: scoreColor.withOpacity(0.3), blurRadius: 5)],
+                      fontSize: 18, fontWeight: FontWeight.bold,
+                      color: scoreColor, shadows: [Shadow(color: scoreColor.withOpacity(0.3), blurRadius: 5)],
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -529,7 +654,6 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
         final item = _securityChecklist[index];
         final isCompleted = item['completed'] as bool;
         final isAutoDetect = item['autoDetect'] as bool;
-        final hasSettingsPage = item['settingsType'] != null;
         
         return TweenAnimationBuilder<double>(
           tween: Tween(begin: 0, end: 1),
@@ -562,7 +686,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      onTap: () => _toggleChecklist(index),
+                      onTap: () => _handleItemTap(index),
                       borderRadius: BorderRadius.circular(16),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
@@ -605,10 +729,8 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                                           child: Text(
                                             'AUTO',
                                             style: TextStyle(
-                                              fontSize: 9,
-                                              fontWeight: FontWeight.w800,
-                                              color: const Color(0xFF00E5FF).withOpacity(0.8),
-                                              letterSpacing: 0.5,
+                                              fontSize: 9, fontWeight: FontWeight.w800,
+                                              color: const Color(0xFF00E5FF).withOpacity(0.8), letterSpacing: 0.5,
                                             ),
                                           ),
                                         ),
@@ -619,20 +741,18 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                                     item['subtitle'] as String,
                                     style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.4)),
                                   ),
-                                  // Show "Open Settings" hint for incomplete auto-detected items
-                                  if (isAutoDetect && !isCompleted && hasSettingsPage)
+                                  if (!isCompleted && !isAutoDetect)
                                     Padding(
                                       padding: const EdgeInsets.only(top: 6),
                                       child: Row(
                                         children: [
-                                          Icon(Icons.open_in_new, size: 12, color: const Color(0xFFFF9100).withOpacity(0.8)),
+                                          Icon(Icons.touch_app, size: 12, color: const Color(0xFFFF9100).withOpacity(0.8)),
                                           const SizedBox(width: 4),
                                           Expanded(
                                             child: Text(
-                                              'Tap to open device settings',
+                                              'Tap to configure',
                                               style: TextStyle(
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.w500,
+                                                fontSize: 11, fontWeight: FontWeight.w500,
                                                 color: const Color(0xFFFF9100).withOpacity(0.8),
                                               ),
                                             ),
@@ -644,18 +764,13 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                               ),
                             ),
                             const SizedBox(width: 12),
-                            // For auto-detect items that are not completed, show a settings icon
-                            // For manual items, show the normal checkbox
                             if (isAutoDetect && !isCompleted)
                               Container(
                                 width: 28, height: 28,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: const Color(0xFFFF9100).withOpacity(0.15),
-                                  border: Border.all(
-                                    color: const Color(0xFFFF9100).withOpacity(0.5),
-                                    width: 2,
-                                  ),
+                                  border: Border.all(color: const Color(0xFFFF9100).withOpacity(0.5), width: 2),
                                 ),
                                 child: const Icon(Icons.settings, size: 16, color: Color(0xFFFF9100)),
                               )
@@ -670,13 +785,9 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                                     color: isCompleted ? const Color(0xFF00FF40) : Colors.white.withOpacity(0.3),
                                     width: 2,
                                   ),
-                                  boxShadow: isCompleted ? [
-                                    BoxShadow(color: const Color(0xFF00FF40).withOpacity(0.4), blurRadius: 8)
-                                  ] : [],
+                                  boxShadow: isCompleted ? [BoxShadow(color: const Color(0xFF00FF40).withOpacity(0.4), blurRadius: 8)] : [],
                                 ),
-                                child: isCompleted
-                                    ? const Icon(Icons.check, size: 18, color: Colors.black)
-                                    : null,
+                                child: isCompleted ? const Icon(Icons.check, size: 18, color: Colors.black) : null,
                               ),
                           ],
                         ),
@@ -735,15 +846,9 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Protection Guides',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
+                        const Text('Protection Guides', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
-                        Text(
-                          '${ProtectionGuidesScreen.guides.length} guides to keep you safe',
-                          style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.5)),
-                        ),
+                        Text('${ProtectionGuidesScreen.guides.length} guides to keep you safe', style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.5))),
                       ],
                     ),
                   ),
