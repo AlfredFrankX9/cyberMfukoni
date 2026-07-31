@@ -8,6 +8,7 @@ from app.models.game import QuizAttempt
 from app.models.history import ScamAnalysis, ChatMessage
 from app.models.intel import IntelArticle
 from app.models.active_defense import ReportedNumber
+from app.models.chonjo_score import ChonjoLevelScore
 app = FastAPI(
     title="Cyber Mfukoni 2.0 API",
     description="AI-Powered Cybersecurity Platform",

@@ -473,7 +473,7 @@ class _ChonjoGameScreenState extends State<ChonjoGameScreen>
 
   Future<void> _submitScore() async {
     try {
-      await ApiService.post('/api/chonjo/submit-score?score=$_score');
+      await ApiService.post('/api/chonjo/submit-score?score=$_score&level=$_selectedLevel');
     } catch (e) {
       debugPrint('Failed to submit score: $e');
     }

@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 import 'chonjo_game_screen.dart';
+import 'certificate_screen.dart';
 
 enum LevelStatus { locked, current, completed }
 
@@ -18,15 +22,10 @@ class _LevelNode {
 }
 
 class ChonjoLevelsScreen extends StatefulWidget {
-  /// How many levels the player has unlocked so far (1 = only Level 1 open).
-  /// Defaults to 10 (all unlocked) to match a fully-open level map.
-  final int unlockedCount;
-
   final ValueChanged<int>? onNavigate;
 
   const ChonjoLevelsScreen({
     super.key,
-    this.unlockedCount = 10,
     this.onNavigate,
   });
 
@@ -43,8 +42,27 @@ class _ChonjoLevelsScreenState extends State<ChonjoLevelsScreen>
 
   late List<_LevelNode> _nodes;
 
+  int _totalXp = 0;
+  Map<String, int> _levelScores = {};
+  String? _certEarnedAt;
+  String _username = '';
+  String _email = '';
+
+  // XP thresholds to unlock each level
+  static const List<int> _xpThresholds = [
+    0,   // Level 1
+    90,  // Level 2
+    190, // Level 3
+    290, // Level 4
+    390, // Level 5
+    480, // Level 6
+    580, // Level 7
+    680, // Level 8
+    780, // Level 9
+    880, // Level 10
+  ];
+
   // Positions calibrated to sit ON the staircase rails in the reference art.
-  // Lower rail: 1-5 left→right; Upper rail: 6-10 left→right
   static const List<Offset> _positions = [
     // Bottom Row: 1 to 5
     Offset(0.150, 0.650),
@@ -95,23 +113,17 @@ class _ChonjoLevelsScreenState extends State<ChonjoLevelsScreen>
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
+    // Initialize nodes with all locked (will update after API call)
     _nodes = List.generate(10, (i) {
-      final id = i + 1;
-      LevelStatus status;
-      if (id < widget.unlockedCount) {
-        status = LevelStatus.completed;
-      } else if (id == widget.unlockedCount) {
-        status = LevelStatus.current;
-      } else {
-        status = LevelStatus.locked;
-      }
       return _LevelNode(
-        id: id,
+        id: i + 1,
         position: _positions[i],
         glowColor: _glowColors[i],
-        status: status,
+        status: i == 0 ? LevelStatus.current : LevelStatus.locked,
       );
     });
+
+    _fetchProgress();
   }
 
   @override
@@ -120,12 +132,71 @@ class _ChonjoLevelsScreenState extends State<ChonjoLevelsScreen>
     super.dispose();
   }
 
-  void _onLevelTap(_LevelNode node) {
+  Future<void> _fetchProgress() async {
+    try {
+      final response = await ApiService.get('/api/chonjo/progress');
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body)['data'];
+        setState(() {
+          _totalXp = data['total_xp'] ?? 0;
+          _username = data['username'] ?? '';
+          _email = data['email'] ?? '';
+          _certEarnedAt = data['cert_earned_at'];
+          _levelScores = {};
+          if (data['level_scores'] != null) {
+            (data['level_scores'] as Map<String, dynamic>).forEach((k, v) {
+              _levelScores[k] = v as int;
+            });
+          }
+          _updateNodeStatuses();
+        });
+      }
+    } catch (e) {
+      debugPrint('Failed to fetch chonjo progress: $e');
+    }
+  }
+
+  void _updateNodeStatuses() {
+    for (int i = 0; i < _nodes.length; i++) {
+      final levelId = i + 1;
+      final threshold = _xpThresholds[i];
+      final hasPlayed = _levelScores.containsKey(levelId.toString());
+
+      if (_totalXp >= threshold) {
+        // Unlocked
+        if (hasPlayed) {
+          _nodes[i].status = LevelStatus.completed;
+        } else {
+          _nodes[i].status = LevelStatus.current;
+        }
+      } else {
+        _nodes[i].status = LevelStatus.locked;
+      }
+    }
+  }
+
+  void _onLevelTap(_LevelNode node) async {
     if (node.status == LevelStatus.locked) return;
-    Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => ChonjoGameScreen(initialLevel: node.id),
+      ),
+    );
+    // Refresh progress after returning from game
+    _fetchProgress();
+  }
+
+  void _openCertificate() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CertificateScreen(
+          username: _username,
+          email: _email,
+          totalXp: _totalXp,
+          dateEarned: _certEarnedAt ?? '',
+        ),
       ),
     );
   }
@@ -199,6 +270,96 @@ class _ChonjoLevelsScreenState extends State<ChonjoLevelsScreen>
             mainAxisSize: MainAxisSize.min,
           ),
           const Spacer(),
+
+          // Certificate icon (only visible once earned)
+          if (_certEarnedAt != null) ...[
+            GestureDetector(
+              onTap: _openCertificate,
+              child: Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFFFD700), Color(0xFFFFA000)],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFFFD700).withOpacity(0.5),
+                      blurRadius: 12,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.workspace_premium,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+          ],
+
+          // Total XP Badge
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.45),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: kCyberGreen.withOpacity(0.3),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: kCyberGreen.withOpacity(0.15),
+                      blurRadius: 12,
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: kCyberGreen,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: kCyberGreen.withOpacity(0.6),
+                            blurRadius: 6,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '$_totalXp XP',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 13,
+                        color: kCyberGreen,
+                        shadows: [
+                          Shadow(
+                            color: kCyberGreen.withOpacity(0.5),
+                            blurRadius: 8,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+
           // Close / back button — circular as in image 1
           GestureDetector(
             onTap: () {
@@ -241,25 +402,14 @@ class _ChonjoLevelsScreenState extends State<ChonjoLevelsScreen>
         : 96; // bigger nodes to match reference on desktop
     final bool isLocked = node.status == LevelStatus.locked;
     final bool isCurrent = node.status == LevelStatus.current;
+    final bool isCompleted = node.status == LevelStatus.completed;
     final Color glow = isLocked
         ? Colors.white.withOpacity(0.15)
         : node.glowColor;
 
-    // XP rewards per level
-    final List<String> xpLabels = [
-      '',
-      '250XP',
-      '500XP',
-      '800XP',
-      '1200XP',
-      '1700XP',
-      '2500XP',
-      '3500XP',
-      '5000XP',
-      '',
-    ];
-    final String xpLabel = node.id <= 9 && node.id >= 2
-        ? xpLabels[node.id - 1]
+    // XP thresholds as labels
+    final String xpLabel = node.id >= 2
+        ? '${_xpThresholds[node.id - 1]}XP'
         : '';
 
     return Positioned(
@@ -281,7 +431,7 @@ class _ChonjoLevelsScreenState extends State<ChonjoLevelsScreen>
                     shape: BoxShape.circle,
                     color: Colors.black.withOpacity(isLocked ? 0.60 : 0.30),
                     border: Border.all(
-                      color: glow,
+                      color: isLocked ? glow.withOpacity(0.4) : glow,
                       width: isCurrent ? 3.5 : 2.5,
                     ),
                     boxShadow: isLocked
@@ -300,8 +450,18 @@ class _ChonjoLevelsScreenState extends State<ChonjoLevelsScreen>
                     alignment: Alignment.center,
                     children: [
                       ClipOval(
-                        child: Opacity(
-                          opacity: isLocked ? 0.30 : 1.0,
+                        child: ColorFiltered(
+                          colorFilter: isLocked
+                              ? const ColorFilter.matrix(<double>[
+                                  0.4, 0, 0, 0, 0,
+                                  0, 0.4, 0, 0, 0,
+                                  0, 0, 0.4, 0, 0,
+                                  0, 0, 0, 0.6, 0,
+                                ])
+                              : const ColorFilter.mode(
+                                  Colors.transparent,
+                                  BlendMode.multiply,
+                                ),
                           child: SizedBox(
                             width: d,
                             height: d,
@@ -323,7 +483,10 @@ class _ChonjoLevelsScreenState extends State<ChonjoLevelsScreen>
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: Colors.black.withOpacity(0.90),
-                            border: Border.all(color: glow, width: 1.8),
+                            border: Border.all(
+                              color: isLocked ? glow.withOpacity(0.4) : glow,
+                              width: 1.8,
+                            ),
                           ),
                           child: Text(
                             '${node.id}',
@@ -335,6 +498,29 @@ class _ChonjoLevelsScreenState extends State<ChonjoLevelsScreen>
                           ),
                         ),
                       ),
+                      // Completed checkmark — top-right corner
+                      if (isCompleted)
+                        Positioned(
+                          top: -1,
+                          right: -1,
+                          child: Container(
+                            width: 22,
+                            height: 22,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: const Color(0xFF00E676),
+                              border: Border.all(
+                                color: Colors.black,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.check,
+                              color: Colors.black,
+                              size: 14,
+                            ),
+                          ),
+                        ),
                       // Lock overlay
                       if (isLocked)
                         Container(
@@ -355,7 +541,7 @@ class _ChonjoLevelsScreenState extends State<ChonjoLevelsScreen>
                 );
               },
             ),
-            // XP label beneath the node (matches reference screenshots)
+            // XP label beneath the node (shows threshold)
             if (xpLabel.isNotEmpty) ...[
               const SizedBox(height: 3),
               Container(

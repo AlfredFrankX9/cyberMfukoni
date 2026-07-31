@@ -37,20 +37,80 @@ async def get_daily_quiz(level: int = 1):
     return {"status": "success", "data": questions}
 
 @router.post("/chonjo/submit-score")
-async def submit_score(score: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+async def submit_score(score: int, level: int = 1, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """
-    Submit the final score after completing the 20 questions.
+    Submit the score for a specific level.
+    Only the ADDITIONAL XP (score minus previous best for that level)
+    is added to the user's cumulative total_score.
     """
-    current_user.total_score += score
+    from app.models.chonjo_score import ChonjoLevelScore
+    from datetime import datetime, timezone
+
+    # Find existing best score for this user+level
+    entry = db.query(ChonjoLevelScore).filter(
+        ChonjoLevelScore.user_id == current_user.id,
+        ChonjoLevelScore.level == level,
+    ).first()
+
+    if entry:
+        old_max = entry.max_score
+        if score > old_max:
+            delta = score - old_max
+            entry.max_score = score
+            current_user.total_score += delta
+        # else: no new XP, they didn't beat their old score
+    else:
+        entry = ChonjoLevelScore(
+            user_id=current_user.id,
+            level=level,
+            max_score=score,
+        )
+        db.add(entry)
+        current_user.total_score += score
+
+    # If this is level 10 and no cert yet, mark certificate earned
+    if level == 10 and entry.cert_earned_at is None:
+        entry.cert_earned_at = datetime.now(timezone.utc)
+
     if score > 0:
         current_user.streak += 1
     else:
         current_user.streak = 0
-        
+
     db.commit()
     db.refresh(current_user)
-    
+
     return {"status": "success", "message": "Score updated successfully", "score": current_user.total_score, "streak": current_user.streak}
+
+
+@router.get("/chonjo/progress")
+async def get_chonjo_progress(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    """
+    Returns the user's total XP, per-level best scores, and certificate status.
+    """
+    from app.models.chonjo_score import ChonjoLevelScore
+
+    level_entries = db.query(ChonjoLevelScore).filter(
+        ChonjoLevelScore.user_id == current_user.id,
+    ).all()
+
+    level_scores = {}
+    cert_earned_at = None
+    for e in level_entries:
+        level_scores[str(e.level)] = e.max_score
+        if e.level == 10 and e.cert_earned_at is not None:
+            cert_earned_at = e.cert_earned_at.strftime("%B %d, %Y")
+
+    return {
+        "status": "success",
+        "data": {
+            "total_xp": current_user.total_score,
+            "username": current_user.username,
+            "email": current_user.email,
+            "level_scores": level_scores,
+            "cert_earned_at": cert_earned_at,
+        },
+    }
 
 @router.get("/intel/feed")
 async def get_intel(category: str = "All", db: Session = Depends(get_db)):
