@@ -85,7 +85,7 @@ class _ChonjoGameScreenState extends State<ChonjoGameScreen>
     try {
       final response = await ApiService.get(
         '/api/chonjo/daily-quiz?level=$_selectedLevel',
-      ).timeout(const Duration(seconds: 5));
+      );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -152,10 +152,7 @@ class _ChonjoGameScreenState extends State<ChonjoGameScreen>
           "explanation": "Standard billing receipt from legitimate domain.",
         },
       ];
-      _questions = List.generate(
-        20,
-        (index) => {...baseMocks[index % baseMocks.length], "id": index + 100},
-      );
+      _questions = List.from(baseMocks);
       _questions.shuffle();
       _isLoading = false;
     });
@@ -184,11 +181,7 @@ class _ChonjoGameScreenState extends State<ChonjoGameScreen>
       if (_currentIndex >= _questions.length) {
         _gameFinished = true;
         _submitScore();
-        // Small delay so the last card swipe animation completes before
-        // the popup appears.
-        Future.delayed(const Duration(milliseconds: 350), () {
-          if (mounted) _showCompletionDialog();
-        });
+        // The popup is now triggered manually via the 'Finish Level' button on the results view.
       } else {
         _cardEntryController.forward(from: 0);
       }
@@ -1391,6 +1384,29 @@ class _ChonjoGameScreenState extends State<ChonjoGameScreen>
               ),
             ),
             const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                _showCompletionDialog();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 0, 255, 98),
+                foregroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(vertical: 18),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 10,
+                shadowColor: const Color.fromARGB(255, 0, 255, 98).withOpacity(0.5),
+              ),
+              child: const Text(
+                'Finish Level',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
           ],
         ),
       ),
