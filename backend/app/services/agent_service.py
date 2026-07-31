@@ -127,7 +127,7 @@ async def generate_agent_response(message: str, history: list[dict] | None = Non
 
     try:
         response = await client.aio.models.generate_content(
-            model='gemini-1.5-flash',
+            model='gemini-2.0-flash',
             contents=_build_contents(message, history),
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_PROMPT,
