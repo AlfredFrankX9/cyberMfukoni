@@ -36,8 +36,6 @@ class MainActivity : FlutterFragmentActivity() {
 
     // App Locker state
     private val blockedApps = java.util.Collections.synchronizedSet(mutableSetOf<String>())
-    private var appLockerThread: Thread? = null
-    private var appLockerRunning = false
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -106,14 +104,45 @@ class MainActivity : FlutterFragmentActivity() {
                     startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
                     result.success(true)
                 }
+                "hasOverlayPermission" -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        result.success(Settings.canDrawOverlays(this@MainActivity))
+                    } else {
+                        result.success(true)
+                    }
+                }
+                "requestOverlayPermission" -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, android.net.Uri.parse("package:$packageName"))
+                        startActivity(intent)
+                    }
+                    result.success(true)
+                }
                 "updateBlockedApps" -> {
                     val apps = call.argument<List<String>>("packages") ?: emptyList()
                     blockedApps.clear()
                     blockedApps.addAll(apps)
-                    if (apps.isNotEmpty() && !appLockerRunning) {
-                        startAppLocker()
-                    } else if (apps.isEmpty()) {
-                        stopAppLocker()
+                    
+                    // Save to SharedPreferences for BootReceiver
+                    val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+                    val editor = prefs.edit()
+                    val appsJson = "[" + apps.joinToString(",") { "\"$it\"" } + "]"
+                    editor.putString("flutter.parental_blocked_apps", appsJson)
+                    editor.apply()
+
+                    AppLockerService.updateBlockedApps(apps)
+
+                    if (apps.isNotEmpty()) {
+                        val serviceIntent = Intent(this@MainActivity, AppLockerService::class.java)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            startForegroundService(serviceIntent)
+                        } else {
+                            startService(serviceIntent)
+                        }
+                    } else {
+                        val serviceIntent = Intent(this@MainActivity, AppLockerService::class.java)
+                        serviceIntent.action = "STOP_SERVICE"
+                        startService(serviceIntent)
                     }
                     result.success(true)
                 }
@@ -414,82 +443,8 @@ class MainActivity : FlutterFragmentActivity() {
         return mode == AppOpsManager.MODE_ALLOWED
     }
 
-    private fun startAppLocker() {
-        if (appLockerRunning) return
-        appLockerRunning = true
-        appLockerThread = Thread {
-            Log.d("AppLocker", "App Locker started. Monitoring ${blockedApps.size} apps.")
-            val usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-
-            while (appLockerRunning && !Thread.currentThread().isInterrupted) {
-                try {
-                    if (blockedApps.isEmpty()) {
-                        Thread.sleep(2000)
-                        continue
-                    }
-
-                    val endTime = System.currentTimeMillis()
-                    val beginTime = endTime - 2000
-                    
-                    var currentApp: String? = null
-                    val usageEvents = usageStatsManager.queryEvents(beginTime, endTime)
-                    val event = android.app.usage.UsageEvents.Event()
-                    
-                    while (usageEvents.hasNextEvent()) {
-                        usageEvents.getNextEvent(event)
-                        if (event.eventType == android.app.usage.UsageEvents.Event.MOVE_TO_FOREGROUND) {
-                            currentApp = event.packageName
-                        }
-                    }
-
-                    if (currentApp != null
-                        && currentApp != packageName
-                        && currentApp != "com.example.frontend"
-                        && blockedApps.contains(currentApp)) {
-
-                        // Get the human-readable name
-                        val appName = try {
-                            val appInfo = packageManager.getApplicationInfo(currentApp, 0)
-                            packageManager.getApplicationLabel(appInfo).toString()
-                        } catch (e: Exception) {
-                            currentApp
-                        }
-
-                        Log.d("AppLocker", "Blocking: $currentApp ($appName)")
-
-                        val blockIntent = Intent(this@MainActivity, BlockedAppActivity::class.java).apply {
-                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                            putExtra("blocked_app_name", appName)
-                        }
-                        startActivity(blockIntent)
-
-                        // Wait a bit before checking again to avoid rapid-fire
-                        Thread.sleep(3000)
-                    }
-
-                    Thread.sleep(1000)
-                } catch (e: InterruptedException) {
-                    break
-                } catch (e: Exception) {
-                    Log.e("AppLocker", "Error in app locker loop", e)
-                    Thread.sleep(2000)
-                }
-            }
-            Log.d("AppLocker", "App Locker stopped.")
-        }
-        appLockerThread?.isDaemon = true
-        appLockerThread?.start()
-    }
-
-    private fun stopAppLocker() {
-        appLockerRunning = false
-        appLockerThread?.interrupt()
-        appLockerThread = null
-        Log.d("AppLocker", "App Locker stopped by user.")
-    }
-
     override fun onDestroy() {
         super.onDestroy()
-        stopAppLocker()
+        // Do not stop AppLockerService here, it should run independently
     }
 }

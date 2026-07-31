@@ -37,6 +37,7 @@ class _ParentalControlsScreenState extends State<ParentalControlsScreen>
   Set<String> _blockedAppPackages = {};
   bool _loadingApps = true;
   bool _hasUsagePermission = false;
+  bool _hasOverlayPermission = false;
 
   @override
   void initState() {
@@ -85,9 +86,11 @@ class _ParentalControlsScreenState extends State<ParentalControlsScreen>
 
   Future<void> _checkUsagePermission() async {
     try {
-      final result = await _parentalChannel.invokeMethod('hasUsagePermission');
+      final usageRes = await _parentalChannel.invokeMethod('hasUsagePermission');
+      final overlayRes = await _parentalChannel.invokeMethod('hasOverlayPermission');
       setState(() {
-        _hasUsagePermission = result == true;
+        _hasUsagePermission = usageRes == true;
+        _hasOverlayPermission = overlayRes == true;
       });
     } catch (_) {}
   }
@@ -170,6 +173,40 @@ class _ParentalControlsScreenState extends State<ParentalControlsScreen>
             ),
             content: Text(
               'Android Settings has opened. Find "The Guardian" in the list and toggle it ON to allow app monitoring.\n\nThen press Back to return here.',
+              style: GoogleFonts.inter(color: Colors.white70),
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () => Navigator.pop(ctx),
+                style: ElevatedButton.styleFrom(backgroundColor: _kNeonGreen),
+                child: Text("I've granted it",
+                    style: GoogleFonts.inter(
+                        color: Colors.black, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        );
+      }
+
+      await _checkUsagePermission();
+    } catch (_) {}
+  }
+
+  Future<void> _requestOverlayPermission() async {
+    try {
+      await _parentalChannel.invokeMethod('requestOverlayPermission');
+
+      if (mounted) {
+        await showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            backgroundColor: _kSlateBlue,
+            title: Text(
+              "Grant Display Over Other Apps",
+              style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            content: Text(
+              'Android Settings has opened. Find "The Guardian" and toggle it ON to allow drawing the block screen over restricted apps.\n\nThen press Back to return here.',
               style: GoogleFonts.inter(color: Colors.white70),
             ),
             actions: [
@@ -418,6 +455,49 @@ class _ParentalControlsScreenState extends State<ParentalControlsScreen>
                       child: Text("GRANT USAGE ACCESS",
                           style: GoogleFonts.inter(
                               color: Colors.black, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          // Overlay permission banner
+          if (!_hasOverlayPermission)
+            Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: _kCriticalRed.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: _kCriticalRed.withOpacity(0.4)),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.error_outline, color: _kCriticalRed, size: 24),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          "Display Over Other Apps permission is REQUIRED to block apps in the background.",
+                          style: GoogleFonts.inter(color: Colors.white70, fontSize: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _requestOverlayPermission,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _kCriticalRed,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: Text("GRANT DISPLAY ACCESS",
+                          style: GoogleFonts.inter(
+                              color: Colors.white, fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],

@@ -59,7 +59,7 @@ async def analyze_message_content(message: str, input_type: str = "text", image_
             )
 
         response = client.models.generate_content(
-            model='gemini-2.0-flash',
+            model='gemini-3.5-flash',
             contents=contents
         )
         raw_text = response.text.strip()
