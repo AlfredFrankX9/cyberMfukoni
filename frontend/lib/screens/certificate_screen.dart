@@ -48,7 +48,7 @@ class _CertificateScreenState extends State<CertificateScreen> {
       final filePath = await FileSaver.instance.saveFile(
         name: fileName,
         bytes: pngBytes,
-        ext: 'png',
+        fileExtension: 'png',
         mimeType: MimeType.png,
       );
 
