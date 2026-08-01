@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:file_saver/file_saver.dart';
 import 'dart:io';
 
 class CertificateScreen extends StatefulWidget {
@@ -42,12 +43,14 @@ class _CertificateScreenState extends State<CertificateScreen> {
 
       final Uint8List pngBytes = byteData.buffer.asUint8List();
 
-      // Save to Documents directory (works on Android and iOS)
-      final directory = await getApplicationDocumentsDirectory();
-      final filePath =
-          '${directory.path}/CyberMfukoni_Certificate_${widget.username.replaceAll(' ', '_')}.png';
-      final file = File(filePath);
-      await file.writeAsBytes(pngBytes);
+      // Use file_saver to support Web, Desktop, and Mobile seamlessly
+      final fileName = 'CyberMfukoni_Certificate_${widget.username.replaceAll(' ', '_')}';
+      final filePath = await FileSaver.instance.saveFile(
+        name: fileName,
+        bytes: pngBytes,
+        ext: 'png',
+        mimeType: MimeType.png,
+      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -59,7 +62,7 @@ class _CertificateScreenState extends State<CertificateScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Certificate saved to:\n$filePath',
+                    'Certificate saved successfully!\n$filePath',
                     style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w600, fontSize: 12),
                   ),
                 ),
