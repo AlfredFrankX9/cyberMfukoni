@@ -271,120 +271,141 @@ class _ChonjoLevelsScreenState extends State<ChonjoLevelsScreen>
           ),
           const Spacer(),
 
-          // Certificate icon (only visible once earned)
-          if (_certEarnedAt != null) ...[
-            GestureDetector(
-              onTap: _openCertificate,
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFFD700), Color(0xFFFFA000)],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFFFD700).withOpacity(0.5),
-                      blurRadius: 12,
-                      spreadRadius: 1,
+          // Right side grouped in a Column to prevent overflow
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Top row: XP Badge & Close Button
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Total XP Badge
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.45),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: kCyberGreen.withOpacity(0.3),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: kCyberGreen.withOpacity(0.15),
+                              blurRadius: 12,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: kCyberGreen,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: kCyberGreen.withOpacity(0.6),
+                                    blurRadius: 6,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '$_totalXp XP',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 13,
+                                color: kCyberGreen,
+                                shadows: [
+                                  Shadow(
+                                    color: kCyberGreen.withOpacity(0.5),
+                                    blurRadius: 8,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.workspace_premium,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-          ],
-
-          // Total XP Badge
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.45),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: kCyberGreen.withOpacity(0.3),
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: kCyberGreen.withOpacity(0.15),
-                      blurRadius: 12,
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
+                  const SizedBox(width: 10),
+                  // Close / back button
+                  GestureDetector(
+                    onTap: () {
+                      if (widget.onNavigate != null) {
+                        widget.onNavigate!(3);
+                      } else {
+                        if (Navigator.canPop(context)) {
+                          Navigator.pop(context);
+                        }
+                      }
+                    },
+                    child: Container(
+                      width: 36,
+                      height: 36,
                       decoration: BoxDecoration(
-                        color: kCyberGreen,
+                        color: Colors.black.withOpacity(0.3),
                         shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: kCyberGreen.withOpacity(0.6),
-                            blurRadius: 6,
-                          ),
-                        ],
+                        border: Border.all(color: Colors.white24, width: 1),
                       ),
+                      child: const Icon(Icons.close, color: Colors.white70, size: 18),
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '$_totalXp XP',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 13,
-                        color: kCyberGreen,
-                        shadows: [
-                          Shadow(
-                            color: kCyberGreen.withOpacity(0.5),
-                            blurRadius: 8,
-                          ),
-                        ],
+                  ),
+                ],
+              ),
+              // Bottom row: Certificate icon (if earned)
+              if (_certEarnedAt != null) ...[
+                const SizedBox(height: 12),
+                GestureDetector(
+                  onTap: _openCertificate,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'Download Certificate',
+                        style: TextStyle(
+                          color: Color(0xFFFFD700),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 6),
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFFFD700), Color(0xFFFFA000)],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFFFFD700).withOpacity(0.5),
+                              blurRadius: 10,
+                              spreadRadius: 1,
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.workspace_premium,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-
-          // Close / back button — circular as in image 1
-          GestureDetector(
-            onTap: () {
-              if (widget.onNavigate != null) {
-                widget.onNavigate!(3);
-              } else {
-                if (Navigator.canPop(context)) {
-                  Navigator.pop(context);
-                }
-              }
-            },
-            child: Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.black.withOpacity(0.55),
-                border: Border.all(color: Colors.white.withOpacity(0.18)),
-              ),
-              child: Icon(
-                Icons.close,
-                color: Colors.white.withOpacity(0.8),
-                size: 18,
-              ),
-            ),
+              ],
+            ],
           ),
         ],
       ),
