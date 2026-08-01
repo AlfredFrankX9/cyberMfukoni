@@ -58,6 +58,8 @@ async def submit_score(score: int, level: int = 1, db: Session = Depends(get_db)
             delta = score - old_max
             entry.max_score = score
             current_user.total_score += delta
+            if level == 10:
+                entry.cert_earned_at = datetime.now(timezone.utc)
         # else: no new XP, they didn't beat their old score
     else:
         entry = ChonjoLevelScore(
@@ -65,12 +67,10 @@ async def submit_score(score: int, level: int = 1, db: Session = Depends(get_db)
             level=level,
             max_score=score,
         )
+        if level == 10:
+            entry.cert_earned_at = datetime.now(timezone.utc)
         db.add(entry)
         current_user.total_score += score
-
-    # If this is level 10 and no cert yet, mark certificate earned
-    if level == 10 and entry.cert_earned_at is None:
-        entry.cert_earned_at = datetime.now(timezone.utc)
 
     if score > 0:
         current_user.streak += 1
