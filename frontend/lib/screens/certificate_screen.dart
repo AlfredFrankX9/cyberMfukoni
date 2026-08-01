@@ -167,13 +167,13 @@ class _CertificateScreenState extends State<CertificateScreen> {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFFD700),
+                  backgroundColor: const Color(0xFF8CC63F),
                   foregroundColor: Colors.black,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                   elevation: 8,
-                  shadowColor: const Color(0xFFFFD700).withOpacity(0.4),
+                  shadowColor: const Color(0xFF8CC63F).withOpacity(0.4),
                 ),
               ),
             ),
@@ -228,16 +228,18 @@ class _CertificateScreenState extends State<CertificateScreen> {
                   // "CERTIFICATE" heading
                   Text(
                     'CERTIFICATE',
-                    style: GoogleFonts.cinzel(
+                    style: const TextStyle(
+                      fontFamily: 'Times New Roman',
                       fontSize: 56,
                       fontWeight: FontWeight.w900,
-                      color: const Color(0xFF8B4513),
+                      color: Color(0xFF8B4513),
                       letterSpacing: 10,
                     ),
                   ),
                   Text(
                     'OF ACHIEVEMENT',
-                    style: GoogleFonts.cinzel(
+                    style: TextStyle(
+                      fontFamily: 'Times New Roman',
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
                       color: const Color(0xFF8B4513).withOpacity(0.75),
@@ -247,7 +249,8 @@ class _CertificateScreenState extends State<CertificateScreen> {
                   const SizedBox(height: 40),
                   Text(
                     'THE FOLLOWING AWARD IS GIVEN TO',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: 'Times New Roman',
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: Colors.grey[700],
@@ -269,7 +272,8 @@ class _CertificateScreenState extends State<CertificateScreen> {
                   // Email
                   Text(
                     widget.email,
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: 'Times New Roman',
                       fontSize: 16,
                       color: Colors.grey[600],
                       fontStyle: FontStyle.italic,
@@ -282,7 +286,8 @@ class _CertificateScreenState extends State<CertificateScreen> {
                     child: Text(
                       'In recognition of successfully completing the Chonjo Quiz\nin the Guardian Cybersecurity Training.',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
+                        fontFamily: 'Times New Roman',
                         fontSize: 18,
                         color: Colors.grey[800],
                         height: 1.6,
@@ -300,10 +305,11 @@ class _CertificateScreenState extends State<CertificateScreen> {
                           children: [
                             Text(
                               '${widget.totalXp} XP',
-                              style: GoogleFonts.cinzel(
+                              style: const TextStyle(
+                                fontFamily: 'Times New Roman',
                                 fontSize: 26,
                                 fontWeight: FontWeight.w900,
-                                color: const Color(0xFF1A1A2E),
+                                color: Color(0xFF1A1A2E),
                               ),
                             ),
                             Container(
@@ -318,10 +324,11 @@ class _CertificateScreenState extends State<CertificateScreen> {
                           children: [
                             Text(
                               widget.dateEarned,
-                              style: GoogleFonts.poppins(
+                              style: const TextStyle(
+                                fontFamily: 'Times New Roman',
                                 fontSize: 20,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF1A1A2E),
+                                color: Color(0xFF1A1A2E),
                               ),
                             ),
                             Container(
