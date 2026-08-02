@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:android_intent_plus/android_intent.dart';
 import 'protection_guides_screen.dart';
 import 'permission_auditor_screen.dart';
+import 'package:installed_apps/installed_apps.dart';
 
 class BomaScreen extends StatefulWidget {
   const BomaScreen({super.key});
@@ -93,8 +94,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
       'completed': false,
       'category': 'Device',
       'autoDetect': false,
-      'actionType': 'url',
-      'actionData': 'market://details?id=com.google.android.gms', // Play Store trigger
+      'actionType': 'playstore',
     },
     {
       'title': 'SIM PIN Lock',
@@ -104,7 +104,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
       'category': 'Banking',
       'autoDetect': false,
       'actionType': 'settings',
-      'actionData': 'security',
+      'actionData': 'android.settings.SECURITY_SETTINGS',
     },
     {
       'title': 'Social Media Privacy',
@@ -302,14 +302,26 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
       }
     } else if (actionType == 'stk') {
       if (defaultTargetPlatform == TargetPlatform.android) {
-        final intent = const AndroidIntent(
-          action: 'android.intent.action.MAIN',
-          package: 'com.android.stk',
-        );
         try {
-          await intent.launch();
+          final bool success = await InstalledApps.startApp('com.android.stk') ?? false;
+          if (!success) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('SIM Toolkit app not found.')));
+          }
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('SIM Toolkit app not found.')));
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Not supported on this device.')));
+      }
+    } else if (actionType == 'playstore') {
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        try {
+          final bool success = await InstalledApps.startApp('com.android.vending') ?? false;
+          if (!success) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Play Store app not found.')));
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Play Store app not found.')));
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Not supported on this device.')));
@@ -323,7 +335,32 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
     }
   }
 
-  void _showSocialMediaPicker() {
+  void _showSocialMediaPicker() async {
+    final allSocials = [
+      {'name': 'WhatsApp', 'package': 'com.whatsapp', 'icon': Icons.chat},
+      {'name': 'Instagram', 'package': 'com.instagram.android', 'icon': Icons.camera_alt},
+      {'name': 'Facebook', 'package': 'com.facebook.katana', 'icon': Icons.facebook},
+      {'name': 'X (Twitter)', 'package': 'com.twitter.android', 'icon': Icons.alternate_email},
+      {'name': 'TikTok', 'package': 'com.zhiliaoapp.musically', 'icon': Icons.music_note},
+    ];
+
+    List<Map<String, dynamic>> installedSocials = [];
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      for (var s in allSocials) {
+        final bool isInstalled = await InstalledApps.isAppInstalled(s['package'] as String) ?? false;
+        if (isInstalled) {
+          installedSocials.add(s);
+        }
+      }
+    }
+
+    if (!mounted) return;
+
+    if (installedSocials.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No supported social media apps found on this device.')));
+      return;
+    }
+
     showModalBottomSheet(
       context: context,
       backgroundColor: const Color(0xFF1E212B),
@@ -331,13 +368,6 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) {
-        final socials = [
-          {'name': 'WhatsApp', 'package': 'com.whatsapp', 'icon': Icons.chat},
-          {'name': 'Instagram', 'package': 'com.instagram.android', 'icon': Icons.camera_alt},
-          {'name': 'Facebook', 'package': 'com.facebook.katana', 'icon': Icons.facebook},
-          {'name': 'X / Twitter', 'package': 'com.twitter.android', 'icon': Icons.alternate_email},
-          {'name': 'TikTok', 'package': 'com.zhiliaoapp.musically', 'icon': Icons.music_note},
-        ];
         return Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
@@ -345,20 +375,19 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
             children: [
               const Text('Select App to Configure', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
               const SizedBox(height: 16),
-              ...socials.map((s) => ListTile(
+              ...installedSocials.map((s) => ListTile(
                 leading: Icon(s['icon'] as IconData, color: Colors.white70),
                 title: Text(s['name'] as String, style: const TextStyle(color: Colors.white)),
                 onTap: () async {
                   Navigator.pop(ctx);
                   if (defaultTargetPlatform == TargetPlatform.android) {
-                    final intent = AndroidIntent(
-                      action: 'android.intent.action.MAIN',
-                      package: s['package'] as String,
-                    );
                     try {
-                      await intent.launch();
+                      final bool success = await InstalledApps.startApp(s['package'] as String) ?? false;
+                      if (!success) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to launch ${s['name']}')));
+                      }
                     } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${s['name']} is not installed on this device.')));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to launch ${s['name']}')));
                     }
                   }
                 },
@@ -385,6 +414,16 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
         break;
       case 'security':
         AppSettings.openAppSettings(type: AppSettingsType.security);
+        break;
+      case 'android.settings.SECURITY_SETTINGS':
+        if (defaultTargetPlatform == TargetPlatform.android) {
+          try {
+            const intent = AndroidIntent(action: 'android.settings.SECURITY_SETTINGS');
+            await intent.launch();
+          } catch (e) {
+            _showManualTip();
+          }
+        }
         break;
       case 'appSettings':
         AppSettings.openAppSettings(type: AppSettingsType.settings);
