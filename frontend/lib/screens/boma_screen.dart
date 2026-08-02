@@ -402,7 +402,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
 
   bool get _isWindows => defaultTargetPlatform == TargetPlatform.windows;
 
-  void _openSettings(String? settingsType) {
+  void _openSettings(String? settingsType) async {
     if (_isWindows) {
       _openWindowsSettings(settingsType);
       return;

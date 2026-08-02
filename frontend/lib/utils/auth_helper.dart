@@ -33,10 +33,8 @@ class AuthHelper {
 
       final didAuthenticate = await _localAuth.authenticate(
         localizedReason: 'Authenticate to access this secure feature',
-        options: const AuthenticationOptions(
-          stickyAuth: true,
-          biometricOnly: false, // Allow PIN/pattern/password fallback
-        ),
+        biometricsOnly: false,
+        stickyAuth: true,
       );
 
       if (!didAuthenticate && context.mounted) {
