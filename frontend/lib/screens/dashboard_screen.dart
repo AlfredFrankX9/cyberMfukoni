@@ -18,6 +18,7 @@ import 'secure_shredder_screen.dart';
 import 'smart_scan_screen.dart';
 import 'dns_filter_screen.dart';
 import 'secure_modules_screen.dart';
+import '../utils/auth_helper.dart';
 
 class DashboardScreen extends StatefulWidget {
   final ValueChanged<int>? onNavigate;
@@ -87,7 +88,12 @@ class _DashboardScreenState extends State<DashboardScreen>
       title: 'Secure',
       bgImage: 'assets/images/secure.webp',
       color: const Color(0xFF00FF40),
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SecureModulesScreen())),
+      onTap: () async {
+        final ok = await AuthHelper.authenticate(context);
+        if (ok && mounted) {
+          Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SecureModulesScreen()));
+        }
+      },
     ),
   ];
 
@@ -632,19 +638,29 @@ class _DashboardScreenState extends State<DashboardScreen>
         icon: Icons.delete_forever,
         label: 'SECURE SHRED',
         color: const Color(0xFF32CD32),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const SecureShredderScreen()),
-        ),
+        onTap: () async {
+          final ok = await AuthHelper.authenticate(context);
+          if (ok && mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SecureShredderScreen()),
+            );
+          }
+        },
       ),
       _QuickActionData(
         icon: Icons.vpn_lock,
         label: 'DNS FILTER',
         color: const Color(0xFF00FF40),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const DnsFilterScreen()),
-        ),
+        onTap: () async {
+          final ok = await AuthHelper.authenticate(context);
+          if (ok && mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const DnsFilterScreen()),
+            );
+          }
+        },
       ),
     ];
 

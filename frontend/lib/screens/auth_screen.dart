@@ -16,6 +16,7 @@ class _AuthScreenState extends State<AuthScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _obscurePassword = true;
 
   static const Color kGreen = Color(0xFF00FF55);
   static const Color kFieldFill = Color(0xFF1A1A1A);
@@ -369,7 +370,8 @@ class _AuthScreenState extends State<AuthScreen> {
             _buildField(
               controller: _passwordController,
               hint: '••••••••',
-              obscure: true,
+              obscure: _obscurePassword,
+              isPassword: true,
             ),
             SizedBox(height: isDesktop ? 5 : 2),
 
@@ -658,6 +660,7 @@ class _AuthScreenState extends State<AuthScreen> {
     required TextEditingController controller,
     required String hint,
     bool obscure = false,
+    bool isPassword = false,
   }) {
     return SizedBox(
       height: 40,
@@ -679,6 +682,16 @@ class _AuthScreenState extends State<AuthScreen> {
             borderRadius: BorderRadius.circular(11),
             borderSide: BorderSide.none,
           ),
+          suffixIcon: isPassword
+              ? GestureDetector(
+                  onTap: () => setState(() => _obscurePassword = !_obscurePassword),
+                  child: Icon(
+                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                    color: kGreen,
+                    size: 20,
+                  ),
+                )
+              : null,
         ),
       ),
     );

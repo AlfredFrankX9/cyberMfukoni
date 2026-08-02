@@ -6,6 +6,7 @@ import 'services/auth_service.dart';
 import 'screens/auth_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/main_shell.dart';
+import 'widgets/inactivity_tracker.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -66,7 +67,9 @@ class CyberMfukoniApp extends StatelessWidget {
               );
             },
             child: auth.isAuthenticated
-                ? const MainShell(key: ValueKey('main'))
+                ? const InactivityTracker(
+                    child: MainShell(key: ValueKey('main')),
+                  )
                 : const AuthScreen(key: ValueKey('auth')),
           );
         },
