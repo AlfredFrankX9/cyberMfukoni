@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../services/api_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -71,6 +72,38 @@ class _AgentScreenState extends State<AgentScreen>
         );
       }
     });
+  }
+
+  void _copyToClipboard(String text) {
+    Clipboard.setData(ClipboardData(text: text));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Copied to clipboard'),
+        duration: const Duration(seconds: 2),
+        backgroundColor: kCyberGreen.withOpacity(0.9),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
+  }
+
+  Future<void> _retryMessage(int index) async {
+    // Find the relevant user query to retry
+    String queryToRetry = '';
+    if (_messages[index]['role'] == 'user') {
+      queryToRetry = _messages[index]['content'] as String;
+    } else {
+      // Look back for the preceding user message
+      for (int i = index - 1; i >= 0; i--) {
+        if (_messages[i]['role'] == 'user') {
+          queryToRetry = _messages[i]['content'] as String;
+          break;
+        }
+      }
+    }
+    if (queryToRetry.isNotEmpty) {
+      _sendMessage(queryToRetry);
+    }
   }
 
   Future<void> _sendMessage([String? quick]) async {
@@ -573,6 +606,72 @@ class _AgentScreenState extends State<AgentScreen>
                     : null,
               ),
               child: _buildRichText(message['content'] as String, isAgent),
+            ),
+            // Action bar: Copy for user, Copy & Retry for agent
+            Padding(
+              padding: EdgeInsets.only(
+                bottom: action == null ? 8 : 4,
+                left: isAgent ? 4 : 0,
+                right: isAgent ? 0 : 4,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  InkWell(
+                    onTap: () => _copyToClipboard(message['content'] as String),
+                    borderRadius: BorderRadius.circular(8),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.copy_rounded,
+                            size: 13,
+                            color: Colors.white.withOpacity(0.4),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Copy',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.white.withOpacity(0.4),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (isAgent) ...[
+                    const SizedBox(width: 10),
+                    InkWell(
+                      onTap: () => _retryMessage(index),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.refresh_rounded,
+                              size: 13,
+                              color: Colors.white.withOpacity(0.4),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Retry',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.white.withOpacity(0.4),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
             ),
             if (action != null)
               Container(
