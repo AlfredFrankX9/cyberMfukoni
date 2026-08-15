@@ -92,3 +92,50 @@ def get_me(current_user: User = Depends(get_current_user)):
         "current_level": current_user.current_level,
         "streak": current_user.streak,
     }
+
+class UpdateProfile(BaseModel):
+    username: str | None = None
+    email: str | None = None
+    current_password: str | None = None
+    new_password: str | None = None
+
+@router.put("/update-profile")
+def update_profile(
+    payload: UpdateProfile,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Update the current user's username, email, or password."""
+    # Username change
+    if payload.username and payload.username != current_user.username:
+        existing = db.query(User).filter(User.username == payload.username).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="Username already taken.")
+        current_user.username = payload.username
+
+    # Email change
+    if payload.email and payload.email != current_user.email:
+        existing = db.query(User).filter(User.email == payload.email).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already in use.")
+        current_user.email = payload.email
+
+    # Password change
+    if payload.new_password:
+        if not payload.current_password:
+            raise HTTPException(status_code=400, detail="Current password is required to set a new one.")
+        if not verify_password(payload.current_password, current_user.hashed_password):
+            raise HTTPException(status_code=400, detail="Current password is incorrect.")
+        current_user.hashed_password = get_password_hash(payload.new_password)
+
+    db.commit()
+    db.refresh(current_user)
+
+    return {
+        "status": "success",
+        "data": {
+            "id": current_user.id,
+            "username": current_user.username,
+            "email": current_user.email,
+        },
+    }
