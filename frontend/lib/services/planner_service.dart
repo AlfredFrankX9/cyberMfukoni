@@ -225,6 +225,8 @@ class PlannerService extends ChangeNotifier {
         playSound: true,
         enableVibration: true,
         fullScreenIntent: true,
+        category: AndroidNotificationCategory.alarm,
+        timeoutAfter: 60000,
         icon: '@mipmap/ic_launcher',
         color: const Color(0xFF00FF40),
         styleInformation: BigTextStyleInformation(
