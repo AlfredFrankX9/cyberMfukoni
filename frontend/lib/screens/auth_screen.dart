@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
+import '../utils/translations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -37,12 +38,12 @@ class _AuthScreenState extends State<AuthScreen> {
 
     if (_isLogin) {
       if (email.isEmpty || password.isEmpty) {
-        _snack('Please fill all fields');
+        _snack(context.tr('auth_fill_fields'));
         return;
       }
     } else {
       if (username.isEmpty || email.isEmpty || password.isEmpty) {
-        _snack('Please fill all fields');
+        _snack(context.tr('auth_fill_fields'));
         return;
       }
     }
@@ -66,8 +67,8 @@ class _AuthScreenState extends State<AuthScreen> {
 
     if (error == 'offline_success') {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Logged in offline. Some features may be limited.'),
+        SnackBar(
+          content: Text(context.tr('auth_offline_login')),
           backgroundColor: Color(0xFF00FFCC),
         ),
       );
@@ -115,8 +116,8 @@ class _AuthScreenState extends State<AuthScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Reset Password',
+              Text(
+                context.tr('auth_reset_password_title'),
                 style: TextStyle(
                   color: kGreen,
                   fontSize: 18,
@@ -125,7 +126,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Enter your email address to receive a password reset link.',
+                context.tr('auth_reset_password_desc'),
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.6),
                   fontSize: 12,
@@ -140,7 +141,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   TextButton(
                     onPressed: () => Navigator.pop(ctx),
                     child: Text(
-                      'Cancel',
+                      context.tr('settings_cancel'),
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.6),
                         fontWeight: FontWeight.bold,
@@ -152,8 +153,8 @@ class _AuthScreenState extends State<AuthScreen> {
                     onPressed: () {
                       Navigator.pop(ctx);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Reset link sent to email!'),
+                        SnackBar(
+                          content: Text(context.tr('auth_reset_sent')),
                           backgroundColor: kGreen,
                           behavior: SnackBarBehavior.floating,
                         ),
@@ -166,9 +167,9 @@ class _AuthScreenState extends State<AuthScreen> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text(
-                      'Send Link',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    child: Text(
+                      context.tr('auth_send_link'),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
@@ -311,7 +312,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
               ),
               child: Text(
-                _isLogin ? 'Welcome Back' : 'Create Account',
+                _isLogin ? context.tr('auth_login_title') : context.tr('auth_signup_title'),
                 key: ValueKey<bool>(_isLogin),
                 style: TextStyle(
                   fontSize: isDesktop ? 19 : 17,
@@ -325,8 +326,8 @@ class _AuthScreenState extends State<AuthScreen> {
               duration: const Duration(milliseconds: 300),
               child: Text(
                 _isLogin
-                    ? 'Log in to continue protecting your digital life'
-                    : 'Sign up to unlock advanced digital protection',
+                    ? context.tr('auth_login_desc')
+                    : context.tr('auth_signup_desc'),
                 key: ValueKey<bool>(_isLogin),
                 style: TextStyle(
                   fontSize: isDesktop ? 11 : 9,
@@ -345,7 +346,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildLabel('USERNAME', isDesktop),
+                        _buildLabel(context.tr('auth_username'), isDesktop),
                         SizedBox(height: isDesktop ? 5 : 2),
                         _buildField(
                           controller: _usernameController,
@@ -358,14 +359,14 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
 
             _buildLabel(
-              _isLogin ? 'USERNAME OR EMAIL ADDRESS' : 'EMAIL ADDRESS',
+              _isLogin ? context.tr('auth_username_email') : context.tr('auth_email'),
               isDesktop,
             ),
             SizedBox(height: isDesktop ? 5 : 2),
             _buildField(controller: _emailController, hint: 'you@example.com'),
             SizedBox(height: isDesktop ? 12 : 8),
 
-            _buildLabel('PASSWORD', isDesktop),
+            _buildLabel(context.tr('auth_password'), isDesktop),
             SizedBox(height: isDesktop ? 5 : 2),
             _buildField(
               controller: _passwordController,
@@ -387,7 +388,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 2),
                           child: Text(
-                            'Forgot password?',
+                            context.tr('auth_forgot_password'),
                             style: TextStyle(
                               color: kGreen,
                               fontSize: isDesktop ? 11 : 10,
@@ -424,7 +425,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                       )
                     : Text(
-                        _isLogin ? 'Log In' : 'Sign Up',
+                        _isLogin ? context.tr('auth_login_btn') : context.tr('auth_signup_btn'),
                         style: TextStyle(
                           fontSize: isDesktop ? 13.5 : 12.5,
                           fontWeight: FontWeight.bold,
@@ -521,7 +522,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         setState(() => _isLoading = false);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Google Sign-In failed: $e'),
+                            content: Text('${context.tr('auth_google_failed')} $e'),
                             backgroundColor: Colors.red.shade800,
                           ),
                         );
@@ -553,7 +554,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Continue with Google',
+                          context.tr('auth_continue_google'),
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
@@ -583,15 +584,15 @@ class _AuthScreenState extends State<AuthScreen> {
                     children: [
                       Text(
                         _isLogin
-                            ? "Don't have an account?  "
-                            : "Already have an account?  ",
+                            ? context.tr('auth_dont_have_account')
+                            : context.tr('auth_already_have_account'),
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.55),
                           fontSize: isDesktop ? 11 : 10,
                         ),
                       ),
                       Text(
-                        _isLogin ? 'Sign Up' : 'Log In',
+                        _isLogin ? context.tr('auth_signup_btn') : context.tr('auth_login_btn'),
                         style: TextStyle(
                           color: kGreen,
                           fontSize: isDesktop ? 11 : 10,
@@ -614,7 +615,7 @@ class _AuthScreenState extends State<AuthScreen> {
     return Column(
       children: [
         Text(
-          'Protect Yourself From',
+          context.tr('auth_hero_1'),
           textAlign: TextAlign.center,
           style: GoogleFonts.inter(
             fontSize: isDesktop ? 32 : 16,
@@ -623,7 +624,7 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
         ),
         Text(
-          'Cyber Threats',
+          context.tr('auth_hero_2'),
           textAlign: TextAlign.center,
           style: GoogleFonts.inter(
             fontSize: isDesktop ? 44 : 24,
@@ -637,9 +638,9 @@ class _AuthScreenState extends State<AuthScreen> {
           spacing: isDesktop ? 16 : 8,
           runSpacing: 12,
           children: [
-            _buildPill('Confidentiality', Colors.redAccent, isDesktop),
-            _buildPill('Integrity', kGreen, isDesktop),
-            _buildPill('Availability', Colors.purpleAccent, isDesktop),
+            _buildPill(context.tr('auth_pill_1'), Colors.redAccent, isDesktop),
+            _buildPill(context.tr('auth_pill_2'), kGreen, isDesktop),
+            _buildPill(context.tr('auth_pill_3'), Colors.purpleAccent, isDesktop),
           ],
         ),
       ],

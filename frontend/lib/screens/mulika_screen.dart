@@ -13,7 +13,8 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import '../services/api_service.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dashboard_screen.dart'; // fallback only, see _goBack()
+import '../utils/translations.dart';
+import 'dashboard_screen.dart';
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Theme constants – matches the global Cyber Mfukoni palette
@@ -68,14 +69,14 @@ class _MulikaScreenState extends State<MulikaScreen>
   late Animation<double> _pulseAnimation;
   late AnimationController _scanController;
 
-  static const List<_InputType> _inputTypes = [
-    _InputType(Icons.security, 'Device Scan'),
-    _InputType(Icons.sms, 'SMS'),
-    _InputType(Icons.email_outlined, 'Email'),
-    _InputType(Icons.link, 'URL'),
-    _InputType(Icons.qr_code_scanner, 'QR Code'),
-    _InputType(Icons.image_outlined, 'Image'),
-    _InputType(Icons.description_outlined, 'Document'),
+  static List<_InputType> _getInputTypes(BuildContext context) => [
+    _InputType(Icons.security, context.tr('mulika_device_scan'), 'Device Scan'),
+    _InputType(Icons.sms, context.tr('mulika_sms'), 'SMS'),
+    _InputType(Icons.email_outlined, context.tr('mulika_email'), 'Email'),
+    _InputType(Icons.link, context.tr('mulika_url'), 'URL'),
+    _InputType(Icons.qr_code_scanner, context.tr('mulika_qr_code'), 'QR Code'),
+    _InputType(Icons.image_outlined, context.tr('mulika_image'), 'Image'),
+    _InputType(Icons.description_outlined, context.tr('mulika_document'), 'Document'),
   ];
 
   @override
@@ -142,7 +143,7 @@ class _MulikaScreenState extends State<MulikaScreen>
               ListTile(
                 leading: const Icon(Icons.photo_library, color: _kNeonGreen),
                 title: Text(
-                  'Choose from Gallery',
+                  context.tr('mulika_choose_gallery'),
                   style: GoogleFonts.inter(color: Colors.white),
                 ),
                 onTap: () => Navigator.pop(context, ImageSource.gallery),
@@ -150,7 +151,7 @@ class _MulikaScreenState extends State<MulikaScreen>
               ListTile(
                 leading: const Icon(Icons.camera_alt, color: _kNeonGreen),
                 title: Text(
-                  'Take a Photo',
+                  context.tr('mulika_take_photo'),
                   style: GoogleFonts.inter(color: Colors.white),
                 ),
                 onTap: () => Navigator.pop(context, ImageSource.camera),
@@ -174,7 +175,7 @@ class _MulikaScreenState extends State<MulikaScreen>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Could not open camera/gallery: $e'),
+              content: Text('${context.tr('mulika_error_camera')} $e'),
               backgroundColor: const Color(0xFFFF1744),
             ),
           );
@@ -694,7 +695,7 @@ class _MulikaScreenState extends State<MulikaScreen>
   }
 
   Future<void> _analyzeMessage() async {
-    if (_inputTypes[_selectedType].label == 'Device Scan') {
+    if (_getInputTypes(context)[_selectedType].rawLabel == 'Device Scan') {
       await _runDeviceScan();
       return;
     }
@@ -718,7 +719,7 @@ class _MulikaScreenState extends State<MulikaScreen>
         '/api/mulika/analyze',
         body: {
           'message': _textController.text.trim(),
-          'type': _inputTypes[_selectedType].label.toLowerCase(),
+          'type': _getInputTypes(context)[_selectedType].rawLabel.toLowerCase(),
           if (base64Image != null) 'image_base64': base64Image,
         },
       );
@@ -922,7 +923,7 @@ class _MulikaScreenState extends State<MulikaScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'MULIKA',
+              context.tr('module_mulika'),
               style: GoogleFonts.inter(
                 fontSize: 22,
                 fontWeight: FontWeight.w800,
@@ -934,7 +935,7 @@ class _MulikaScreenState extends State<MulikaScreen>
               ),
             ),
             Text(
-              'AI Threat Detection Engine',
+              context.tr('module_mulika_desc'),
               style: GoogleFonts.inter(fontSize: 12, color: _kMetallicSilver),
             ),
           ],
@@ -969,8 +970,8 @@ class _MulikaScreenState extends State<MulikaScreen>
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
-                    children: List.generate(_inputTypes.length, (i) {
-                      final t = _inputTypes[i];
+                    children: List.generate(_getInputTypes(context).length, (i) {
+                      final t = _getInputTypes(context)[i];
                       final active = i == _selectedType;
                       return Padding(
                         padding: const EdgeInsets.only(right: 8),
@@ -1038,14 +1039,14 @@ class _MulikaScreenState extends State<MulikaScreen>
               Divider(height: 1, color: Colors.white.withOpacity(0.06)),
 
               // DEVICE SCAN OPTIONS
-              if (_inputTypes[_selectedType].label == 'Device Scan')
+              if (_getInputTypes(context)[_selectedType].rawLabel == 'Device Scan')
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'SELECT TARGET:',
+                        context.tr('mulika_select_target'),
                         style: GoogleFonts.shareTechMono(
                           color: _kNeonGreen,
                           fontSize: 12,
@@ -1101,12 +1102,14 @@ class _MulikaScreenState extends State<MulikaScreen>
                 ),
 
               // IMAGE/DOC OPTIONS
-              if (_inputTypes[_selectedType].label == 'Image' ||
-                  _inputTypes[_selectedType].label == 'QR Code' ||
-                  _inputTypes[_selectedType].label == 'Document')
+              if (_getInputTypes(context)[_selectedType].rawLabel == 'Image' ||
+                  _getInputTypes(context)[_selectedType].rawLabel == 'QR Code' ||
+                  _getInputTypes(context)[_selectedType].rawLabel == 'Document')
                 Padding(
                   padding: const EdgeInsets.all(16),
-                  child: _imageBytes != null
+                  child: Stack(
+                    children: [
+                      _imageBytes != null
                       ? Stack(
                           alignment: Alignment.topRight,
                           children: [
@@ -1119,6 +1122,37 @@ class _MulikaScreenState extends State<MulikaScreen>
                                 fit: BoxFit.cover,
                               ),
                             ),
+                            if (_isAnalyzing && !_isTerminalScanning)
+                              Positioned.fill(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: AnimatedBuilder(
+                                    animation: _scanController,
+                                    builder: (context, child) {
+                                      return Align(
+                                        alignment: Alignment(
+                                          0,
+                                          -1.0 + (_scanController.value * 2.0),
+                                        ),
+                                        child: Container(
+                                          height: 4,
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                            color: _kNeonGreen,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: _kNeonGreen.withOpacity(0.8),
+                                                blurRadius: 10,
+                                                spreadRadius: 2,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: GestureDetector(
@@ -1161,9 +1195,9 @@ class _MulikaScreenState extends State<MulikaScreen>
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  _inputTypes[_selectedType].label == 'Document'
-                                      ? 'Tap to upload document'
-                                      : 'Tap to upload image',
+                                  _getInputTypes(context)[_selectedType].rawLabel == 'Document'
+                                      ? context.tr('mulika_tap_doc')
+                                      : context.tr('mulika_tap_img'),
                                   style: GoogleFonts.inter(
                                     color: _kMetallicSilver,
                                     fontSize: 12,
@@ -1173,6 +1207,39 @@ class _MulikaScreenState extends State<MulikaScreen>
                             ),
                           ),
                         ),
+                      if (_isAnalyzing && !_isTerminalScanning && _imageBytes == null)
+                        Positioned.fill(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: AnimatedBuilder(
+                              animation: _scanController,
+                              builder: (context, child) {
+                                return Align(
+                                  alignment: Alignment(
+                                    0,
+                                    -1.0 + (_scanController.value * 2.0),
+                                  ),
+                                  child: Container(
+                                    height: 4,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: _kNeonGreen,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: _kNeonGreen.withOpacity(0.8),
+                                          blurRadius: 10,
+                                          spreadRadius: 2,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
 
               // TEXT INPUT
@@ -1181,7 +1248,7 @@ class _MulikaScreenState extends State<MulikaScreen>
                 'QR Code',
                 'Document',
                 'Device Scan',
-              ].contains(_inputTypes[_selectedType].label))
+              ].contains(_getInputTypes(context)[_selectedType].rawLabel))
                 Stack(
                   children: [
                     TextField(
@@ -1192,8 +1259,7 @@ class _MulikaScreenState extends State<MulikaScreen>
                         color: Colors.white,
                       ),
                       decoration: InputDecoration(
-                        hintText:
-                            'Paste a suspicious message, URL, or email here...',
+                        hintText: context.tr('mulika_paste_hint'),
                         hintStyle: GoogleFonts.inter(
                           color: _kMetallicSilver.withOpacity(0.4),
                         ),
@@ -1278,7 +1344,7 @@ class _MulikaScreenState extends State<MulikaScreen>
                               const SizedBox(width: 12),
                             ] else ...[
                               Icon(
-                                _inputTypes[_selectedType].label ==
+                                _getInputTypes(context)[_selectedType].rawLabel ==
                                         'Device Scan'
                                     ? Icons.radar
                                     : Icons.document_scanner,
@@ -1289,11 +1355,11 @@ class _MulikaScreenState extends State<MulikaScreen>
                             ],
                             Text(
                               _isAnalyzing
-                                  ? 'SCANNING...'
-                                  : (_inputTypes[_selectedType].label ==
+                                  ? context.tr('mulika_scanning')
+                                  : (_getInputTypes(context)[_selectedType].rawLabel ==
                                             'Device Scan'
-                                        ? 'INITIATE SYSTEM SCAN'
-                                        : 'ANALYZE THREAT'),
+                                        ? context.tr('mulika_initiate_scan')
+                                        : context.tr('mulika_analyze_threat')),
                               style: GoogleFonts.inter(
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 1.5,
@@ -1408,14 +1474,14 @@ class _MulikaScreenState extends State<MulikaScreen>
                     children: [
                       // Circular score
                       SizedBox(
-                        width: 90,
-                        height: 90,
+                        width: 110,
+                        height: 110,
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
                             Container(
-                              width: 90,
-                              height: 90,
+                              width: 110,
+                              height: 110,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 boxShadow: [
@@ -1455,7 +1521,7 @@ class _MulikaScreenState extends State<MulikaScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'THREAT ASSESSMENT',
+                              context.tr('mulika_threat_assessment'),
                               style: GoogleFonts.inter(
                                 fontSize: 11,
                                 color: _kMetallicSilver,
@@ -1489,7 +1555,7 @@ class _MulikaScreenState extends State<MulikaScreen>
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
-                                'Confidence: ${_result!['confidence']}%',
+                                '${context.tr('mulika_confidence')}: ${_result!['confidence']}%',
                                 style: GoogleFonts.inter(
                                   fontSize: 11,
                                   color: Colors.white,
@@ -1510,7 +1576,7 @@ class _MulikaScreenState extends State<MulikaScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'RED FLAGS DETECTED',
+                        context.tr('mulika_red_flags'),
                         style: GoogleFonts.inter(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -1519,37 +1585,48 @@ class _MulikaScreenState extends State<MulikaScreen>
                         ),
                       ),
                       const SizedBox(height: 16),
-                      ...flags.map(
-                        (flag) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  color: ratingColor.withOpacity(0.15),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Icon(
-                                  Icons.warning_amber_rounded,
-                                  size: 16,
-                                  color: ratingColor,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  flag,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 14,
-                                    color: Colors.white,
+                      if (flags.isEmpty)
+                        Text(
+                          'NONE',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: _kNeonGreen,
+                            letterSpacing: 2.0,
+                          ),
+                        )
+                      else
+                        ...flags.map(
+                          (flag) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: ratingColor.withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Icon(
+                                    Icons.warning_amber_rounded,
+                                    size: 16,
+                                    color: ratingColor,
                                   ),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    flag,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),
@@ -1563,7 +1640,7 @@ class _MulikaScreenState extends State<MulikaScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'AI ANALYSIS',
+                        context.tr('mulika_ai_analysis'),
                         style: GoogleFonts.inter(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -1634,5 +1711,6 @@ class _MulikaScreenState extends State<MulikaScreen>
 class _InputType {
   final IconData icon;
   final String label;
-  const _InputType(this.icon, this.label);
+  final String rawLabel; // for matching logic
+  const _InputType(this.icon, this.label, this.rawLabel);
 }

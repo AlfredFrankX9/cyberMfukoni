@@ -35,4 +35,16 @@ class ApiService {
       body: body != null ? json.encode(body) : null,
     ).timeout(const Duration(seconds: 60));
   }
+
+  static Future<http.Response> put(String endpoint, {Map<String, dynamic>? body}) async {
+    final token = await AuthService().getToken();
+    return http.put(
+      Uri.parse('$baseUrl$endpoint'),
+      headers: {
+        if (token != null) 'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: body != null ? json.encode(body) : null,
+    ).timeout(const Duration(seconds: 60));
+  }
 }

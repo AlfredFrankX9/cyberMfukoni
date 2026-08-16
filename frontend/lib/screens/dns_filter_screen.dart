@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../utils/translations.dart';
 
 const Color _kDeepBlack = Color(0xFF000000);
 const Color _kSlateBlue = Color(0xFF222633);
@@ -74,7 +75,7 @@ class _DnsFilterScreenState extends State<DnsFilterScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          "DNS FILTER",
+          context.tr('dns_title'),
           style: GoogleFonts.inter(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -111,7 +112,7 @@ class _DnsFilterScreenState extends State<DnsFilterScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    _isVpnRunning ? "PROTECTION ACTIVE" : "PROTECTION DISABLED",
+                    _isVpnRunning ? context.tr('dns_active') : context.tr('dns_disabled'),
                     style: GoogleFonts.inter(
                       color: _isVpnRunning ? _kNeonGreen : Colors.white54,
                       fontWeight: FontWeight.bold,
@@ -120,7 +121,7 @@ class _DnsFilterScreenState extends State<DnsFilterScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "Blocks malware, phishing, and tracking domains at the network level.",
+                    context.tr('dns_desc'),
                     textAlign: TextAlign.center,
                     style: GoogleFonts.inter(
                       color: Colors.white70,
@@ -130,7 +131,7 @@ class _DnsFilterScreenState extends State<DnsFilterScreen> {
                   const SizedBox(height: 24),
                   SwitchListTile(
                     title: Text(
-                      "Enable DNS Filter",
+                      context.tr('dns_enable'),
                       style: GoogleFonts.inter(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -164,7 +165,7 @@ class _DnsFilterScreenState extends State<DnsFilterScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "BLOCKED THREATS",
+                          context.tr('dns_blocked'),
                           style: GoogleFonts.inter(
                             color: Colors.white54,
                             fontSize: 11,
@@ -196,7 +197,7 @@ class _DnsFilterScreenState extends State<DnsFilterScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "ACTIVE FILTERS",
+                          context.tr('dns_active_filters'),
                           style: GoogleFonts.inter(
                             color: Colors.white54,
                             fontSize: 11,
@@ -225,7 +226,7 @@ class _DnsFilterScreenState extends State<DnsFilterScreen> {
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "PROTECTION CATEGORIES",
+                context.tr('dns_categories'),
                 style: GoogleFonts.inter(
                   color: Colors.white54,
                   fontSize: 12,
@@ -235,10 +236,10 @@ class _DnsFilterScreenState extends State<DnsFilterScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            _buildCategoryTile(Icons.bug_report, "Malware Domains", "Blocks known malware distribution sites", true),
-            _buildCategoryTile(Icons.phishing, "Phishing", "Blocks deceptive domains that steal credentials", true),
-            _buildCategoryTile(Icons.track_changes, "Trackers", "Blocks cross-site tracking and analytics", true),
-            _buildCategoryTile(Icons.ads_click, "Ad Networks", "Blocks invasive ad-serving domains", true),
+            _buildCategoryTile(Icons.bug_report, context.tr('dns_malware'), context.tr('dns_malware_desc'), true),
+            _buildCategoryTile(Icons.phishing, context.tr('dns_phishing'), context.tr('dns_phishing_desc'), true),
+            _buildCategoryTile(Icons.track_changes, context.tr('dns_trackers'), context.tr('dns_trackers_desc'), true),
+            _buildCategoryTile(Icons.ads_click, context.tr('dns_ads'), context.tr('dns_ads_desc'), true),
           ],
         ),
       ),

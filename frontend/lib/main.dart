@@ -8,19 +8,24 @@ import 'screens/dashboard_screen.dart';
 import 'screens/main_shell.dart';
 import 'widgets/inactivity_tracker.dart';
 
+import 'providers/locale_provider.dart';
+import 'utils/translations.dart'; // Ensure it's imported if needed
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final authService = AuthService();
   await authService.checkAuthStatus();
   
   runApp(
-    ChangeNotifierProvider.value(
-      value: authService,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: authService),
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
+      ],
       child: const CyberMfukoniApp(),
     ),
   );
 }
-
 class CyberMfukoniApp extends StatelessWidget {
   const CyberMfukoniApp({super.key});
 

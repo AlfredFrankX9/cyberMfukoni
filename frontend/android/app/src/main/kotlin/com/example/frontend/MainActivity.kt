@@ -32,13 +32,48 @@ class MainActivity : FlutterFragmentActivity() {
     private val VPN_CHANNEL = "com.example.frontend/vpn"
     private val SHREDDER_CHANNEL = "com.example.frontend/shredder"
     private val PARENTAL_CHANNEL = "com.example.frontend/parental"
+    private val TILE_CHANNEL = "com.example.frontend/tiles"
     private val VPN_REQUEST_CODE = 0x0F
 
     // App Locker state
     private val blockedApps = java.util.Collections.synchronizedSet(mutableSetOf<String>())
+    
+    // Store latest intent for tiles
+    private var pendingTileModule: String? = null
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntentForTiles(intent)
+    }
+    
+    private fun handleIntentForTiles(intent: Intent?) {
+        val module = intent?.getStringExtra("guardian_module")
+        if (module != null) {
+            pendingTileModule = module
+            // If flutter engine is ready, we could notify it via an EventChannel, 
+            // but for simplicity, Flutter can poll or we just use a method call.
+            flutterEngine?.dartExecutor?.binaryMessenger?.let {
+                MethodChannel(it, TILE_CHANNEL).invokeMethod("onTileAction", module)
+            }
+        }
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        
+        // Handle initial intent
+        handleIntentForTiles(intent)
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, TILE_CHANNEL).setMethodCallHandler { call, result ->
+            if (call.method == "getPendingTileAction") {
+                val module = pendingTileModule
+                pendingTileModule = null
+                result.success(module)
+            } else {
+                result.notImplemented()
+            }
+        }
+
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, PERM_CHANNEL).setMethodCallHandler { call, result ->
             if (call.method == "getInstalledAppsWithPermissions") {
                 val appsList = getInstalledAppsWithPermissions()

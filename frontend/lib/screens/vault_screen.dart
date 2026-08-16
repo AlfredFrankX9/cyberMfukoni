@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'vault/dark_web_screen.dart';
 import 'vault/secure_vault_screen.dart';
 import '../services/active_defense_service.dart';
+import '../utils/translations.dart';
 
 class VaultScreen extends StatefulWidget {
   const VaultScreen({super.key});
@@ -117,7 +118,7 @@ class _VaultScreenState extends State<VaultScreen>
           ),
         ),
         title: Text(
-          'VAULT',
+          context.tr('module_vault'),
           style: GoogleFonts.inter(
             color: Colors.white,
             fontSize: 20,
@@ -173,10 +174,10 @@ class _VaultScreenState extends State<VaultScreen>
                     fontWeight: FontWeight.bold,
                     fontSize: 11,
                   ),
-                  tabs: const [
-                    Tab(text: 'DEFENSE'),
-                    Tab(text: 'DARK WEB'),
-                    Tab(text: 'SECURE'),
+                  tabs: [
+                    Tab(text: context.tr('', fallback: 'DEFENSE')),
+                    Tab(text: context.tr('', fallback: 'DARK WEB')),
+                    Tab(text: context.tr('', fallback: 'SECURE')),
                   ],
                 ),
               ),
@@ -242,7 +243,7 @@ class _VaultScreenState extends State<VaultScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'ACTIVE DEFENSE',
+            context.tr('vault_active_defense'),
             style: GoogleFonts.inter(
               color: const Color(0xFFFF8C42),
               fontSize: 16,
@@ -252,7 +253,7 @@ class _VaultScreenState extends State<VaultScreen>
           ),
           const SizedBox(height: 8),
           Text(
-            'Verify suspicious numbers or report threats to alert other agents.',
+            context.tr('vault_active_defense_desc'),
             style: TextStyle(
               color: Colors.white.withOpacity(0.8),
               fontSize: 14,
@@ -264,8 +265,8 @@ class _VaultScreenState extends State<VaultScreen>
             children: [
               Expanded(
                 child: _buildActionCard(
-                  title: 'CHECK',
-                  subtitle: 'Verify Number',
+                  title: context.tr('vault_check'),
+                  subtitle: context.tr('vault_verify_number'),
                   icon: Icons.public,
                   baseColor: const Color(0xFFFFB380),
                   imagePath: 'assets/images/check.webp',
@@ -275,8 +276,8 @@ class _VaultScreenState extends State<VaultScreen>
               const SizedBox(width: 16),
               Expanded(
                 child: _buildActionCard(
-                  title: 'REPORT',
-                  subtitle: 'Flag Threat',
+                  title: context.tr('vault_report'),
+                  subtitle: context.tr('vault_flag_threat'),
                   icon: Icons.campaign_rounded,
                   baseColor: const Color(0xFFFF8C42),
                   imagePath: 'assets/images/report.webp',
@@ -347,7 +348,7 @@ class _VaultScreenState extends State<VaultScreen>
                             ),
                             const SizedBox(width: 12),
                             Text(
-                              'Check Number',
+                              context.tr('vault_check_number'),
                               style: GoogleFonts.inter(
                                 color: Colors.white,
                                 fontSize: 18,
@@ -367,7 +368,7 @@ class _VaultScreenState extends State<VaultScreen>
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Enter a phone number to check if it has been reported for scams.',
+                          context.tr('vault_check_number_desc'),
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.6),
                             fontSize: 13,
@@ -448,7 +449,7 @@ class _VaultScreenState extends State<VaultScreen>
                                     ),
                                   )
                                 : Text(
-                                    'CHECK',
+                                    context.tr('vault_check'),
                                     style: GoogleFonts.inter(
                                       fontWeight: FontWeight.bold,
                                       letterSpacing: 1,
@@ -518,7 +519,7 @@ class _VaultScreenState extends State<VaultScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'SAFE',
+                    context.tr('vault_safe'),
                     style: GoogleFonts.inter(
                       color: const Color(0xFF00FF9D),
                       fontWeight: FontWeight.bold,
@@ -527,7 +528,7 @@ class _VaultScreenState extends State<VaultScreen>
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'This number has not been reported.',
+                    context.tr('vault_safe_desc'),
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.7),
                       fontSize: 12,
@@ -559,7 +560,7 @@ class _VaultScreenState extends State<VaultScreen>
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  '⚠ DANGER',
+                  context.tr('vault_danger'),
                   style: GoogleFonts.inter(
                     color: const Color(0xFFEF5350),
                     fontWeight: FontWeight.bold,
@@ -569,15 +570,15 @@ class _VaultScreenState extends State<VaultScreen>
               ],
             ),
             const SizedBox(height: 12),
-            _buildResultDetail('Scam Type', data['scam_category'] ?? 'Unknown'),
+            _buildResultDetail(context.tr('vault_scam_type'), data['scam_category'] ?? 'Unknown'),
             const SizedBox(height: 6),
             _buildResultDetail(
-              'Reports',
+              context.tr('vault_reports'),
               '${data['report_count'] ?? 0} time(s)',
             ),
             if (data['last_reported'] != null) ...[
               const SizedBox(height: 6),
-              _buildResultDetail('Last Reported', data['last_reported']),
+              _buildResultDetail(context.tr('vault_last_reported'), data['last_reported']),
             ],
           ],
         ),
@@ -683,7 +684,7 @@ class _VaultScreenState extends State<VaultScreen>
                               ),
                               const SizedBox(width: 12),
                               Text(
-                                'Report Number',
+                                context.tr('vault_report_number'),
                                 style: GoogleFonts.inter(
                                   color: Colors.white,
                                   fontSize: 18,
@@ -703,7 +704,7 @@ class _VaultScreenState extends State<VaultScreen>
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Report a fraudulent number to protect others.',
+                            context.tr('vault_report_number_desc'),
                             style: TextStyle(
                               color: Colors.white.withOpacity(0.6),
                               fontSize: 13,
@@ -733,7 +734,7 @@ class _VaultScreenState extends State<VaultScreen>
                                   ),
                                   const SizedBox(height: 12),
                                   Text(
-                                    'Report Submitted',
+                                    context.tr('vault_report_submitted'),
                                     style: GoogleFonts.inter(
                                       color: const Color(0xFF00FF9D),
                                       fontWeight: FontWeight.bold,
@@ -742,7 +743,7 @@ class _VaultScreenState extends State<VaultScreen>
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'Thank you for helping protect the community. This number has been flagged in the database.',
+                                    context.tr('vault_report_thankyou'),
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       color: Colors.white.withOpacity(0.6),
@@ -770,7 +771,7 @@ class _VaultScreenState extends State<VaultScreen>
                                   ),
                                 ),
                                 child: Text(
-                                  'CLOSE',
+                                  context.tr('vault_close'),
                                   style: GoogleFonts.inter(
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: 1,
@@ -804,7 +805,7 @@ class _VaultScreenState extends State<VaultScreen>
                                     color: Colors.white.withOpacity(0.4),
                                     size: 20,
                                   ),
-                                  hintText: 'Phone number',
+                                  hintText: context.tr('vault_phone_number'),
                                   hintStyle: TextStyle(
                                     color: Colors.white.withOpacity(0.3),
                                   ),
@@ -892,7 +893,7 @@ class _VaultScreenState extends State<VaultScreen>
                                   fontSize: 14,
                                 ),
                                 decoration: InputDecoration(
-                                  hintText: 'Additional details (optional)...',
+                                  hintText: context.tr('vault_details'),
                                   hintStyle: TextStyle(
                                     color: Colors.white.withOpacity(0.3),
                                   ),
@@ -944,7 +945,7 @@ class _VaultScreenState extends State<VaultScreen>
                                         ),
                                       )
                                     : Text(
-                                        'REPORT',
+                                        context.tr('vault_report'),
                                         style: GoogleFonts.inter(
                                           fontWeight: FontWeight.bold,
                                           letterSpacing: 1,
@@ -973,7 +974,7 @@ class _VaultScreenState extends State<VaultScreen>
         const Icon(Icons.shield_outlined, color: Color(0xFFFF8C42), size: 48),
         const SizedBox(height: 12),
         Text(
-          'Fortress Analyzer',
+          context.tr('vault_fortress_analyzer'),
           style: GoogleFonts.inter(
             color: Colors.white,
             fontSize: 22,
@@ -982,7 +983,7 @@ class _VaultScreenState extends State<VaultScreen>
         ),
         const SizedBox(height: 8),
         Text(
-          'Test your password strength against brute-force attacks.',
+          context.tr('vault_fortress_desc'),
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white.withOpacity(0.6),
@@ -1009,7 +1010,7 @@ class _VaultScreenState extends State<VaultScreen>
                 color: Color(0xFFFF8C42),
                 size: 20,
               ),
-              hintText: 'Enter password to test...',
+              hintText: context.tr('vault_enter_password'),
               hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
               border: InputBorder.none,
             ),

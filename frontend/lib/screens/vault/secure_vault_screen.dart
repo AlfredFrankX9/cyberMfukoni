@@ -11,6 +11,7 @@ import 'notes_screen.dart';
 import 'photos_screen.dart';
 import 'files_screen.dart';
 import 'recovery_codes_screen.dart';
+import '../../utils/translations.dart';
 
 class SecureVaultScreen extends StatefulWidget {
   const SecureVaultScreen({super.key});
@@ -83,7 +84,7 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Authentication Failed or Cancelled')),
+            SnackBar(content: Text(context.tr('vault_auth_failed'))),
           );
         }
       }
@@ -91,7 +92,7 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
       // Fallback if biometrics aren't available/setup on emulator
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Biometrics error: $e. Unlocking for demo.')),
+          SnackBar(content: Text('${context.tr('vault_bio_error')} $e. ${context.tr('vault_bio_unlock_demo')}')),
         );
       }
       setState(() {
@@ -127,7 +128,7 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
             ),
             const SizedBox(height: 32),
             Text(
-              'SECURE VAULT LOCKED',
+              context.tr('', fallback: 'SECURE VAULT LOCKED'),
               style: GoogleFonts.inter(
                 color: Colors.white,
                 fontSize: 18,
@@ -136,15 +137,15 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Authenticate to access encrypted storage.',
-              style: TextStyle(color: Colors.white54),
+            Text(
+              context.tr('', fallback: 'Authenticate to access encrypted storage.'),
+              style: const TextStyle(color: Colors.white54),
             ),
             const SizedBox(height: 32),
             ElevatedButton.icon(
               onPressed: _authenticate,
               icon: const Icon(Icons.fingerprint),
-              label: const Text('AUTHENTICATE'),
+              label: Text(context.tr('', fallback: 'AUTHENTICATE')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFFF8C42),
                 foregroundColor: Colors.white,
@@ -178,7 +179,7 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
           _buildVaultStatus(),
           const SizedBox(height: 24),
           Text(
-            'ENCRYPTED STORAGE',
+            context.tr('', fallback: 'ENCRYPTED STORAGE'),
             style: GoogleFonts.inter(
               color: Colors.white,
               fontSize: 14,
@@ -196,8 +197,8 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
             childAspectRatio: 1.0,
             children: [
               _buildGridItem(
-                'Passwords',
-                '$passwordsCount Saved',
+                context.tr('', fallback: 'Passwords'),
+                '$passwordsCount ${context.tr('', fallback: 'Saved')}',
                 Icons.password,
                 'assets/images/password_vault.webp',
                 () async {
@@ -209,8 +210,8 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
                 },
               ),
               _buildGridItem(
-                'Credit Cards',
-                '$cardsCount Saved',
+                context.tr('', fallback: 'Credit Cards'),
+                '$cardsCount ${context.tr('', fallback: 'Saved')}',
                 Icons.credit_card,
                 'assets/images/card_vault.webp',
                 () async {
@@ -224,8 +225,8 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
                 },
               ),
               _buildGridItem(
-                'Secure Notes',
-                '$notesCount Notes',
+                context.tr('', fallback: 'Secure Notes'),
+                '$notesCount ${context.tr('', fallback: 'Notes')}',
                 Icons.note,
                 'assets/images/notes_vault.webp',
                 () async {
@@ -237,8 +238,8 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
                 },
               ),
               _buildGridItem(
-                'Private Photos',
-                '$photosCount Files',
+                context.tr('', fallback: 'Private Photos'),
+                '$photosCount ${context.tr('', fallback: 'Files')}',
                 Icons.photo_library,
                 'assets/images/photo_vault.webp',
                 () async {
@@ -250,8 +251,8 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
                 },
               ),
               _buildGridItem(
-                'Files',
-                '$filesCount Files',
+                context.tr('', fallback: 'Files'),
+                '$filesCount ${context.tr('', fallback: 'Files')}',
                 Icons.folder,
                 'assets/images/doc_vault.webp',
                 () async {
@@ -263,8 +264,8 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
                 },
               ),
               _buildGridItem(
-                'Recovery Codes',
-                '$recoveryCount Services',
+                context.tr('', fallback: 'Recovery Codes'),
+                '$recoveryCount ${context.tr('', fallback: 'Services')}',
                 Icons.vpn_key,
                 'assets/images/key_vault.webp',
                 () async {
@@ -333,7 +334,7 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'VAULT HEALTH',
+                      context.tr('', fallback: 'VAULT HEALTH'),
                       style: GoogleFonts.inter(
                         color: healthColor,
                         fontSize: 14,
@@ -341,14 +342,14 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Encryption: AES-256',
-                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                    Text(
+                      context.tr('', fallback: 'Encryption: AES-256'),
+                      style: const TextStyle(color: Colors.white70, fontSize: 12),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      'Last backed up: 2h ago',
-                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                    Text(
+                      context.tr('', fallback: 'Last backed up: 2h ago'),
+                      style: const TextStyle(color: Colors.white70, fontSize: 12),
                     ),
                   ],
                 ),

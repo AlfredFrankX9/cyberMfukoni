@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:file_saver/file_saver.dart';
 import 'dart:io';
+import '../utils/translations.dart';
 
 class CertificateScreen extends StatefulWidget {
   final String username;
@@ -62,7 +63,7 @@ class _CertificateScreenState extends State<CertificateScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Certificate saved successfully!\n$filePath',
+                    '${context.tr('cert_saved_success')}\n$filePath',
                     style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w600, fontSize: 12),
                   ),
                 ),
@@ -77,7 +78,7 @@ class _CertificateScreenState extends State<CertificateScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: Colors.redAccent,
-            content: Text('Failed to save certificate: $e'),
+            content: Text('${context.tr('cert_save_failed')} $e'),
           ),
         );
       }
@@ -98,7 +99,7 @@ class _CertificateScreenState extends State<CertificateScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Your Certificate',
+          context.tr('cert_title'),
           style: GoogleFonts.tinos(
             fontSize: 20,
             fontWeight: FontWeight.w700,
@@ -160,7 +161,7 @@ class _CertificateScreenState extends State<CertificateScreen> {
                       )
                     : const Icon(Icons.download_rounded, size: 22),
                 label: Text(
-                  _isSaving ? 'Saving...' : 'Download Certificate',
+                  _isSaving ? context.tr('cert_saving') : context.tr('cert_download'),
                   style: GoogleFonts.tinos(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,

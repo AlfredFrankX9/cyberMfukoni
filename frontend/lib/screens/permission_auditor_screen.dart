@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:installed_apps/app_info.dart';
 import 'package:installed_apps/installed_apps.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../utils/translations.dart';
 
 // Theme constants
 const Color _kDeepBlack = Color(0xFF000000);
@@ -296,7 +297,7 @@ class _PermissionAuditorScreenState extends State<PermissionAuditorScreen> {
                   Divider(color: Colors.white.withOpacity(0.1)),
                   const SizedBox(height: 16),
                   Text(
-                    "SENSITIVE PERMISSIONS FOUND (${sensitive.length})",
+                    "${context.tr('perm_sensitive_found')} (${sensitive.length})",
                     style: GoogleFonts.inter(
                       color: _kMetallicSilver,
                       fontWeight: FontWeight.bold,
@@ -309,7 +310,7 @@ class _PermissionAuditorScreenState extends State<PermissionAuditorScreen> {
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Text(
-                        "No highly sensitive permissions detected in this app. Safe to use.",
+                        context.tr('perm_no_sensitive'),
                         style: GoogleFonts.inter(
                           color: Colors.white70,
                           fontSize: 13,
@@ -375,8 +376,8 @@ class _PermissionAuditorScreenState extends State<PermissionAuditorScreen> {
                     ),
                     label: Text(
                       app['riskRating'] == 'High'
-                          ? "UNINSTALL APP (VIA SETTINGS)"
-                          : "OPEN APP SETTINGS",
+                          ? context.tr('perm_uninstall')
+                          : context.tr('perm_open_settings'),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: app['riskRating'] == 'High'
@@ -411,7 +412,7 @@ class _PermissionAuditorScreenState extends State<PermissionAuditorScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          "PRIVACY AUDITOR",
+          context.tr('', fallback: "PRIVACY AUDITOR"),
           style: GoogleFonts.inter(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -435,7 +436,7 @@ class _PermissionAuditorScreenState extends State<PermissionAuditorScreen> {
                   _buildRiskDistribution(),
                   const SizedBox(height: 24),
                   Text(
-                    "AUDITED APPLICATIONS",
+                    context.tr('', fallback: "AUDITED APPLICATIONS"),
                     style: GoogleFonts.inter(
                       color: _kMetallicSilver,
                       fontWeight: FontWeight.bold,
@@ -552,7 +553,7 @@ class _PermissionAuditorScreenState extends State<PermissionAuditorScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "PRIVACY HEALTH SCORE",
+                  "${context.tr('', fallback: 'PRIVACY HEALTH SCORE')}",
                   style: GoogleFonts.inter(
                     color: _kMetallicSilver,
                     fontSize: 11,
@@ -563,10 +564,10 @@ class _PermissionAuditorScreenState extends State<PermissionAuditorScreen> {
                 const SizedBox(height: 6),
                 Text(
                   _privacyScore >= 80
-                      ? "Device is Secure"
+                      ? (context.tr('', fallback: "Device is Secure"))
                       : (_privacyScore >= 50
-                            ? "Moderate Threats Found"
-                            : "Critical Actions Needed"),
+                            ? (context.tr('', fallback: "Moderate Threats Found"))
+                            : (context.tr('', fallback: "Critical Actions Needed"))),
                   style: GoogleFonts.inter(
                     color: Colors.white,
                     fontSize: 16,
@@ -575,7 +576,7 @@ class _PermissionAuditorScreenState extends State<PermissionAuditorScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "Based on requested permissions from user-installed apps.",
+                  context.tr('perm_based_on'),
                   style: GoogleFonts.inter(color: Colors.white38, fontSize: 11),
                 ),
               ],
@@ -590,14 +591,14 @@ class _PermissionAuditorScreenState extends State<PermissionAuditorScreen> {
     return Row(
       children: [
         Expanded(
-          child: _buildRiskItem("Critical", _highRiskCount, _kCriticalRed),
+          child: _buildRiskItem(context.tr('', fallback: "Critical"), _highRiskCount, _kCriticalRed),
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: _buildRiskItem("Warning", _mediumRiskCount, _kWarningAmber),
+          child: _buildRiskItem(context.tr('', fallback: "Warning"), _mediumRiskCount, _kWarningAmber),
         ),
         const SizedBox(width: 12),
-        Expanded(child: _buildRiskItem("Secure", _lowRiskCount, _kNeonGreen)),
+        Expanded(child: _buildRiskItem(context.tr('', fallback: "Secure"), _lowRiskCount, _kNeonGreen)),
       ],
     );
   }

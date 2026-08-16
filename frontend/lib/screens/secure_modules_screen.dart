@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../utils/translations.dart';
 
 import 'dns_filter_screen.dart';
 import 'smart_scan_screen.dart';
@@ -10,42 +11,42 @@ import 'parental_controls_screen.dart';
 class SecureModulesScreen extends StatelessWidget {
   const SecureModulesScreen({super.key});
 
-  static final List<Map<String, dynamic>> modules = [
+  static List<Map<String, dynamic>> _getModules(BuildContext context) => [
     {
-      'title': 'DNS Filter',
-      'description': 'Block malicious domains and trackers at the network level',
+      'title': context.tr('mod_dns_filter'),
+      'description': context.tr('mod_dns_desc'),
       'icon': Icons.security,
       'color': const Color(0xFF00FF40),
       'image': 'assets/images/dns.webp',
       'screen': const DnsFilterScreen(),
     },
     {
-      'title': 'Smart Scan',
-      'description': 'Scan your device and files for known threats',
+      'title': context.tr('mod_smart_scan'),
+      'description': context.tr('mod_scan_desc'),
       'icon': Icons.radar,
       'color': const Color(0xFF00E5FF),
       'image': 'assets/images/smart_scan.webp',
       'screen': const SmartScanScreen(),
     },
     {
-      'title': 'App Permissions',
-      'description': 'Audit and manage sensitive permissions granted to apps',
+      'title': context.tr('mod_app_perms'),
+      'description': context.tr('mod_perms_desc'),
       'icon': Icons.privacy_tip,
       'color': const Color(0xFFFF9100),
       'image': 'assets/images/app_permission.webp',
       'screen': const PermissionAuditorScreen(),
     },
     {
-      'title': 'Secure Shredder',
-      'description': 'Permanently obliterate files beyond recovery',
+      'title': context.tr('mod_shredder'),
+      'description': context.tr('mod_shredder_desc'),
       'icon': Icons.delete_forever,
       'color': const Color(0xFFFF1744),
       'image': 'assets/images/shredder.webp',
       'screen': const SecureShredderScreen(),
     },
     {
-      'title': 'Parental Controls',
-      'description': 'Block inappropriate websites and restrict app access',
+      'title': context.tr('mod_parental'),
+      'description': context.tr('mod_parental_desc'),
       'icon': Icons.family_restroom,
       'color': const Color(0xFF9C27B0),
       'image': 'assets/images/secure.webp',
@@ -64,9 +65,9 @@ class SecureModulesScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Secure Modules',
-          style: TextStyle(
+        title: Text(
+          context.tr('mod_secure_modules'),
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
           ),
@@ -96,8 +97,8 @@ class SecureModulesScreen extends StatelessWidget {
         alignment: WrapAlignment.center,
         spacing: spacing,
         runSpacing: spacing,
-        children: List.generate(modules.length, (index) {
-          final module = modules[index];
+        children: List.generate(_getModules(context).length, (index) {
+          final module = _getModules(context)[index];
           final color = module['color'] as Color;
           final image = module['image'] as String?;
           
@@ -196,8 +197,8 @@ class SecureModulesScreen extends StatelessWidget {
         spacing: 16,
         runSpacing: 16,
         alignment: WrapAlignment.center,
-        children: List.generate(modules.length, (index) {
-          final module = modules[index];
+        children: List.generate(_getModules(context).length, (index) {
+          final module = _getModules(context)[index];
           final color = module['color'] as Color;
           final image = module['image'] as String?;
           

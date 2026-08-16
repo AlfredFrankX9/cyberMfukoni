@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../utils/translations.dart';
 
 // Theme constants
 const Color _kDeepBlack = Color(0xFF000000);
@@ -50,18 +51,18 @@ class _SecureShredderScreenState extends State<SecureShredderScreen> {
           builder: (ctx) => AlertDialog(
             backgroundColor: _kSlateBlue,
             title: Text(
-              "Grant File Access",
+              context.tr('shred_grant_access_title'),
               style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold),
             ),
             content: Text(
-              "Android has opened Settings. Please find \"The Guardian\" in the list and toggle \"Allow access to manage all files\" ON, then press Back to return here.",
+              context.tr('shred_grant_access_desc'),
               style: GoogleFonts.inter(color: Colors.white70),
             ),
             actions: [
               ElevatedButton(
                 onPressed: () => Navigator.pop(ctx),
                 style: ElevatedButton.styleFrom(backgroundColor: _kNeonGreen),
-                child: Text("I've granted it", style: GoogleFonts.inter(color: Colors.black, fontWeight: FontWeight.bold)),
+                child: Text(context.tr('shred_granted'), style: GoogleFonts.inter(color: Colors.black, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -126,17 +127,17 @@ class _SecureShredderScreenState extends State<SecureShredderScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: _kSlateBlue,
-        title: Text("WARNING: PERMANENT DELETION", style: GoogleFonts.inter(color: _kCriticalRed, fontWeight: FontWeight.bold)),
-        content: Text("You are about to securely shred ${_selectedFiles.length} file(s). This action cannot be undone. Digital forensic recovery will be impossible. Are you sure?", style: GoogleFonts.inter(color: Colors.white70)),
+        title: Text(context.tr('shred_warning_title'), style: GoogleFonts.inter(color: _kCriticalRed, fontWeight: FontWeight.bold)),
+        content: Text("${context.tr('shred_warning_desc')} ${_selectedFiles.length} ${context.tr('shred_warning_desc2')}", style: GoogleFonts.inter(color: Colors.white70)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text("CANCEL", style: GoogleFonts.inter(color: Colors.white54)),
+            child: Text(context.tr('settings_cancel'), style: GoogleFonts.inter(color: Colors.white54)),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: _kCriticalRed),
-            child: Text("OBLITERATE", style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold)),
+            child: Text(context.tr('shred_obliterate'), style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -237,7 +238,7 @@ class _SecureShredderScreenState extends State<SecureShredderScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          "SECURE SHREDDER",
+          context.tr('', fallback: "SECURE SHREDDER"),
           style: GoogleFonts.inter(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -258,7 +259,7 @@ class _SecureShredderScreenState extends State<SecureShredderScreen> {
             if (_isShredding) ...[
               const SizedBox(height: 10),
               Text(
-                "SHREDDING IN PROGRESS: ${(_overallProgress * 100).toInt()}%",
+                "${context.tr('shred_in_progress')} ${(_overallProgress * 100).toInt()}%",
                 style: GoogleFonts.inter(color: _kNeonGreen, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
@@ -310,7 +311,7 @@ class _SecureShredderScreenState extends State<SecureShredderScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              "BROWSE FILES TO SHRED",
+              context.tr('', fallback: "BROWSE FILES TO SHRED"),
               style: GoogleFonts.inter(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -320,7 +321,7 @@ class _SecureShredderScreenState extends State<SecureShredderScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              "Files are overwritten with random bytes 3 times before deletion, making digital forensic recovery impossible.",
+              context.tr('', fallback: "Files are overwritten with random bytes 3 times before deletion, making digital forensic recovery impossible."),
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                 color: _kMetallicSilver,
@@ -430,7 +431,7 @@ class _SecureShredderScreenState extends State<SecureShredderScreen> {
         ),
       ),
       child: Text(
-        _isShredding ? "OBLITERATING DATA..." : "SECURELY SHRED FILES",
+        _isShredding ? (context.tr('', fallback: "OBLITERATING DATA...")) : (context.tr('', fallback: "SECURELY SHRED FILES")),
         style: GoogleFonts.inter(
           fontWeight: FontWeight.bold,
           letterSpacing: 1.0,
@@ -586,7 +587,7 @@ class _GuardianFileExplorerState extends State<_GuardianFileExplorer> {
                       const Icon(Icons.folder_special, color: _kNeonGreen, size: 22),
                       const SizedBox(width: 10),
                       Text(
-                        "GUARDIAN FILE EXPLORER",
+                        context.tr('shred_explorer_title'),
                         style: GoogleFonts.inter(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -662,7 +663,7 @@ class _GuardianFileExplorerState extends State<_GuardianFileExplorer> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        "${_selectedPaths.length} selected",
+                        "${_selectedPaths.length} ${context.tr('shred_selected')}",
                         style: GoogleFonts.inter(color: _kCriticalRed, fontSize: 11, fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -679,7 +680,7 @@ class _GuardianFileExplorerState extends State<_GuardianFileExplorer> {
                           child: Padding(
                             padding: const EdgeInsets.all(24),
                             child: Text(
-                              "Access denied or empty directory.\n\n$_error",
+                              "${context.tr('shred_access_denied')}\n\n$_error",
                               style: GoogleFonts.inter(color: _kCriticalRed, fontSize: 13),
                               textAlign: TextAlign.center,
                             ),
@@ -692,7 +693,7 @@ class _GuardianFileExplorerState extends State<_GuardianFileExplorer> {
                                 children: [
                                   const Icon(Icons.folder_off, color: Colors.white24, size: 48),
                                   const SizedBox(height: 12),
-                                  Text("Empty directory", style: GoogleFonts.inter(color: Colors.white38)),
+                                  Text(context.tr('shred_empty_dir'), style: GoogleFonts.inter(color: Colors.white38)),
                                 ],
                               ),
                             )
@@ -790,7 +791,7 @@ class _GuardianFileExplorerState extends State<_GuardianFileExplorer> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: Text("CANCEL", style: GoogleFonts.inter(color: Colors.white54, fontWeight: FontWeight.w600)),
+                    child: Text(context.tr('settings_cancel').toUpperCase(), style: GoogleFonts.inter(color: Colors.white54, fontWeight: FontWeight.w600)),
                   ),
                   const Spacer(),
                   ElevatedButton.icon(

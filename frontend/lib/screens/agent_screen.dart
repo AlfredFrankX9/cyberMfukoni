@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/api_service.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../utils/translations.dart';
 
 class AgentScreen extends StatefulWidget {
   const AgentScreen({super.key});
@@ -78,7 +79,7 @@ class _AgentScreenState extends State<AgentScreen>
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text('Copied to clipboard'),
+        content: Text(context.tr('copied_to_clipboard')),
         duration: const Duration(seconds: 2),
         backgroundColor: kCyberGreen.withOpacity(0.9),
         behavior: SnackBarBehavior.floating,
@@ -127,7 +128,7 @@ class _AgentScreenState extends State<AgentScreen>
         body: {'message': text},
       );
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = json.decode(utf8.decode(response.bodyBytes));
         setState(() {
           _messages.add({
             'role': 'agent',
@@ -276,7 +277,7 @@ class _AgentScreenState extends State<AgentScreen>
       child: Align(
         alignment: Alignment.bottomCenter,
         child: Text(
-          'Your Guardian Against\nDigital Threats',
+          context.tr('agent_hero_text'),
           textAlign: TextAlign.center,
           style: GoogleFonts.inter(
             fontSize: 22,
@@ -346,10 +347,10 @@ class _AgentScreenState extends State<AgentScreen>
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              _buildQuickAction('What is phishing?'),
-                              _buildQuickAction('Password tips'),
-                              _buildQuickAction('I got hacked'),
-                              _buildQuickAction('SIM swap help'),
+                              _buildQuickAction(context.tr('agent_quick_phishing')),
+                              _buildQuickAction(context.tr('agent_quick_password')),
+                              _buildQuickAction(context.tr('agent_quick_hacked')),
+                              _buildQuickAction(context.tr('agent_quick_sim')),
                               const SizedBox(width: 8),
                             ],
                           ),
@@ -415,8 +416,8 @@ class _AgentScreenState extends State<AgentScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'The Guardian',
-                  style: GoogleFonts.inter(
+                  context.tr('agent_title'),
+                  style: GoogleFonts.outfit(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
                   ),
@@ -439,7 +440,7 @@ class _AgentScreenState extends State<AgentScreen>
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'Online & Ready',
+                      context.tr('online_status'),
                       style: TextStyle(
                         fontSize: 11,
                         color: Colors.white.withOpacity(0.5),
@@ -461,12 +462,12 @@ class _AgentScreenState extends State<AgentScreen>
                 _messages.clear();
                 _messages.add({
                   'role': 'agent',
-                  'content': 'Chat cleared. How can I help you?',
+                  'content': context.tr('chat_cleared'),
                   'timestamp': DateTime.now(),
                 });
               });
             },
-            tooltip: 'Clear Chat',
+            tooltip: context.tr('clear_chat'),
           ),
         ],
       ),
@@ -632,8 +633,8 @@ class _AgentScreenState extends State<AgentScreen>
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            'Copy',
-                            style: TextStyle(
+                            context.tr('copy').toUpperCase(),
+                            style: GoogleFonts.outfit(
                               fontSize: 11,
                               color: Colors.white.withOpacity(0.4),
                             ),
@@ -659,8 +660,8 @@ class _AgentScreenState extends State<AgentScreen>
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              'Retry',
-                              style: TextStyle(
+                              context.tr('retry').toUpperCase(),
+                              style: GoogleFonts.outfit(
                                 fontSize: 11,
                                 color: Colors.white.withOpacity(0.4),
                               ),
@@ -739,7 +740,10 @@ class _AgentScreenState extends State<AgentScreen>
         ),
       );
     }
-    return RichText(text: TextSpan(children: spans));
+    return Text.rich(
+      TextSpan(children: spans),
+      style: const TextStyle(fontSize: 13.5, height: 1.5),
+    );
   }
 
   Widget _buildInputArea() {
@@ -761,7 +765,7 @@ class _AgentScreenState extends State<AgentScreen>
                   controller: _messageController,
                   style: const TextStyle(fontSize: 13.5, color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: 'Enter your message...',
+                    hintText: context.tr('agent_input_hint'),
                     hintStyle: TextStyle(
                       color: Colors.white.withOpacity(0.3),
                       fontSize: 13.5,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../services/vault_storage_service.dart';
+import '../../utils/translations.dart';
 
 class NotesScreen extends StatefulWidget {
   const NotesScreen({super.key});
@@ -44,13 +45,13 @@ class _NotesScreenState extends State<NotesScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text('Secure Notes', style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.white)),
+        title: Text(context.tr('vault_notes'), style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.white)),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: Color(0xFFFFB380)))
           : _notes.isEmpty
-              ? const Center(child: Text('No secure notes saved yet.', style: TextStyle(color: Colors.white54)))
+              ? Center(child: Text(context.tr('vault_no_notes'), style: const TextStyle(color: Colors.white54)))
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: _notes.length,
@@ -196,7 +197,7 @@ class _NoteEditorScreenState extends State<_NoteEditorScreen> {
               controller: _titleController,
               style: GoogleFonts.inter(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
               decoration: InputDecoration(
-                hintText: 'Title',
+                hintText: context.tr('vault_note_title'),
                 hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
                 border: InputBorder.none,
               ),
@@ -209,7 +210,7 @@ class _NoteEditorScreenState extends State<_NoteEditorScreen> {
                 keyboardType: TextInputType.multiline,
                 style: const TextStyle(color: Colors.white, fontSize: 16, height: 1.5),
                 decoration: InputDecoration(
-                  hintText: 'Start typing your secure note here...',
+                  hintText: context.tr('vault_note_hint'),
                   hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
                   border: InputBorder.none,
                 ),

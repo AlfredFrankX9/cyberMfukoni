@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:installed_apps/app_info.dart';
 import 'package:installed_apps/installed_apps.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../utils/translations.dart';
 
 import '../services/api_service.dart';
 
@@ -41,7 +42,7 @@ class _SmartScanScreenState extends State<SmartScanScreen> {
     setState(() {
       _isScanning = true;
       _scanComplete = false;
-      _scanStatus = "Gathering installed apps...";
+      _scanStatus = context.tr('scan_gathering');
       _progress = 0.1;
       _scanDetails = [];
     });
@@ -59,14 +60,14 @@ class _SmartScanScreenState extends State<SmartScanScreen> {
         setState(() {
           _isScanning = false;
           _scanComplete = true;
-          _scanStatus = "No user apps found to scan.";
+          _scanStatus = context.tr('scan_no_apps');
           _progress = 1.0;
         });
         return;
       }
 
       setState(() {
-        _scanStatus = "Scanning ${packageNames.length} apps against threat database...";
+        _scanStatus = "${packageNames.length} ${context.tr('scan_scanning')}";
         _progress = 0.4;
       });
 
@@ -99,7 +100,7 @@ class _SmartScanScreenState extends State<SmartScanScreen> {
       // 3. If backend failed, run local heuristic scan
       if (!backendSuccess) {
         setState(() {
-          _scanStatus = "Cloud unavailable. Running local heuristic scan...";
+          _scanStatus = context.tr('scan_cloud_unavail');
           _progress = 0.6;
         });
 
@@ -151,7 +152,7 @@ class _SmartScanScreenState extends State<SmartScanScreen> {
       setState(() {
         _isScanning = false;
         _scanComplete = true;
-        _scanStatus = "Scan error: ${e.toString().length > 80 ? e.toString().substring(0, 80) : e.toString()}";
+        _scanStatus = "${context.tr('scan_error')} ${e.toString().length > 80 ? e.toString().substring(0, 80) : e.toString()}";
         _progress = 0.0;
       });
     }
@@ -210,7 +211,7 @@ class _SmartScanScreenState extends State<SmartScanScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          appInfo?.name ?? scanInfo['name'] ?? 'Unknown App',
+                          appInfo?.name ?? scanInfo['name'] ?? context.tr('scan_unknown_app'),
                           style: GoogleFonts.inter(
                             color: Colors.white,
                             fontSize: 18,
@@ -241,7 +242,7 @@ class _SmartScanScreenState extends State<SmartScanScreen> {
                 child: Column(
                   children: [
                     Text(
-                      "STATUS: $status",
+                      "${context.tr('scan_status')} $status",
                       style: GoogleFonts.inter(
                         color: headerColor,
                         fontWeight: FontWeight.bold,
@@ -252,7 +253,7 @@ class _SmartScanScreenState extends State<SmartScanScreen> {
                     Text(
                       isThreat
                           ? "Malicious indicators: ${scanInfo['malicious']}\nSuspicious indicators: ${scanInfo['suspicious']}"
-                          : (isRateLimited ? "Scan paused due to VirusTotal API rate limits." : "No known malware signatures detected."),
+                          : (isRateLimited ? context.tr('scan_paused') : context.tr('scan_no_malware')),
                       textAlign: TextAlign.center,
                       style: GoogleFonts.inter(color: Colors.white70, fontSize: 13),
                     ),
@@ -266,7 +267,7 @@ class _SmartScanScreenState extends State<SmartScanScreen> {
                     if (pkg != null) InstalledApps.openSettings(pkg);
                   },
                   icon: Icon(isThreat ? Icons.delete_forever : Icons.settings),
-                  label: Text(isThreat ? "UNINSTALL APP" : "OPEN SETTINGS"),
+                  label: Text(isThreat ? context.tr('scan_uninstall') : context.tr('scan_open_settings')),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isThreat ? _kCriticalRed : Colors.white.withOpacity(0.08),
                     foregroundColor: Colors.white,
@@ -309,7 +310,7 @@ class _SmartScanScreenState extends State<SmartScanScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          "SMART SCAN",
+          context.tr('scan_title'),
           style: GoogleFonts.inter(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -361,7 +362,7 @@ class _SmartScanScreenState extends State<SmartScanScreen> {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    _isScanning ? "SCAN IN PROGRESS" : "SCAN COMPLETE",
+                    _isScanning ? context.tr('scan_in_progress') : context.tr('scan_complete'),
                     style: GoogleFonts.inter(
                       color: _isScanning ? _kNeonGreen : scoreColor,
                       fontWeight: FontWeight.bold,
@@ -395,7 +396,7 @@ class _SmartScanScreenState extends State<SmartScanScreen> {
               ElevatedButton.icon(
                 onPressed: _startScan,
                 icon: const Icon(Icons.refresh),
-                label: const Text("RE-SCAN DEVICE"),
+                label: Text(context.tr('scan_rescan')),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _kSlateBlue,
                   foregroundColor: Colors.white,
@@ -414,7 +415,7 @@ class _SmartScanScreenState extends State<SmartScanScreen> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "SCANNED APPLICATIONS (${_scanDetails.length})",
+                  "${context.tr('scan_scanned_apps')} (${_scanDetails.length})",
                   style: GoogleFonts.inter(
                     color: _kMetallicSilver,
                     fontWeight: FontWeight.bold,

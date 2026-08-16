@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/translations.dart';
 
 // Theme constants
 const Color _kDeepBlack = Color(0xFF000000);
@@ -168,18 +169,18 @@ class _ParentalControlsScreenState extends State<ParentalControlsScreen>
           builder: (ctx) => AlertDialog(
             backgroundColor: _kSlateBlue,
             title: Text(
-              "Grant Usage Access",
+              context.tr('parent_grant_usage_title'),
               style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold),
             ),
             content: Text(
-              'Android Settings has opened. Find "The Guardian" in the list and toggle it ON to allow app monitoring.\n\nThen press Back to return here.',
+              context.tr('parent_grant_usage_desc'),
               style: GoogleFonts.inter(color: Colors.white70),
             ),
             actions: [
               ElevatedButton(
                 onPressed: () => Navigator.pop(ctx),
                 style: ElevatedButton.styleFrom(backgroundColor: _kNeonGreen),
-                child: Text("I've granted it",
+                child: Text(context.tr('shred_granted'),
                     style: GoogleFonts.inter(
                         color: Colors.black, fontWeight: FontWeight.bold)),
               ),
@@ -202,18 +203,18 @@ class _ParentalControlsScreenState extends State<ParentalControlsScreen>
           builder: (ctx) => AlertDialog(
             backgroundColor: _kSlateBlue,
             title: Text(
-              "Grant Display Over Other Apps",
+              context.tr('parent_grant_overlay_title'),
               style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold),
             ),
             content: Text(
-              'Android Settings has opened. Find "The Guardian" and toggle it ON to allow drawing the block screen over restricted apps.\n\nThen press Back to return here.',
+              context.tr('parent_grant_overlay_desc'),
               style: GoogleFonts.inter(color: Colors.white70),
             ),
             actions: [
               ElevatedButton(
                 onPressed: () => Navigator.pop(ctx),
                 style: ElevatedButton.styleFrom(backgroundColor: _kNeonGreen),
-                child: Text("I've granted it",
+                child: Text(context.tr('shred_granted'),
                     style: GoogleFonts.inter(
                         color: Colors.black, fontWeight: FontWeight.bold)),
               ),
@@ -245,7 +246,7 @@ class _ParentalControlsScreenState extends State<ParentalControlsScreen>
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          "PARENTAL CONTROLS",
+          context.tr('parent_title'),
           style: GoogleFonts.inter(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -260,9 +261,9 @@ class _ParentalControlsScreenState extends State<ParentalControlsScreen>
           labelColor: _kCyberPurple,
           unselectedLabelColor: Colors.white54,
           labelStyle: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 13),
-          tabs: const [
-            Tab(icon: Icon(Icons.language), text: "WEBSITES"),
-            Tab(icon: Icon(Icons.apps), text: "APPS"),
+          tabs: [
+            Tab(icon: const Icon(Icons.language), text: context.tr('parent_websites')),
+            Tab(icon: const Icon(Icons.apps), text: context.tr('parent_apps')),
           ],
         ),
       ),
@@ -297,7 +298,7 @@ class _ParentalControlsScreenState extends State<ParentalControlsScreen>
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    "Blocked domains are filtered by the DNS VPN. Enable the DNS Filter to activate blocking.",
+                    context.tr('parent_dns_info'),
                     style: GoogleFonts.inter(color: Colors.white70, fontSize: 12),
                   ),
                 ),
@@ -314,7 +315,7 @@ class _ParentalControlsScreenState extends State<ParentalControlsScreen>
                   controller: _domainController,
                   style: GoogleFonts.shareTechMono(color: Colors.white, fontSize: 14),
                   decoration: InputDecoration(
-                    hintText: "e.g. example.com",
+                    hintText: context.tr('parent_eg_domain'),
                     hintStyle: GoogleFonts.shareTechMono(color: Colors.white30),
                     filled: true,
                     fillColor: _kSlateBlue,
@@ -344,7 +345,7 @@ class _ParentalControlsScreenState extends State<ParentalControlsScreen>
 
           // Blocked domains list
           Text(
-            "BLOCKED SITES (${_blockedDomains.length})",
+            "${context.tr('parent_blocked_sites')} (${_blockedDomains.length})",
             style: GoogleFonts.inter(
               color: Colors.white54,
               fontSize: 11,
@@ -362,7 +363,7 @@ class _ParentalControlsScreenState extends State<ParentalControlsScreen>
                         Icon(Icons.check_circle_outline, color: Colors.white24, size: 48),
                         const SizedBox(height: 12),
                         Text(
-                          "No sites blocked yet.\nAdd a domain above to get started.",
+                          context.tr('parent_no_sites'),
                           textAlign: TextAlign.center,
                           style: GoogleFonts.inter(color: Colors.white38, fontSize: 13),
                         ),
@@ -436,7 +437,7 @@ class _ParentalControlsScreenState extends State<ParentalControlsScreen>
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          "Usage Access permission is required to monitor which app is in the foreground.",
+                          context.tr('parent_usage_req'),
                           style: GoogleFonts.inter(color: Colors.white70, fontSize: 12),
                         ),
                       ),
@@ -452,7 +453,7 @@ class _ParentalControlsScreenState extends State<ParentalControlsScreen>
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
                       ),
-                      child: Text("GRANT USAGE ACCESS",
+                      child: Text(context.tr('parent_grant_usage'),
                           style: GoogleFonts.inter(
                               color: Colors.black, fontWeight: FontWeight.bold)),
                     ),
@@ -479,7 +480,7 @@ class _ParentalControlsScreenState extends State<ParentalControlsScreen>
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          "Display Over Other Apps permission is REQUIRED to block apps in the background.",
+                          context.tr('parent_overlay_req'),
                           style: GoogleFonts.inter(color: Colors.white70, fontSize: 12),
                         ),
                       ),
@@ -495,7 +496,7 @@ class _ParentalControlsScreenState extends State<ParentalControlsScreen>
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
                       ),
-                      child: Text("GRANT DISPLAY ACCESS",
+                      child: Text(context.tr('parent_grant_overlay'),
                           style: GoogleFonts.inter(
                               color: Colors.white, fontWeight: FontWeight.bold)),
                     ),
@@ -518,7 +519,7 @@ class _ParentalControlsScreenState extends State<ParentalControlsScreen>
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    "Toggle apps below to block them. When a blocked app is opened, The Guardian will display a block screen.",
+                    context.tr('parent_app_info'),
                     style: GoogleFonts.inter(color: Colors.white70, fontSize: 12),
                   ),
                 ),
@@ -529,7 +530,7 @@ class _ParentalControlsScreenState extends State<ParentalControlsScreen>
 
           // Blocked count
           Text(
-            "INSTALLED APPS — ${_blockedAppPackages.length} BLOCKED",
+            "${context.tr('parent_installed')} — ${_blockedAppPackages.length} ${context.tr('parent_blocked_count')}",
             style: GoogleFonts.inter(
               color: Colors.white54,
               fontSize: 11,
@@ -546,7 +547,7 @@ class _ParentalControlsScreenState extends State<ParentalControlsScreen>
                     child: CircularProgressIndicator(color: _kNeonGreen))
                 : _installedApps.isEmpty
                     ? Center(
-                        child: Text("No apps found.",
+                        child: Text(context.tr('parent_no_apps'),
                             style: GoogleFonts.inter(color: Colors.white38)),
                       )
                     : ListView.builder(

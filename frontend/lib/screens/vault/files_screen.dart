@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../services/vault_storage_service.dart';
+import '../../utils/translations.dart';
 
 class FilesScreen extends StatefulWidget {
   const FilesScreen({super.key});
@@ -61,7 +62,7 @@ class _FilesScreenState extends State<FilesScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error picking file: $e')),
+          SnackBar(content: Text('${context.tr('vault_error_pick_file')} $e')),
         );
       }
     } finally {
@@ -110,14 +111,14 @@ class _FilesScreenState extends State<FilesScreen> {
               const SizedBox(height: 20),
               ListTile(
                 leading: const Icon(Icons.download, color: Colors.white),
-                title: const Text('Restore to Downloads folder', style: TextStyle(color: Colors.white)),
+                title: Text(context.tr('vault_restore'), style: const TextStyle(color: Colors.white)),
                 onTap: () async {
                   Navigator.pop(ctx);
                   setState(() => _isLoading = true);
                   await VaultStorageService.removeHiddenFile(file['id'], false, deleteCompletely: false);
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('File restored to Downloads folder')),
+                      SnackBar(content: Text(context.tr('vault_file_restored'))),
                     );
                   }
                   _loadData();
@@ -125,14 +126,14 @@ class _FilesScreenState extends State<FilesScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.delete_forever, color: Colors.redAccent),
-                title: const Text('Delete Permanently from Vault', style: TextStyle(color: Colors.redAccent)),
+                title: Text(context.tr('vault_delete_permanent'), style: const TextStyle(color: Colors.redAccent)),
                 onTap: () async {
                   Navigator.pop(ctx);
                   setState(() => _isLoading = true);
                   await VaultStorageService.removeHiddenFile(file['id'], false, deleteCompletely: true);
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('File deleted permanently')),
+                      SnackBar(content: Text(context.tr('vault_file_deleted'))),
                     );
                   }
                   _loadData();
@@ -152,7 +153,7 @@ class _FilesScreenState extends State<FilesScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text('Hidden Files', style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.white)),
+        title: Text(context.tr('vault_files'), style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.white)),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: _isLoading || _isImporting
@@ -163,13 +164,13 @@ class _FilesScreenState extends State<FilesScreen> {
                   const CircularProgressIndicator(color: Color(0xFFFFB380)),
                   if (_isImporting) ...[
                     const SizedBox(height: 16),
-                    const Text('Importing and Encrypting...', style: TextStyle(color: Colors.white)),
+                    Text(context.tr('vault_importing'), style: const TextStyle(color: Colors.white)),
                   ]
                 ],
               ),
             )
           : _files.isEmpty
-              ? const Center(child: Text('No files hidden yet. Tap + to import.', style: TextStyle(color: Colors.white54)))
+              ? Center(child: Text(context.tr('vault_no_files'), style: const TextStyle(color: Colors.white54)))
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: _files.length,

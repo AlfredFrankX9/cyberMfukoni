@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import 'chonjo_game_screen.dart';
 import 'certificate_screen.dart';
+import '../utils/translations.dart';
 
 enum LevelStatus { locked, current, completed }
 
@@ -240,7 +241,7 @@ class _ChonjoLevelsScreenState extends State<ChonjoLevelsScreen>
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16, top: 4),
                   child: Text(
-                    'Tap a level to begin',
+                    context.tr('', fallback: 'Tap a level to begin'),
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.white.withOpacity(0.55),
@@ -370,9 +371,9 @@ class _ChonjoLevelsScreenState extends State<ChonjoLevelsScreen>
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                        'Download Certificate',
-                        style: TextStyle(
+                      Text(
+                        context.tr('', fallback: 'Download Certificate'),
+                        style: const TextStyle(
                           color: Color(0xFFFFD700),
                           fontSize: 12,
                           fontWeight: FontWeight.w700,

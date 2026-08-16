@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/vault_storage_service.dart';
+import '../../utils/translations.dart';
 
 class PhotosScreen extends StatefulWidget {
   const PhotosScreen({super.key});
@@ -51,7 +52,7 @@ class _PhotosScreenState extends State<PhotosScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error picking photo: $e')),
+          SnackBar(content: Text('${context.tr('vault_error_pick_photo')} $e')),
         );
       }
     } finally {
@@ -81,14 +82,14 @@ class _PhotosScreenState extends State<PhotosScreen> {
               const SizedBox(height: 20),
               ListTile(
                 leading: const Icon(Icons.download, color: Colors.white),
-                title: const Text('Restore to Downloads folder', style: TextStyle(color: Colors.white)),
+                title: Text(context.tr('vault_restore'), style: const TextStyle(color: Colors.white)),
                 onTap: () async {
                   Navigator.pop(ctx);
                   setState(() => _isLoading = true);
                   await VaultStorageService.removeHiddenFile(photo['id'], true, deleteCompletely: false);
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Photo restored to Downloads')),
+                      SnackBar(content: Text(context.tr('vault_photo_restored'))),
                     );
                   }
                   _loadData();
@@ -96,14 +97,14 @@ class _PhotosScreenState extends State<PhotosScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.delete_forever, color: Colors.redAccent),
-                title: const Text('Delete Permanently from Vault', style: TextStyle(color: Colors.redAccent)),
+                title: Text(context.tr('vault_delete_permanent'), style: const TextStyle(color: Colors.redAccent)),
                 onTap: () async {
                   Navigator.pop(ctx);
                   setState(() => _isLoading = true);
                   await VaultStorageService.removeHiddenFile(photo['id'], true, deleteCompletely: true);
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Photo deleted permanently')),
+                      SnackBar(content: Text(context.tr('vault_photo_deleted'))),
                     );
                   }
                   _loadData();
@@ -123,7 +124,7 @@ class _PhotosScreenState extends State<PhotosScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text('Private Photos', style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.white)),
+        title: Text(context.tr('vault_photos'), style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.white)),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: _isLoading || _isImporting
@@ -134,13 +135,13 @@ class _PhotosScreenState extends State<PhotosScreen> {
                   const CircularProgressIndicator(color: Color(0xFFFFB380)),
                   if (_isImporting) ...[
                     const SizedBox(height: 16),
-                    const Text('Importing and Encrypting...', style: TextStyle(color: Colors.white)),
+                    Text(context.tr('vault_importing'), style: const TextStyle(color: Colors.white)),
                   ]
                 ],
               ),
             )
           : _photos.isEmpty
-              ? const Center(child: Text('No photos hidden yet. Tap + to import.', style: TextStyle(color: Colors.white54)))
+              ? Center(child: Text(context.tr('vault_no_photos'), style: const TextStyle(color: Colors.white54)))
               : GridView.builder(
                   padding: const EdgeInsets.all(16),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

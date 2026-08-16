@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../services/vault_storage_service.dart';
+import '../../utils/translations.dart';
 
 class PasswordsScreen extends StatefulWidget {
   const PasswordsScreen({super.key});
@@ -57,7 +58,7 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
                         children: [
                           const Icon(Icons.password, color: Color(0xFFFFB380)),
                           const SizedBox(width: 12),
-                          Text('Add Password', style: GoogleFonts.inter(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                          Text(context.tr('vault_add_password'), style: GoogleFonts.inter(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                           const Spacer(),
                           IconButton(
                             icon: const Icon(Icons.close, color: Colors.white54),
@@ -66,11 +67,11 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      _buildTextField(websiteController, 'Website / App Name', Icons.language),
+                      _buildTextField(websiteController, context.tr('vault_website_app'), Icons.language),
                       const SizedBox(height: 16),
-                      _buildTextField(usernameController, 'Username / Email', Icons.person),
+                      _buildTextField(usernameController, context.tr('vault_username_email'), Icons.person),
                       const SizedBox(height: 16),
-                      _buildTextField(passwordController, 'Password', Icons.lock, obscure: true),
+                      _buildTextField(passwordController, context.tr('vault_password'), Icons.lock, obscure: true),
                       const SizedBox(height: 24),
                       SizedBox(
                         width: double.infinity,
@@ -92,7 +93,7 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
                               _loadData();
                             }
                           },
-                          child: Text('SAVE', style: GoogleFonts.inter(fontWeight: FontWeight.bold, letterSpacing: 1)),
+                          child: Text(context.tr('vault_save'), style: GoogleFonts.inter(fontWeight: FontWeight.bold, letterSpacing: 1)),
                         ),
                       ),
                     ],
@@ -135,13 +136,13 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text('Passwords', style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.white)),
+        title: Text(context.tr('vault_passwords'), style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.white)),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: Color(0xFFFFB380)))
           : _passwords.isEmpty
-              ? const Center(child: Text('No passwords saved yet.', style: TextStyle(color: Colors.white54)))
+              ? Center(child: Text(context.tr('vault_no_passwords'), style: const TextStyle(color: Colors.white54)))
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: _passwords.length,

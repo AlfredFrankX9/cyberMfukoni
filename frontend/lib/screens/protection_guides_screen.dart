@@ -1,49 +1,56 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'guide_steps_screen.dart';
+import '../utils/translations.dart';
 
 class ProtectionGuidesScreen extends StatelessWidget {
   const ProtectionGuidesScreen({super.key});
 
-  static final List<Map<String, dynamic>> guides = [
+  static List<Map<String, dynamic>> _getGuides(BuildContext context) => [
     {
-      'title': 'SIM Swap Protection',
-      'description': 'Learn how to protect yourself from SIM swap fraud',
+      'title': context.tr('', fallback: 'SIM Swap Protection'),
+      'titleKey': 'guide_sim_swap',
+      'description': context.tr('', fallback: 'Learn how to protect yourself from SIM swap fraud'),
       'icon': Icons.sim_card_alert,
       'color': const Color(0xFFFF9100),
       'image': 'assets/images/simSwap.webp',
     },
     {
-      'title': 'Social Media Safety',
-      'description': 'Secure your social media accounts against hackers',
+      'title': context.tr('', fallback: 'Social Media Safety'),
+      'titleKey': 'guide_social',
+      'description': context.tr('', fallback: 'Secure your social media accounts against hackers'),
       'icon': Icons.share,
       'color': const Color(0xFF00E5FF),
       'image': 'assets/images/socialMedia.webp',
     },
     {
-      'title': 'Banking Security',
-      'description': 'Best practices for mobile & online banking',
+      'title': context.tr('', fallback: 'Banking Security'),
+      'titleKey': 'guide_banking',
+      'description': context.tr('', fallback: 'Best practices for mobile & online banking'),
       'icon': Icons.account_balance,
       'color': const Color(0xFF00FF40),
       'image': 'assets/images/banking.webp',
     },
     {
-      'title': 'Identity Theft Guard',
-      'description': 'Steps to prevent and respond to identity theft',
+      'title': context.tr('', fallback: 'Identity Theft Guard'),
+      'titleKey': 'guide_identity',
+      'description': context.tr('', fallback: 'Steps to prevent and respond to identity theft'),
       'icon': Icons.badge,
       'color': const Color(0xFFAA00FF),
       'image': 'assets/images/identityGuard.webp',
     },
     {
-      'title': 'Password Health',
-      'description': 'Check and improve your password strength',
+      'title': context.tr('', fallback: 'Password Health'),
+      'titleKey': 'guide_password',
+      'description': context.tr('', fallback: 'Check and improve your password strength'),
       'icon': Icons.key,
       'color': const Color(0xFFFFD600),
       'image': 'assets/images/password.webp',
     },
     {
-      'title': 'Wi-Fi Security',
-      'description': 'Stay safe on public and home networks',
+      'title': context.tr('', fallback: 'Wi-Fi Security'),
+      'titleKey': 'guide_wifi',
+      'description': context.tr('', fallback: 'Stay safe on public and home networks'),
       'icon': Icons.wifi_lock,
       'color': const Color(0xFFFF1744),
       'image': 'assets/images/wifi.webp',
@@ -61,9 +68,9 @@ class ProtectionGuidesScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Protection Guides',
-          style: TextStyle(
+        title: Text(
+          context.tr('guide_title'),
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
           ),
@@ -93,9 +100,9 @@ class ProtectionGuidesScreen extends StatelessWidget {
           mainAxisSpacing: 16,
           childAspectRatio: 0.9,
         ),
-        itemCount: guides.length,
+        itemCount: _getGuides(context).length,
         itemBuilder: (context, index) {
-          final guide = guides[index];
+          final guide = _getGuides(context)[index];
           final color = guide['color'] as Color;
           final image = guide['image'] as String?;
           
@@ -124,13 +131,13 @@ class ProtectionGuidesScreen extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: () {
-                      final steps = allGuideSteps[guide['title']];
+                      final steps = allGuideSteps[guide['titleKey']];
                       if (steps != null && steps.isNotEmpty) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => GuideStepsScreen(
-                              guideTitle: guide['title'] as String,
+                              guideTitle: context.tr(guide['titleKey'] as String),
                               accentColor: color,
                               steps: steps,
                             ),
@@ -199,8 +206,8 @@ class ProtectionGuidesScreen extends StatelessWidget {
         spacing: 16,
         runSpacing: 16,
         alignment: WrapAlignment.center,
-        children: List.generate(guides.length, (index) {
-          final guide = guides[index];
+        children: List.generate(_getGuides(context).length, (index) {
+          final guide = _getGuides(context)[index];
           final color = guide['color'] as Color;
           final image = guide['image'] as String?;
           
@@ -231,13 +238,13 @@ class ProtectionGuidesScreen extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: () {
-                      final steps = allGuideSteps[guide['title']];
+                      final steps = allGuideSteps[guide['titleKey']];
                       if (steps != null && steps.isNotEmpty) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => GuideStepsScreen(
-                              guideTitle: guide['title'] as String,
+                              guideTitle: context.tr(guide['titleKey'] as String),
                               accentColor: color,
                               steps: steps,
                             ),

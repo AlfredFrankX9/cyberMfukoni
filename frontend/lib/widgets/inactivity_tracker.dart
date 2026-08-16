@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
+import '../utils/translations.dart';
 
 /// Wraps any child and monitors user activity.
 ///
@@ -252,9 +253,9 @@ class _InactivityWarningDialogState extends State<_InactivityWarningDialog> {
             const SizedBox(height: 12),
 
             // Title
-            const Text(
-              'Session Timeout',
-              style: TextStyle(
+            Text(
+              context.tr('inactivity_session_timeout'),
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -265,7 +266,7 @@ class _InactivityWarningDialogState extends State<_InactivityWarningDialog> {
 
             // Description
             Text(
-              'You have been inactive. You will be logged out in $_remaining seconds.',
+              '${context.tr('inactivity_warning_msg_1')}$_remaining${context.tr('inactivity_warning_msg_2')}',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
@@ -290,9 +291,9 @@ class _InactivityWarningDialogState extends State<_InactivityWarningDialog> {
                     side: BorderSide(color: kGreen.withOpacity(0.4)),
                   ),
                 ),
-                child: const Text(
-                  'Stay Logged In',
-                  style: TextStyle(
+                child: Text(
+                  context.tr('inactivity_stay_logged_in'),
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                     letterSpacing: 0.5,

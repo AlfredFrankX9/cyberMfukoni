@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../services/api_service.dart';
+import '../utils/translations.dart';
 
 class ChonjoGameScreen extends StatefulWidget {
   final int initialLevel;
@@ -506,7 +507,7 @@ class _ChonjoGameScreenState extends State<ChonjoGameScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              'Loading scenarios...',
+              context.tr('', fallback: 'Loading scenarios...'),
               style: TextStyle(
                 color: Colors.white.withOpacity(0.4),
                 fontSize: 13,
@@ -589,7 +590,7 @@ class _ChonjoGameScreenState extends State<ChonjoGameScreen>
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                'Level $_selectedLevel',
+                                '${context.tr('', fallback: 'Level')} $_selectedLevel',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13,
@@ -768,7 +769,7 @@ class _ChonjoGameScreenState extends State<ChonjoGameScreen>
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  'LEGIT',
+                  context.tr('', fallback: 'LEGIT'),
                   style: TextStyle(
                     color: Colors.greenAccent.withOpacity(0.4),
                     fontSize: 10,
@@ -783,7 +784,7 @@ class _ChonjoGameScreenState extends State<ChonjoGameScreen>
                 ),
                 const SizedBox(width: 16),
                 Text(
-                  'SCAM',
+                  context.tr('', fallback: 'SCAM'),
                   style: TextStyle(
                     color: Colors.redAccent.withOpacity(0.4),
                     fontSize: 10,
@@ -1276,7 +1277,7 @@ class _ChonjoGameScreenState extends State<ChonjoGameScreen>
             ),
             const SizedBox(height: 20),
             Text(
-              'Review',
+              context.tr('', fallback: 'Review'),
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -1398,9 +1399,9 @@ class _ChonjoGameScreenState extends State<ChonjoGameScreen>
                 elevation: 10,
                 shadowColor: const Color.fromARGB(255, 0, 255, 98).withOpacity(0.5),
               ),
-              child: const Text(
-                'Finish Level',
-                style: TextStyle(
+              child: Text(
+                context.tr('', fallback: 'Finish Level'),
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
                 ),

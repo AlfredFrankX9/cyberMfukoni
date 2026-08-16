@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/translations.dart';
 
 class IntelFeedScreen extends StatefulWidget {
   const IntelFeedScreen({super.key});
@@ -79,10 +80,10 @@ class _IntelFeedScreenState extends State<IntelFeedScreen> {
         });
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Offline Mode: Showing cached intel feed.'),
+            SnackBar(
+              content: Text(context.tr('intel_offline_msg')),
               backgroundColor: Colors.orange,
-              duration: Duration(seconds: 3),
+              duration: const Duration(seconds: 3),
             ),
           );
         }
@@ -201,9 +202,9 @@ class _IntelFeedScreenState extends State<IntelFeedScreen> {
                             ),
                           ],
                         ),
-                        child: const Text(
-                          'Intel Feed',
-                          style: TextStyle(
+                        child: Text(
+                          context.tr('intel_live_feed'),
+                          style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF00FF55),
@@ -255,9 +256,9 @@ class _IntelFeedScreenState extends State<IntelFeedScreen> {
                                 Expanded(
                                   child: TextField(
                                     style: const TextStyle(color: Colors.grey),
-                                    decoration: const InputDecoration(
-                                      hintText: 'Search threats...',
-                                      hintStyle: TextStyle(color: Colors.grey),
+                                    decoration: InputDecoration(
+                                      hintText: context.tr('intel_search'),
+                                      hintStyle: const TextStyle(color: Colors.grey),
                                       border: InputBorder.none,
                                     ),
                                   ),
@@ -274,28 +275,28 @@ class _IntelFeedScreenState extends State<IntelFeedScreen> {
                     children: [
                       const SizedBox(width: 150),
                       _buildFilterPill(
-                        'All',
+                        context.tr('intel_filter_all'),
                         const Color(0xFF00FF55),
                         Colors.black,
                         true,
                       ),
                       const SizedBox(width: 12),
                       _buildFilterPill(
-                        'Critical',
+                        context.tr('intel_filter_critical'),
                         const Color(0xFF6E6E6E),
                         Colors.white,
                         false,
                       ),
                       const SizedBox(width: 12),
                       _buildFilterPill(
-                        'High',
+                        context.tr('intel_filter_high'),
                         const Color(0xFF6E6E6E),
                         Colors.white,
                         false,
                       ),
                       const SizedBox(width: 12),
                       _buildFilterPill(
-                        'Medium',
+                        context.tr('intel_filter_medium'),
                         const Color(0xFF6E6E6E),
                         Colors.white,
                         false,
@@ -496,9 +497,9 @@ class _IntelFeedScreenState extends State<IntelFeedScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Welcome, Agent Franklin',
-                    style: TextStyle(
+                  Text(
+                    context.tr('intel_welcome'),
+                    style: const TextStyle(
                       fontFamily: 'monospace',
                       color: Color(0xFF00FF55),
                       fontSize: 11,
@@ -508,10 +509,10 @@ class _IntelFeedScreenState extends State<IntelFeedScreen> {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      const Flexible(
+                      Flexible(
                         child: Text(
-                          'Live Intel Feed',
-                          style: TextStyle(
+                          context.tr('intel_live_feed'),
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,
                             fontWeight: FontWeight.w900,
@@ -544,9 +545,9 @@ class _IntelFeedScreenState extends State<IntelFeedScreen> {
                               ),
                             ),
                             const SizedBox(width: 6),
-                            const Text(
-                              'LIVE',
-                              style: TextStyle(
+                            Text(
+                              context.tr('intel_live'),
+                              style: const TextStyle(
                                 color: Colors.red,
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
@@ -685,9 +686,9 @@ class _IntelFeedScreenState extends State<IntelFeedScreen> {
                             color: const Color(0xFF00FF55),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: const Text(
-                            'LATEST INTEL',
-                            style: TextStyle(
+                          child: Text(
+                            context.tr('intel_latest'),
+                            style: const TextStyle(
                               color: Colors.black,
                               fontSize: 9,
                               fontWeight: FontWeight.bold,

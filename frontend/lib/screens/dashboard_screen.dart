@@ -18,7 +18,11 @@ import 'secure_shredder_screen.dart';
 import 'smart_scan_screen.dart';
 import 'dns_filter_screen.dart';
 import 'secure_modules_screen.dart';
+import 'settings_screen.dart';
+import 'planner_screen.dart';
 import '../utils/auth_helper.dart';
+import '../utils/translations.dart';
+import '../providers/locale_provider.dart';
 
 class DashboardScreen extends StatefulWidget {
   final ValueChanged<int>? onNavigate;
@@ -55,45 +59,63 @@ class _DashboardScreenState extends State<DashboardScreen>
   // One GlobalKey per module tile so we can look up each tile's live
   // on-screen RenderBox (position/size) during a touch drag, regardless of
   // scroll offset — the key always points at the currently-built widget.
-  final List<GlobalKey> _cardKeys = List.generate(5, (_) => GlobalKey());
+  final List<GlobalKey> _cardKeys = List.generate(8, (_) => GlobalKey());
 
   List<_ModuleDef> get _moduleDefs => [
     _ModuleDef(
-      title: 'Threat Intel',
+      title: context.tr('nav_intel'),
       bgImage: 'assets/images/ThreatIntelBackround.webp',
       color: const Color(0xFF00FF40),
       onTap: () => _navigateTo(4),
     ),
     _ModuleDef(
-      title: 'Mulika AI',
+      title: context.tr('module_mulika'),
       bgImage: 'assets/images/mulikaBacground.webp',
       color: const Color(0xFF32CD32),
       onTap: () => _navigateTo(2),
     ),
     _ModuleDef(
+      title: 'Planner',
+      bgImage: 'assets/images/plannericon.webp',
+      color: const Color(0xFF00FF40),
+      onTap: () => _navigateTo(8),
+    ),
+    _ModuleDef(
+      title: 'Boma',
+      bgImage: 'assets/images/bomaBackground.webp',
+      color: const Color(0xFF00FF40),
+      onTap: () => _navigateTo(7),
+    ),
+    _ModuleDef(
       title: 'Chonjo',
       bgImage: 'assets/images/chonjoBackground.webp',
-      color: const Color(0xFFA8FF00),
+      color: const Color(0xFF00FF40),
       onTap: () => Navigator.of(
         context,
       ).push(MaterialPageRoute(builder: (_) => const ChonjoIntroScreen())),
     ),
     _ModuleDef(
-      title: 'Secure Vault',
+      title: context.tr('vault_title'),
       bgImage: 'assets/images/vaultbackground.webp',
       color: const Color(0xFF00FF40),
       onTap: () => _navigateTo(0),
     ),
     _ModuleDef(
-      title: 'Secure',
+      title: context.tr('dashboard_secure_modules'),
       bgImage: 'assets/images/secure.webp',
       color: const Color(0xFF00FF40),
       onTap: () async {
         final ok = await AuthHelper.authenticate(context);
         if (ok && mounted) {
-          Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SecureModulesScreen()));
+          _navigateTo(1);
         }
       },
+    ),
+    _ModuleDef(
+      title: 'AI Agent',
+      bgImage: 'assets/images/agent.webp',
+      color: const Color(0xFF00FF40),
+      onTap: () => _navigateTo(5),
     ),
   ];
 
@@ -247,7 +269,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                               _buildHealthCard(),
                               const SizedBox(height: 30),
                               Text(
-                                'QUICK ACTIONS',
+                                context.tr('dashboard_quick_actions'),
                                 style: GoogleFonts.inter(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w800,
@@ -259,7 +281,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                               _buildQuickActions(),
                               const SizedBox(height: 30),
                               Text(
-                                'SECURITY MODULES',
+                                context.tr('dashboard_secure_modules'),
                                 style: GoogleFonts.inter(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w800,
@@ -271,7 +293,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                               _buildModulesGrid(isWide, size),
                               const SizedBox(height: 40),
                               Text(
-                                'RECENT ACTIVITY',
+                                context.tr('dashboard_recent_activity'),
                                 style: GoogleFonts.inter(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w800,
@@ -288,6 +310,110 @@ class _DashboardScreenState extends State<DashboardScreen>
                     ),
                   ),
                 ],
+              ),
+            ),
+          ),
+
+          // ── Floating Settings Button ──────────────────────────────────
+          Positioned(
+            right: 16,
+            bottom: 100,
+            child: GestureDetector(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+              ),
+              child: Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1A1E28).withOpacity(0.9),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: const Color(0xFF00FF40).withOpacity(0.3),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF00FF40).withOpacity(0.15),
+                      blurRadius: 12,
+                      spreadRadius: 1,
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.4),
+                      blurRadius: 8,
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.settings,
+                  color: Color(0xFF00FF40),
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
+
+          // ── Floating Planner Button ─────────────────────────────────────
+          Positioned(
+            right: 16,
+            top: MediaQuery.of(context).padding.top + 62,
+            child: GestureDetector(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PlannerScreen()),
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1A1E28).withOpacity(0.92),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: const Color(0xFF00FF40).withOpacity(0.3),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF00FF40).withOpacity(0.12),
+                      blurRadius: 14,
+                      spreadRadius: 1,
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.5),
+                      blurRadius: 10,
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Planner',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF00FF40),
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.asset(
+                        'assets/images/plannericon.webp',
+                        width: 30,
+                        height: 30,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const Icon(
+                          Icons.smart_toy,
+                          color: Color(0xFF00FF40),
+                          size: 24,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -331,8 +457,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Welcome back,',
-                    style: TextStyle(
+                    context.tr('dashboard_greeting'),
+                    style: const TextStyle(
                       color: const Color(0xFFB0B0B0),
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -394,7 +520,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'SYSTEM STATUS',
+                    context.tr('dashboard_system_status'),
                     style: GoogleFonts.inter(
                       color: const Color(0xFF00FF40),
                       fontWeight: FontWeight.w800,
@@ -406,7 +532,7 @@ class _DashboardScreenState extends State<DashboardScreen>
               ),
               const SizedBox(height: 16),
               Text(
-                'Cyber Safety Score',
+                context.tr('boma_score'),
                 style: GoogleFonts.inter(
                   color: const Color(0xFFC0C0C0),
                   fontSize: 14,
@@ -484,7 +610,7 @@ class _DashboardScreenState extends State<DashboardScreen>
               ),
               const SizedBox(height: 16),
               Text(
-                'SCORE BREAKDOWN',
+                context.tr('dashboard_score_breakdown'),
                 style: GoogleFonts.inter(
                   color: const Color(0xFFB0B0B0),
                   fontSize: 10,
@@ -495,21 +621,21 @@ class _DashboardScreenState extends State<DashboardScreen>
               const SizedBox(height: 8),
               _buildScoreBreakdownItem(
                 Icons.lock,
-                'Device Security',
+                context.tr('dashboard_device_security'),
                 '30/30',
                 const Color(0xFF00FF40),
               ),
               const SizedBox(height: 6),
               _buildScoreBreakdownItem(
                 Icons.vpn_key,
-                'Vault Setup',
+                context.tr('dashboard_vault_setup'),
                 '10/20',
                 const Color(0xFFFFC107),
               ),
               const SizedBox(height: 6),
               _buildScoreBreakdownItem(
                 Icons.school,
-                'Chonjo XP',
+                context.tr('dashboard_chonjo_xp'),
                 '${(_cyberSafetyScore > 40) ? (_cyberSafetyScore - 40) : 0}/50',
                 const Color(0xFF00FF40),
               ),
@@ -618,7 +744,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     final actions = [
       _QuickActionData(
         icon: Icons.radar,
-        label: 'SMART SCAN',
+        label: context.tr('dashboard_quick_action_scan'),
         color: const Color(0xFF00FF40),
         onTap: () => Navigator.push(
           context,
@@ -627,7 +753,7 @@ class _DashboardScreenState extends State<DashboardScreen>
       ),
       _QuickActionData(
         icon: Icons.shield,
-        label: 'APP PERMISSIONS',
+        label: context.tr('settings_app_permissions'),
         color: const Color(0xFF00FF40),
         onTap: () => Navigator.push(
           context,
@@ -636,7 +762,7 @@ class _DashboardScreenState extends State<DashboardScreen>
       ),
       _QuickActionData(
         icon: Icons.delete_forever,
-        label: 'SECURE SHRED',
+        label: context.tr('dashboard_quick_action_shred'),
         color: const Color(0xFF32CD32),
         onTap: () async {
           final ok = await AuthHelper.authenticate(context);
@@ -650,7 +776,7 @@ class _DashboardScreenState extends State<DashboardScreen>
       ),
       _QuickActionData(
         icon: Icons.vpn_lock,
-        label: 'DNS FILTER',
+        label: context.tr('dashboard_quick_action_filter'),
         color: const Color(0xFF00FF40),
         onTap: () async {
           final ok = await AuthHelper.authenticate(context);
@@ -664,67 +790,111 @@ class _DashboardScreenState extends State<DashboardScreen>
       ),
     ];
 
-    return SizedBox(
-      height: 50,
-      child: _InfiniteMarquee(actions: actions),
-    );
+    return SizedBox(height: 50, child: _InfiniteMarquee(actions: actions));
   }
 
   // ─── Activity Log ─────────────────────────────────────────────────────────
   Widget _buildActivityLog() {
-    final List<Map<String, dynamic>> mockLogs = [
-      {'icon': Icons.check_circle, 'color': const Color(0xFF00FF40), 'text': 'System scan clear. No threats detected.', 'time': 'Just now'},
-      {'icon': Icons.vpn_lock, 'color': const Color(0xFF32CD32), 'text': 'Secure VPN connection established.', 'time': '2h ago'},
-      {'icon': Icons.warning_amber, 'color': const Color(0xFFFFC107), 'text': 'Suspicious ad-tracker blocked.', 'time': '5h ago'},
+    final List<Map<String, dynamic>> activityLogs = [
+      {
+        'icon': Icons.dns,
+        'color': const Color(0xFF00E5FF),
+        'text': 'DNS filter activated',
+        'time': 'Just now',
+      },
+      {
+        'icon': Icons.verified_user,
+        'color': const Color(0xFF00FF40),
+        'text': 'Scan finished: Safe',
+        'time': '12 min ago',
+      },
+      {
+        'icon': Icons.lock_reset,
+        'color': const Color(0xFF7C4DFF),
+        'text': 'Password changed',
+        'time': '1h ago',
+      },
+      {
+        'icon': Icons.schedule,
+        'color': const Color(0xFFFFC107),
+        'text': 'Event "Network Audit" is due in 3 mins',
+        'time': '1h ago',
+      },
+      {
+        'icon': Icons.warning_amber,
+        'color': const Color(0xFFFF5252),
+        'text': 'Event "Phishing Test" missed',
+        'time': '3h ago',
+      },
+      {
+        'icon': Icons.phone_android,
+        'color': const Color(0xFF00FF40),
+        'text': 'Device scanned — No threats found',
+        'time': '5h ago',
+      },
+      {
+        'icon': Icons.block,
+        'color': const Color(0xFFFFA726),
+        'text': 'Ad-tracker blocked (3 domains)',
+        'time': '8h ago',
+      },
+      {
+        'icon': Icons.enhanced_encryption,
+        'color': const Color(0xFF69F0AE),
+        'text': 'Vault updated — 2 files encrypted',
+        'time': 'Yesterday',
+      },
     ];
 
     return Container(
+      height: 250, // Fixed height for ~3.5 items
       decoration: BoxDecoration(
         color: const Color(0xFF1A1D27),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
-      child: Column(
-        children: mockLogs.map((log) {
-          final isLast = mockLogs.last == log;
-          return Column(
-            children: [
-              ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                leading: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: log['color'].withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(log['icon'], color: log['color'], size: 20),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: ListView.separated(
+          padding: EdgeInsets.zero,
+          physics: const BouncingScrollPhysics(),
+          itemCount: activityLogs.length,
+          separatorBuilder: (_, __) => Divider(
+            height: 1,
+            color: Colors.white.withOpacity(0.05),
+            indent: 70,
+            endIndent: 24,
+          ),
+          itemBuilder: (context, index) {
+            final log = activityLogs[index];
+            return ListTile(
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: 8,
+              ),
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: (log['color'] as Color).withOpacity(0.1),
+                  shape: BoxShape.circle,
                 ),
-                title: Text(
-                  log['text'],
-                  style: GoogleFonts.inter(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                trailing: Text(
-                  log['time'],
-                  style: GoogleFonts.inter(
-                    color: Colors.white54,
-                    fontSize: 11,
-                  ),
+                child: Icon(log['icon'], color: log['color'], size: 20),
+              ),
+              title: Text(
+                log['text'],
+                style: GoogleFonts.inter(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-              if (!isLast)
-                Divider(
-                  height: 1,
-                  color: Colors.white.withOpacity(0.05),
-                  indent: 70,
-                  endIndent: 24,
-                ),
-            ],
-          );
-        }).toList(),
+              trailing: Text(
+                log['time'],
+                style: GoogleFonts.inter(color: Colors.white54, fontSize: 11),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -891,31 +1061,33 @@ class _InfiniteMarqueeState extends State<_InfiniteMarquee> {
 
   void _startScrolling() {
     if (_isPaused || !_scrollController.hasClients) return;
-    
+
     final maxScroll = _scrollController.position.maxScrollExtent;
     final minScroll = _scrollController.position.minScrollExtent;
-    
+
     final currentPosition = _scrollController.offset;
     final remainingDistance = maxScroll - currentPosition;
-    
+
     if (remainingDistance <= 0) {
       _scrollController.jumpTo(minScroll);
       _startScrolling();
       return;
     }
-    
+
     final durationMs = (remainingDistance / 40) * 1000;
-    
-    _scrollController.animateTo(
-      maxScroll,
-      duration: Duration(milliseconds: durationMs.toInt()),
-      curve: Curves.linear,
-    ).then((_) {
-      if (mounted) {
-        _scrollController.jumpTo(minScroll);
-        _startScrolling();
-      }
-    });
+
+    _scrollController
+        .animateTo(
+          maxScroll,
+          duration: Duration(milliseconds: durationMs.toInt()),
+          curve: Curves.linear,
+        )
+        .then((_) {
+          if (mounted) {
+            _scrollController.jumpTo(minScroll);
+            _startScrolling();
+          }
+        });
   }
 
   void _pauseScrolling() {
@@ -951,7 +1123,7 @@ class _InfiniteMarqueeState extends State<_InfiniteMarquee> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> items = [];
-    
+
     // Repeat items to allow smooth continuous scrolling
     for (int loop = 0; loop < 8; loop++) {
       for (int i = 0; i < widget.actions.length; i++) {
@@ -1023,9 +1195,7 @@ class _InfiniteMarqueeState extends State<_InfiniteMarquee> {
           physics: _isPaused
               ? const BouncingScrollPhysics()
               : const NeverScrollableScrollPhysics(),
-          child: Row(
-            children: items,
-          ),
+          child: Row(children: items),
         ),
       ),
     );

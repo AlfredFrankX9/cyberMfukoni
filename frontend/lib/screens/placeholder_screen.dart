@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/translations.dart';
 
 class PlaceholderScreen extends StatelessWidget {
   final String title;
@@ -21,7 +22,7 @@ class PlaceholderScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Text('Coming soon...', style: TextStyle(color: Colors.white54)),
+          Text(context.tr('placeholder_coming_soon'), style: const TextStyle(color: Colors.white54)),
         ],
       ),
     );

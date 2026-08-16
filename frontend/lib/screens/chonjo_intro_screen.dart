@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../utils/translations.dart';
 import 'chonjo_levels_screen.dart';
 
 class ChonjoIntroScreen extends StatefulWidget {
@@ -105,9 +106,9 @@ class _ChonjoIntroScreenState extends State<ChonjoIntroScreen>
                             ),
                           ),
                           const SizedBox(width: 8),
-                          const Text(
-                            'AGENT STATUS  ·  STANDBY',
-                            style: TextStyle(
+                          Text(
+                            context.tr('', fallback: 'AGENT STATUS  ·  STANDBY'),
+                            style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 10,
                               fontWeight: FontWeight.w700,
@@ -120,7 +121,7 @@ class _ChonjoIntroScreenState extends State<ChonjoIntroScreen>
                     const SizedBox(height: 10),
 
                     Text(
-                      'Kaanga Chonjo!',
+                      context.tr('', fallback: 'Kaanga Chonjo!'),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
@@ -138,7 +139,7 @@ class _ChonjoIntroScreenState extends State<ChonjoIntroScreen>
                     const SizedBox(height: 6),
 
                     Text(
-                      'Identify digital threats targeting\nthe Kenyan cyberspace.',
+                      context.tr('', fallback: 'Identify digital threats targeting\nthe Kenyan cyberspace.'),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.55),
@@ -155,8 +156,8 @@ class _ChonjoIntroScreenState extends State<ChonjoIntroScreen>
                           child: _buildSwipeCard(
                             icon: Icons.undo_rounded,
                             color: kGreen,
-                            label: 'LEGIT',
-                            sub: 'Swipe Left',
+                            label: context.tr('', fallback: 'LEGIT'),
+                            sub: context.tr('', fallback: 'Swipe Left'),
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -164,8 +165,8 @@ class _ChonjoIntroScreenState extends State<ChonjoIntroScreen>
                           child: _buildSwipeCard(
                             icon: Icons.redo_rounded,
                             color: kRed,
-                            label: 'SCAM',
-                            sub: 'Swipe Right',
+                            label: context.tr('', fallback: 'SCAM'),
+                            sub: context.tr('', fallback: 'Swipe Right'),
                           ),
                         ),
                       ],
@@ -297,8 +298,8 @@ class _ChonjoIntroScreenState extends State<ChonjoIntroScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'YOUR MISSION',
-                      style: TextStyle(
+                      context.tr('', fallback: 'YOUR MISSION'),
+                      style: const TextStyle(
                         color: kGold,
                         fontSize: 9,
                         fontWeight: FontWeight.w800,
@@ -307,7 +308,7 @@ class _ChonjoIntroScreenState extends State<ChonjoIntroScreen>
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Swipe each message — flag scams before they reach citizens.',
+                      context.tr('', fallback: 'Swipe each message — flag scams before they reach citizens.'),
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.65),
                         fontSize: 11,
@@ -367,10 +368,10 @@ class _ChonjoIntroScreenState extends State<ChonjoIntroScreen>
             ),
           ],
         ),
-        child: const Center(
+        child: Center(
           child: Text(
-            'START GAME',
-            style: TextStyle(
+            context.tr('', fallback: 'START GAME'),
+            style: const TextStyle(
               color: Color(0xFF001A09),
               fontSize: 15,
               fontWeight: FontWeight.w900,

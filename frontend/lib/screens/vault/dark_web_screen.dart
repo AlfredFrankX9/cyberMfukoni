@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../../utils/translations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
@@ -25,7 +26,7 @@ class _DarkWebScreenState extends State<DarkWebScreen> {
 
     if (_selectedType != 'Password') {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$_selectedType scanning coming soon!')),
+        SnackBar(content: Text('${context.tr('dark_web_type_${_selectedType.toLowerCase().replaceAll(' ', '_')}')} ${context.tr('dark_web_coming_soon')}')),
       );
       return;
     }
@@ -63,7 +64,7 @@ class _DarkWebScreenState extends State<DarkWebScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error connecting to HIBP API: $e')),
+          SnackBar(content: Text('${context.tr('dark_web_error_api')} $e')),
         );
       }
     } finally {
@@ -102,15 +103,15 @@ class _DarkWebScreenState extends State<DarkWebScreen> {
           _buildScannerInput(),
           const SizedBox(height: 24),
           if (_isScanning)
-            const Center(
+            Center(
               child: Column(
                 children: [
-                  SizedBox(height: 40),
-                  CircularProgressIndicator(color: Color(0xFFFF8C42)),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 40),
+                  const CircularProgressIndicator(color: Color(0xFFFF8C42)),
+                  const SizedBox(height: 16),
                   Text(
-                    'Scanning Dark Web Databases...',
-                    style: TextStyle(color: Colors.white54),
+                    context.tr('dark_web_scanning'),
+                    style: const TextStyle(color: Colors.white54),
                   ),
                 ],
               ),
@@ -162,7 +163,7 @@ class _DarkWebScreenState extends State<DarkWebScreen> {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Dark Web Scanner',
+                    context.tr('dark_web_scanner'),
                     style: GoogleFonts.inter(
                       color: Colors.white,
                       fontSize: 16,
@@ -211,7 +212,7 @@ class _DarkWebScreenState extends State<DarkWebScreen> {
                             ].map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
-                                child: Text(value),
+                                child: Text(context.tr('dark_web_type_${value.toLowerCase().replaceAll(' ', '_')}')),
                               );
                             }).toList(),
                       ),
@@ -236,7 +237,7 @@ class _DarkWebScreenState extends State<DarkWebScreen> {
                           fontSize: 14,
                         ),
                         decoration: InputDecoration(
-                          hintText: 'Enter $_selectedType...',
+                          hintText: '${context.tr('dark_web_enter')} ${context.tr('dark_web_type_${_selectedType.toLowerCase().replaceAll(' ', '_')}')}...',
                           hintStyle: TextStyle(
                             color: Colors.white.withOpacity(0.5),
                             fontSize: 14,
@@ -263,9 +264,9 @@ class _DarkWebScreenState extends State<DarkWebScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text(
-                    'INITIATE SCAN',
-                    style: TextStyle(
+                  child: Text(
+                    context.tr('dark_web_initiate'),
+                    style: const TextStyle(
                       fontWeight: FontWeight.w900,
                       letterSpacing: 1.5,
                     ),
@@ -290,7 +291,7 @@ class _DarkWebScreenState extends State<DarkWebScreen> {
               const Icon(Icons.verified_user, color: Color(0xFF00FF9D)),
               const SizedBox(width: 8),
               Text(
-                'NO BREACHES FOUND',
+                context.tr('dark_web_no_breaches'),
                 style: GoogleFonts.inter(
                   color: const Color(0xFF00FF9D),
                   fontSize: 16,
@@ -313,7 +314,7 @@ class _DarkWebScreenState extends State<DarkWebScreen> {
                   border: Border.all(color: Colors.white.withOpacity(0.2)),
                 ),
                 child: Text(
-                  'Good news! This password was not found in any known data breaches. It is safe to use.',
+                  context.tr('dark_web_safe_msg'),
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.9),
                     height: 1.5,
@@ -336,7 +337,7 @@ class _DarkWebScreenState extends State<DarkWebScreen> {
             const Icon(Icons.warning_amber_rounded, color: Color(0xFFFF5722)),
             const SizedBox(width: 8),
             Text(
-              'COMPROMISED PASSWORD',
+              context.tr('dark_web_compromised'),
               style: GoogleFonts.inter(
                 color: const Color(0xFFFF5722),
                 fontSize: 16,
@@ -361,17 +362,17 @@ class _DarkWebScreenState extends State<DarkWebScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildResultRow('Source', 'Have I Been Pwned API'),
+                  _buildResultRow(context.tr('dark_web_source'), context.tr('dark_web_hibp')),
                   const SizedBox(height: 12),
-                  _buildResultRow('Pwned Count', '$_pwnedCount times'),
+                  _buildResultRow(context.tr('dark_web_pwned_count'), '$_pwnedCount ${context.tr('dark_web_times')}'),
                   const SizedBox(height: 12),
-                  _buildResultRow('Data Exposed', 'Hashed Passwords'),
+                  _buildResultRow(context.tr('dark_web_data_exposed'), context.tr('dark_web_hashed_passwords')),
                   const SizedBox(height: 20),
                   Row(
                     children: [
-                      const Text(
-                        'Risk Score:',
-                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                      Text(
+                        context.tr('dark_web_risk_score'),
+                        style: const TextStyle(color: Colors.white70, fontSize: 12),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -424,7 +425,7 @@ class _DarkWebScreenState extends State<DarkWebScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'AI THREAT ANALYSIS',
+                        context.tr('dark_web_ai_threat'),
                         style: GoogleFonts.spaceMono(
                           color: Colors.white,
                           fontSize: 12,
@@ -435,7 +436,7 @@ class _DarkWebScreenState extends State<DarkWebScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'This password has been seen $_pwnedCount times in data breaches. This means it is no longer secure. Hackers use lists of breached passwords (credential stuffing) to break into accounts.',
+                    '${context.tr('dark_web_breach_msg_1')} $_pwnedCount ${context.tr('dark_web_breach_msg_2')}',
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.9),
                       height: 1.5,
@@ -449,7 +450,7 @@ class _DarkWebScreenState extends State<DarkWebScreen> {
         ),
         const SizedBox(height: 24),
         Text(
-          'RECOMMENDED ACTIONS',
+          context.tr('dark_web_recommended'),
           style: GoogleFonts.inter(
             color: Colors.white,
             fontSize: 12,
@@ -460,14 +461,14 @@ class _DarkWebScreenState extends State<DarkWebScreen> {
         const SizedBox(height: 12),
         _buildActionRow(
           Icons.password,
-          'Change Password',
-          'Update your password for this service immediately.',
+          context.tr('dark_web_change_password'),
+          context.tr('dark_web_change_password_desc'),
         ),
         const SizedBox(height: 8),
         _buildActionRow(
           Icons.security,
-          'Enable 2FA',
-          'Add an extra layer of security to your account.',
+          context.tr('dark_web_enable_2fa'),
+          context.tr('dark_web_enable_2fa_desc'),
         ),
       ],
     );

@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../screens/chonjo_intro_screen.dart';
+import '../utils/translations.dart';
 
 /// Floating dock that starts as a single centre circle.
 /// Tapping it expands 8 icon tiles — 4 slide left, 4 slide right.
@@ -43,35 +44,35 @@ class _DockNavBarState extends State<DockNavBar>
   static const double _mobileBreakpoint = 480.0;
 
   static const List<({String svg, String label, int navIndex})> _leftItems = [
-    (svg: 'assets/icons/home.svg', label: 'Home', navIndex: 3),
-    (svg: 'assets/icons/intel.svg', label: 'Intel', navIndex: 4),
-    (svg: 'assets/icons/mulika.svg', label: 'Mulika', navIndex: 2),
-    (svg: 'assets/icons/boma.svg', label: 'Boma', navIndex: 1),
+    (svg: 'assets/icons/home.svg', label: 'nav_home', navIndex: 3),
+    (svg: 'assets/icons/intel.svg', label: 'nav_intel', navIndex: 4),
+    (svg: 'assets/icons/mulika.svg', label: 'nav_mulika', navIndex: 2),
+    (svg: 'assets/icons/security_modules.svg', label: 'nav_secure_modules', navIndex: 1),
   ];
 
   static const List<({String svg, String label, int navIndex, bool isLogout})>
   _rightItems = [
     (
       svg: 'assets/icons/chonjo.svg',
-      label: 'Chonjo',
+      label: 'Chonjo', // This doesn't need translation according to user
       navIndex: 6,
       isLogout: false,
     ),
     (
       svg: 'assets/icons/vault.svg',
-      label: 'Vault',
+      label: 'nav_vault',
       navIndex: 0,
       isLogout: false,
     ),
     (
       svg: 'assets/icons/agent.svg',
-      label: 'Agent',
+      label: 'nav_agent',
       navIndex: 5,
       isLogout: false,
     ),
     (
       svg: 'assets/icons/logout.svg',
-      label: 'Logout',
+      label: 'settings_logout',
       navIndex: -1,
       isLogout: true,
     ),
@@ -369,7 +370,7 @@ class _DockNavBarState extends State<DockNavBar>
             opacity: _fadeAnims[i].value,
             child: _DockTile(
               svgPath: item.svg,
-              label: item.label,
+              label: context.tr(item.label),
               navIndex: item.navIndex,
               isActive: isActive,
               isLogout: false,
@@ -396,7 +397,7 @@ class _DockNavBarState extends State<DockNavBar>
             opacity: _fadeAnims[i + 4].value,
             child: _DockTile(
               svgPath: item.svg,
-              label: item.label,
+              label: context.tr(item.label),
               navIndex: item.navIndex,
               isActive: isActive,
               isLogout: item.isLogout,

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../services/vault_storage_service.dart';
+import '../../utils/translations.dart';
 
 class CreditCardsScreen extends StatefulWidget {
   const CreditCardsScreen({super.key});
@@ -58,7 +59,7 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
                         children: [
                           const Icon(Icons.credit_card, color: Color(0xFFFFB380)),
                           const SizedBox(width: 12),
-                          Text('Add Card', style: GoogleFonts.inter(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                          Text(context.tr('vault_add_card'), style: GoogleFonts.inter(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                           const Spacer(),
                           IconButton(
                             icon: const Icon(Icons.close, color: Colors.white54),
@@ -67,9 +68,9 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      _buildTextField(nameController, 'Cardholder Name', Icons.person),
+                      _buildTextField(nameController, context.tr('vault_cardholder'), Icons.person),
                       const SizedBox(height: 16),
-                      _buildTextField(numberController, 'Card Number', Icons.numbers, type: TextInputType.number),
+                      _buildTextField(numberController, context.tr('vault_card_number'), Icons.numbers, type: TextInputType.number),
                       const SizedBox(height: 16),
                       Row(
                         children: [
@@ -100,7 +101,7 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
                               _loadData();
                             }
                           },
-                          child: Text('SAVE', style: GoogleFonts.inter(fontWeight: FontWeight.bold, letterSpacing: 1)),
+                          child: Text(context.tr('vault_save'), style: GoogleFonts.inter(fontWeight: FontWeight.bold, letterSpacing: 1)),
                         ),
                       ),
                     ],
@@ -144,13 +145,13 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text('Credit Cards', style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.white)),
+        title: Text(context.tr('vault_credit_cards'), style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.white)),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: Color(0xFFFFB380)))
           : _cards.isEmpty
-              ? const Center(child: Text('No credit cards saved yet.', style: TextStyle(color: Colors.white54)))
+              ? Center(child: Text(context.tr('vault_no_cards'), style: const TextStyle(color: Colors.white54)))
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: _cards.length,
@@ -242,7 +243,7 @@ class _CardTileState extends State<_CardTile> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('CARDHOLDER', style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 10)),
+                  Text(context.tr('vault_cardholder_label'), style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 10)),
                   const SizedBox(height: 4),
                   Text((widget.item['name'] ?? '').toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
                 ],
@@ -250,7 +251,7 @@ class _CardTileState extends State<_CardTile> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text('EXPIRES', style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 10)),
+                  Text(context.tr('vault_expires_label'), style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 10)),
                   const SizedBox(height: 4),
                   Text(widget.item['expiry'] ?? '', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
                 ],

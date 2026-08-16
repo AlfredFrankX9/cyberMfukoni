@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import '../../services/vault_storage_service.dart';
+import '../../utils/translations.dart';
 
 class RecoveryCodesScreen extends StatefulWidget {
   const RecoveryCodesScreen({super.key});
@@ -57,7 +58,7 @@ class _RecoveryCodesScreenState extends State<RecoveryCodesScreen> {
                         children: [
                           const Icon(Icons.vpn_key, color: Color(0xFFFFB380)),
                           const SizedBox(width: 12),
-                          Text('Add Code', style: GoogleFonts.inter(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                          Text(context.tr('vault_add_code'), style: GoogleFonts.inter(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                           const Spacer(),
                           IconButton(
                             icon: const Icon(Icons.close, color: Colors.white54),
@@ -66,9 +67,9 @@ class _RecoveryCodesScreenState extends State<RecoveryCodesScreen> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      _buildTextField(nameController, 'App / Website Name', Icons.apps),
+                      _buildTextField(nameController, context.tr('vault_app_website'), Icons.apps),
                       const SizedBox(height: 16),
-                      _buildTextField(codeController, 'Recovery Code', Icons.numbers),
+                      _buildTextField(codeController, context.tr('vault_recovery_code'), Icons.numbers),
                       const SizedBox(height: 24),
                       SizedBox(
                         width: double.infinity,
@@ -89,7 +90,7 @@ class _RecoveryCodesScreenState extends State<RecoveryCodesScreen> {
                               _loadData();
                             }
                           },
-                          child: Text('SAVE', style: GoogleFonts.inter(fontWeight: FontWeight.bold, letterSpacing: 1)),
+                          child: Text(context.tr('vault_save'), style: GoogleFonts.inter(fontWeight: FontWeight.bold, letterSpacing: 1)),
                         ),
                       ),
                     ],
@@ -131,13 +132,13 @@ class _RecoveryCodesScreenState extends State<RecoveryCodesScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text('Recovery Codes', style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.white)),
+        title: Text(context.tr('vault_recovery_codes'), style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.white)),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: Color(0xFFFFB380)))
           : _codes.isEmpty
-              ? const Center(child: Text('No recovery codes saved yet.', style: TextStyle(color: Colors.white54)))
+               ? Center(child: Text(context.tr('vault_no_codes'), style: const TextStyle(color: Colors.white54)))
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: _codes.length,
@@ -171,7 +172,7 @@ class _RecoveryCodesScreenState extends State<RecoveryCodesScreen> {
                               icon: const Icon(Icons.copy, color: Colors.white54, size: 20),
                               onPressed: () {
                                 Clipboard.setData(ClipboardData(text: item['code']));
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Code copied to clipboard!')));
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('vault_code_copied'))));
                               },
                             ),
                             IconButton(

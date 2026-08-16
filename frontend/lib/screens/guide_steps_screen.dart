@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../utils/translations.dart';
 
 /// A single step inside a protection guide.
 class GuideStep {
@@ -192,7 +193,7 @@ class _GuideStepsScreenState extends State<GuideStepsScreen>
 
                       // Step Counter
                       Text(
-                        'S T E P   ${_currentStep + 1}',
+                        '${context.tr('guide_step')}   ${_currentStep + 1}',
                         style: GoogleFonts.spaceMono(
                           color: accent,
                           fontSize: 14,
@@ -205,7 +206,7 @@ class _GuideStepsScreenState extends State<GuideStepsScreen>
 
                       // Title
                       Text(
-                        step.title,
+                        context.tr(step.title),
                         textAlign: TextAlign.center,
                         style: GoogleFonts.inter(
                           color: Colors.white,
@@ -219,7 +220,7 @@ class _GuideStepsScreenState extends State<GuideStepsScreen>
 
                       // Description
                       Text(
-                        step.description,
+                        context.tr(step.description),
                         textAlign: TextAlign.center,
                         style: GoogleFonts.inter(
                           color: Colors.white.withOpacity(0.6),
@@ -259,7 +260,7 @@ class _GuideStepsScreenState extends State<GuideStepsScreen>
                             Icon(Icons.open_in_new, color: Colors.white, size: 18),
                             const SizedBox(width: 10),
                             Text(
-                              step.actionLabel!,
+                              context.tr(step.actionLabel!),
                               style: GoogleFonts.inter(
                                 color: Colors.white,
                                 fontSize: 14,
@@ -296,237 +297,177 @@ class _GuideStepsScreenState extends State<GuideStepsScreen>
 // ═══════════════════════════════════════════════════════
 
 final Map<String, List<GuideStep>> allGuideSteps = {
-  'SIM Swap Protection': [
+  'guide_sim_swap': [
     const GuideStep(
       icon: Icons.signal_cellular_off,
-      title: 'Recognize the Signs',
-      description:
-          'If your phone suddenly loses network signal for an extended period, '
-          'you may be a SIM swap victim. Act immediately — every second counts.',
+      title: 'guide_sim_1_title',
+      description: 'guide_sim_1_desc',
     ),
     const GuideStep(
       icon: Icons.phone_in_talk,
-      title: 'Contact Your Carrier',
-      description:
-          'Call Safaricom (100), Airtel (100), or your carrier from another phone '
-          'to report the suspicious SIM swap and request an immediate block.',
-      actionLabel: 'CALL SAFARICOM',
+      title: 'guide_sim_2_title',
+      description: 'guide_sim_2_desc',
+      actionLabel: 'guide_sim_2_action',
       actionUrl: 'tel:100',
     ),
     const GuideStep(
       icon: Icons.account_balance,
-      title: 'Lock Your Accounts',
-      description:
-          'Call your bank immediately to freeze online and mobile banking. '
-          'Your SIM is the key to M-Pesa and SMS-based authentication.',
+      title: 'guide_sim_3_title',
+      description: 'guide_sim_3_desc',
     ),
     const GuideStep(
       icon: Icons.local_police,
-      title: 'Report to Police',
-      description:
-          'File a report at the nearest police station or through the eCitizen portal. '
-          'You\'ll need the OB number for insurance or bank claims.',
+      title: 'guide_sim_4_title',
+      description: 'guide_sim_4_desc',
     ),
     const GuideStep(
       icon: Icons.visibility,
-      title: 'Monitor Your Accounts',
-      description:
-          'For the next 30 days, watch all your bank statements and M-Pesa history '
-          'for unauthorized transactions. Report anything suspicious immediately.',
+      title: 'guide_sim_5_title',
+      description: 'guide_sim_5_desc',
     ),
   ],
 
-  'Social Media Safety': [
+  'guide_social': [
     const GuideStep(
       icon: Icons.verified_user,
-      title: 'Enable Two-Factor Authentication',
-      description:
-          'Add 2FA to all your social media accounts. Use an authenticator app '
-          'like Google Authenticator instead of SMS for stronger security.',
+      title: 'guide_soc_1_title',
+      description: 'guide_soc_1_desc',
     ),
     const GuideStep(
       icon: Icons.privacy_tip,
-      title: 'Review Privacy Settings',
-      description:
-          'Limit who can see your posts, friends list, and personal information. '
-          'Set your profile to private and restrict friend requests to friends-of-friends.',
+      title: 'guide_soc_2_title',
+      description: 'guide_soc_2_desc',
     ),
     const GuideStep(
       icon: Icons.link_off,
-      title: 'Beware of Phishing Links',
-      description:
-          'Don\'t click suspicious links in DMs or comments, even from friends. '
-          'Hackers often hijack accounts and send malicious links to contacts.',
+      title: 'guide_soc_3_title',
+      description: 'guide_soc_3_desc',
     ),
     const GuideStep(
       icon: Icons.key,
-      title: 'Use Strong Passwords',
-      description:
-          'Use a unique, complex password for each social media account. '
-          'Never reuse your email or banking password for social media.',
+      title: 'guide_soc_4_title',
+      description: 'guide_soc_4_desc',
     ),
     const GuideStep(
       icon: Icons.app_settings_alt,
-      title: 'Audit Connected Apps',
-      description:
-          'Remove third-party apps and website logins you no longer use. '
-          'These forgotten connections can become backdoors for attackers.',
+      title: 'guide_soc_5_title',
+      description: 'guide_soc_5_desc',
     ),
   ],
 
-  'Banking Security': [
+  'guide_banking': [
     const GuideStep(
       icon: Icons.lock,
-      title: 'Never Share PINs or OTPs',
-      description:
-          'Your M-Pesa PIN, ATM PIN, and one-time passwords should never be shared '
-          'with anyone — not even someone claiming to be from your bank or Safaricom.',
+      title: 'guide_bnk_1_title',
+      description: 'guide_bnk_1_desc',
     ),
     const GuideStep(
       icon: Icons.person_search,
-      title: 'Verify Before Transacting',
-      description:
-          'Always confirm the recipient\'s name before completing M-Pesa or bank '
-          'transfers. A wrong transaction is very difficult to reverse.',
+      title: 'guide_bnk_2_title',
+      description: 'guide_bnk_2_desc',
     ),
     const GuideStep(
       icon: Icons.download,
-      title: 'Use Official Apps Only',
-      description:
-          'Download banking apps only from Google Play Store or Apple App Store. '
-          'Fake banking apps are a common tool for stealing credentials.',
+      title: 'guide_bnk_3_title',
+      description: 'guide_bnk_3_desc',
     ),
     const GuideStep(
       icon: Icons.notifications_active,
-      title: 'Enable Transaction Alerts',
-      description:
-          'Set up SMS and email notifications for all account activity. '
-          'Instant alerts help you catch unauthorized transactions immediately.',
+      title: 'guide_bnk_4_title',
+      description: 'guide_bnk_4_desc',
     ),
     const GuideStep(
       icon: Icons.report_problem,
-      title: 'Report Fraud Immediately',
-      description:
-          'If you notice unauthorized activity, call your bank\'s fraud line and '
-          'Safaricom\'s M-Pesa support (234) without delay.',
-      actionLabel: 'CALL M-PESA SUPPORT',
+      title: 'guide_bnk_5_title',
+      description: 'guide_bnk_5_desc',
+      actionLabel: 'guide_bnk_5_action',
       actionUrl: 'tel:234',
     ),
   ],
 
-  'Identity Theft Guard': [
+  'guide_identity': [
     const GuideStep(
       icon: Icons.badge,
-      title: 'Guard Your ID Documents',
-      description:
-          'Never share photos of your National ID, passport, or KRA PIN on social media '
-          'or with unverified websites. Criminals use these to open accounts in your name.',
+      title: 'guide_id_1_title',
+      description: 'guide_id_1_desc',
     ),
     const GuideStep(
       icon: Icons.delete_sweep,
-      title: 'Shred Sensitive Documents',
-      description:
-          'Destroy old bank statements, utility bills, and any documents containing '
-          'personal information. Dumpster diving is a real threat.',
+      title: 'guide_id_2_title',
+      description: 'guide_id_2_desc',
     ),
     const GuideStep(
       icon: Icons.credit_score,
-      title: 'Monitor Your Credit',
-      description:
-          'Check your CRB (Credit Reference Bureau) report regularly for unauthorized '
-          'loans or accounts opened in your name. You can check via Metropol or TransUnion.',
+      title: 'guide_id_3_title',
+      description: 'guide_id_3_desc',
     ),
     const GuideStep(
       icon: Icons.security,
-      title: 'Be Cautious Online',
-      description:
-          'Avoid entering personal details on unfamiliar or unsecured websites. '
-          'Look for the padlock icon (HTTPS) before submitting any information.',
+      title: 'guide_id_4_title',
+      description: 'guide_id_4_desc',
     ),
     const GuideStep(
       icon: Icons.emergency,
-      title: 'Act Fast If Compromised',
-      description:
-          'Report identity theft to the DCI Cybercrime Unit immediately. '
-          'File an official complaint and notify your bank and mobile provider.',
-      actionLabel: 'CALL DCI CYBERCRIME',
+      title: 'guide_id_5_title',
+      description: 'guide_id_5_desc',
+      actionLabel: 'guide_id_5_action',
       actionUrl: 'tel:0800723253',
     ),
   ],
 
-  'Password Health': [
+  'guide_password': [
     const GuideStep(
       icon: Icons.text_fields,
-      title: 'Use Long, Unique Passwords',
-      description:
-          'Each account should have a password of at least 12 characters mixing '
-          'uppercase, lowercase, numbers, and symbols. Length beats complexity.',
+      title: 'guide_pwd_1_title',
+      description: 'guide_pwd_1_desc',
     ),
     const GuideStep(
       icon: Icons.manage_accounts,
-      title: 'Use a Password Manager',
-      description:
-          'Apps like Bitwarden or Google Password Manager store all your passwords '
-          'securely so you only need to remember one master password.',
+      title: 'guide_pwd_2_title',
+      description: 'guide_pwd_2_desc',
     ),
     const GuideStep(
       icon: Icons.block,
-      title: 'Never Reuse Passwords',
-      description:
-          'If one service is breached, reused passwords expose all your other accounts. '
-          'Each account must have its own unique password.',
+      title: 'guide_pwd_3_title',
+      description: 'guide_pwd_3_desc',
     ),
     const GuideStep(
       icon: Icons.sync_problem,
-      title: 'Change Compromised Passwords',
-      description:
-          'If a service reports a data breach, change your password there immediately. '
-          'Check haveibeenpwned.com to see if your email has been exposed.',
+      title: 'guide_pwd_4_title',
+      description: 'guide_pwd_4_desc',
     ),
     const GuideStep(
       icon: Icons.abc,
-      title: 'Try Passphrases',
-      description:
-          'Combine random words like "Sunset-Mango-River-42" for passwords that are '
-          'both strong and easy to remember. Avoid common phrases or song lyrics.',
+      title: 'guide_pwd_5_title',
+      description: 'guide_pwd_5_desc',
     ),
   ],
 
-  'Wi-Fi Security': [
+  'guide_wifi': [
     const GuideStep(
       icon: Icons.wifi_off,
-      title: 'Avoid Public Wi-Fi for Banking',
-      description:
-          'Never access banking, M-Pesa, or other sensitive accounts on public '
-          'Wi-Fi at restaurants, malls, or airports. Use mobile data instead.',
+      title: 'guide_wifi_1_title',
+      description: 'guide_wifi_1_desc',
     ),
     const GuideStep(
       icon: Icons.vpn_lock,
-      title: 'Use a VPN',
-      description:
-          'A Virtual Private Network encrypts all your data on public networks, '
-          'making it invisible to hackers on the same Wi-Fi.',
+      title: 'guide_wifi_2_title',
+      description: 'guide_wifi_2_desc',
     ),
     const GuideStep(
       icon: Icons.router,
-      title: 'Secure Your Home Wi-Fi',
-      description:
-          'Change the default router password and Wi-Fi name. Use WPA3 or WPA2 '
-          'encryption — never leave your network open or use WEP.',
+      title: 'guide_wifi_3_title',
+      description: 'guide_wifi_3_desc',
     ),
     const GuideStep(
       icon: Icons.delete_forever,
-      title: 'Forget Old Networks',
-      description:
-          'Remove saved Wi-Fi networks you no longer use from your device. '
-          'Your phone could auto-connect to a malicious network with the same name.',
+      title: 'guide_wifi_4_title',
+      description: 'guide_wifi_4_desc',
     ),
     const GuideStep(
       icon: Icons.warning_amber,
-      title: 'Watch for Fake Hotspots',
-      description:
-          'Hackers create fake Wi-Fi networks that mimic coffee shops, hotels, or '
-          'airports. Always confirm the exact network name with staff before connecting.',
+      title: 'guide_wifi_5_title',
+      description: 'guide_wifi_5_desc',
     ),
   ],
 };
@@ -611,7 +552,7 @@ class _AnimatedHoverNavigationState extends State<_AnimatedHoverNavigation> {
                     ],
                   ),
                   alignment: Alignment.center,
-                  child: Text('NEXT STEP', style: textStyle),
+                  child: Text(context.tr('', fallback: 'NEXT STEP'), style: textStyle),
                 ),
               ),
             ),
@@ -653,7 +594,7 @@ class _AnimatedHoverNavigationState extends State<_AnimatedHoverNavigation> {
                   ],
                 ),
                 alignment: Alignment.center,
-                child: Text('FINISH', style: textStyle),
+                child: Text(context.tr('', fallback: 'FINISH'), style: textStyle),
               ),
             ),
           ),
@@ -717,7 +658,7 @@ class _AnimatedHoverNavigationState extends State<_AnimatedHoverNavigation> {
                             behavior: HitTestBehavior.opaque,
                             child: Container(
                               alignment: Alignment.center,
-                              child: Text('BACK', style: textStyle),
+                              child: Text(context.tr('', fallback: 'BACK'), style: textStyle),
                             ),
                           ),
                         ),
@@ -732,7 +673,7 @@ class _AnimatedHoverNavigationState extends State<_AnimatedHoverNavigation> {
                             behavior: HitTestBehavior.opaque,
                             child: Container(
                               alignment: Alignment.center,
-                              child: Text(widget.isLast ? 'FINISH' : 'NEXT STEP', style: textStyle),
+                              child: Text(widget.isLast ? (context.tr('', fallback: 'FINISH')) : (context.tr('', fallback: 'NEXT STEP')), style: textStyle),
                             ),
                           ),
                         ),

@@ -1,6 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
+
+import '../utils/translations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:app_settings/app_settings.dart';
@@ -31,7 +33,9 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
   final List<Map<String, dynamic>> _securityChecklist = [
     {
       'title': 'Screen Lock Enabled',
+      'titleKey': 'boma_screen_lock',
       'subtitle': 'Use PIN, fingerprint, or face unlock',
+      'subtitleKey': 'boma_screen_lock_desc',
       'icon': Icons.lock,
       'completed': false,
       'category': 'Device',
@@ -41,7 +45,9 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
     },
     {
       'title': 'Biometric Authentication',
+      'titleKey': 'boma_biometric',
       'subtitle': 'Fingerprint or face recognition set up',
+      'subtitleKey': 'boma_biometric_desc',
       'icon': Icons.fingerprint,
       'completed': false,
       'category': 'Device',
@@ -51,7 +57,9 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
     },
     {
       'title': 'Two-Factor Authentication',
+      'titleKey': 'boma_2fa',
       'subtitle': 'Enable 2FA on all important accounts',
+      'subtitleKey': 'boma_2fa_desc',
       'icon': Icons.verified_user,
       'completed': false,
       'category': 'Account',
@@ -61,7 +69,9 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
     },
     {
       'title': 'M-Pesa PIN Security',
+      'titleKey': 'boma_mpesa_pin',
       'subtitle': 'Change your M-Pesa PIN regularly',
+      'subtitleKey': 'boma_mpesa_pin_desc',
       'icon': Icons.phone_android,
       'completed': false,
       'category': 'Banking',
@@ -70,7 +80,9 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
     },
     {
       'title': 'App Permissions Review',
+      'titleKey': 'boma_permissions',
       'subtitle': 'Check which apps have access to your data',
+      'subtitleKey': 'boma_permissions_desc',
       'icon': Icons.apps,
       'completed': false,
       'category': 'Privacy',
@@ -79,7 +91,9 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
     },
     {
       'title': 'Password Manager',
+      'titleKey': 'boma_password_manager',
       'subtitle': 'Use unique passwords for each account',
+      'subtitleKey': 'boma_password_manager_desc',
       'icon': Icons.password,
       'completed': false,
       'category': 'Account',
@@ -89,7 +103,9 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
     },
     {
       'title': 'Software Updates',
+      'titleKey': 'boma_updates',
       'subtitle': 'Keep your OS and apps up to date',
+      'subtitleKey': 'boma_updates_desc',
       'icon': Icons.system_update,
       'completed': false,
       'category': 'Device',
@@ -98,7 +114,9 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
     },
     {
       'title': 'SIM PIN Lock',
+      'titleKey': 'boma_sim_pin',
       'subtitle': 'Protect against SIM swap attacks',
+      'subtitleKey': 'boma_sim_pin_desc',
       'icon': Icons.sim_card,
       'completed': false,
       'category': 'Banking',
@@ -108,7 +126,9 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
     },
     {
       'title': 'Social Media Privacy',
+      'titleKey': 'boma_social',
       'subtitle': 'Review and restrict public profile info',
+      'subtitleKey': 'boma_social_desc',
       'icon': Icons.people,
       'completed': false,
       'category': 'Privacy',
@@ -201,7 +221,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('✅ This setting is already enabled on your device'),
+            content: Text(context.tr('boma_already_enabled')),
             backgroundColor: const Color(0xFF00FF40).withOpacity(0.9),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -237,16 +257,16 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
           const SizedBox(height: 20),
           Icon(item['icon'], size: 40, color: const Color(0xFF00FF40)),
           const SizedBox(height: 12),
-          Text(item['title'], style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+          Text(context.tr(item['titleKey'] as String), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
           const SizedBox(height: 8),
-          Text(item['subtitle'], style: TextStyle(color: Colors.white.withOpacity(0.7)), textAlign: TextAlign.center),
+          Text(context.tr(item['subtitleKey'] as String), style: TextStyle(color: Colors.white.withOpacity(0.7)), textAlign: TextAlign.center),
           const SizedBox(height: 24),
           if (item['actionType'] != null)
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.launch, size: 18),
-                label: const Text('Launch & Configure'),
+                label: Text(context.tr('boma_launch_configure')),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF00FF40).withOpacity(0.15),
                   foregroundColor: const Color(0xFF00FF40),
@@ -267,7 +287,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
             width: double.infinity,
             child: OutlinedButton.icon(
               icon: Icon(isCompleted ? Icons.close : Icons.check, size: 18),
-              label: Text(isCompleted ? 'Mark as Incomplete' : 'Mark as Completed'),
+              label: Text(isCompleted ? context.tr('boma_mark_incomplete') : context.tr('boma_mark_complete')),
               style: OutlinedButton.styleFrom(
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
@@ -298,33 +318,33 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not open link.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('boma_link_failed'))));
       }
     } else if (actionType == 'stk') {
       if (defaultTargetPlatform == TargetPlatform.android) {
         try {
           final bool success = await InstalledApps.startApp('com.android.stk') ?? false;
           if (!success) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('SIM Toolkit app not found.')));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('boma_no_sim_toolkit'))));
           }
         } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('SIM Toolkit app not found.')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('boma_no_sim_toolkit'))));
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Not supported on this device.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('boma_not_supported'))));
       }
     } else if (actionType == 'playstore') {
       if (defaultTargetPlatform == TargetPlatform.android) {
         try {
           final bool success = await InstalledApps.startApp('com.android.vending') ?? false;
           if (!success) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Play Store app not found.')));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('boma_no_playstore'))));
           }
         } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Play Store app not found.')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('boma_no_playstore'))));
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Not supported on this device.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('boma_not_supported'))));
       }
     } else if (actionType == 'permission_manager') {
        Navigator.push(context, MaterialPageRoute(builder: (_) => const PermissionAuditorScreen()));
@@ -357,7 +377,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
     if (!mounted) return;
 
     if (installedSocials.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No supported social media apps found on this device.')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('boma_no_social_apps'))));
       return;
     }
 
@@ -373,7 +393,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Select App to Configure', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+              Text(context.tr('boma_select_app'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
               const SizedBox(height: 16),
               ...installedSocials.map((s) => ListTile(
                 leading: Icon(s['icon'] as IconData, color: Colors.white70),
@@ -384,10 +404,10 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                     try {
                       final bool success = await InstalledApps.startApp(s['package'] as String) ?? false;
                       if (!success) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to launch ${s['name']}')));
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${context.tr('boma_launch_failed')} ${s['name']}')));
                       }
                     } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to launch ${s['name']}')));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${context.tr('boma_launch_failed')} ${s['name']}')));
                     }
                   }
                 },
@@ -455,7 +475,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
   void _showManualTip() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text('Enable this manually, then mark it as done here.'),
+        content: Text(context.tr('boma_manual_tip')),
         backgroundColor: const Color(0xFFFFD600).withOpacity(0.9),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -502,9 +522,9 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                   const SizedBox(height: 24),
                   _buildScoreCard(),
                   const SizedBox(height: 32),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 8.0),
-                    child: Text('SECURITY CHECKLIST', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, letterSpacing: 1.5, color: Colors.white70)),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(context.tr('boma_security_checklist'), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, letterSpacing: 1.5, color: Colors.white70)),
                   ),
                   const SizedBox(height: 12),
                   _buildChecklist(),
@@ -540,7 +560,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'BOMA',
+              context.tr('module_boma'),
               style: GoogleFonts.inter(
                 fontSize: 24,
                 fontWeight: FontWeight.w800,
@@ -549,7 +569,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
               ),
             ),
             Text(
-              'Protection Center',
+              context.tr('module_boma_desc'),
               style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.5)),
             ),
           ],
@@ -581,7 +601,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                       : const Icon(Icons.refresh, color: Color(0xFF00FF40), size: 18),
                   const SizedBox(width: 6),
                   Text(
-                    _isCheckingDevice ? 'Scanning...' : 'Re-scan',
+                    _isCheckingDevice ? context.tr('boma_scanning') : context.tr('boma_rescan'),
                     style: const TextStyle(
                       color: Color(0xFF00FF40),
                       fontSize: 12,
@@ -621,7 +641,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
               ),
               child: Column(
                 children: [
-                  Text('DEVICE SAFETY SCORE', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white.withOpacity(0.5), letterSpacing: 2)),
+                  Text(context.tr('boma_safety_score'), style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white.withOpacity(0.5), letterSpacing: 2)),
                   const SizedBox(height: 24),
                   SizedBox(
                     width: 140, height: 140,
@@ -667,7 +687,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    currentScore >= 80 ? 'Well Protected' : currentScore >= 50 ? 'Needs Improvement' : 'At Risk',
+                    currentScore >= 80 ? context.tr('boma_well_protected') : currentScore >= 50 ? context.tr('boma_needs_improvement') : context.tr('boma_at_risk'),
                     style: TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold,
                       color: scoreColor, shadows: [Shadow(color: scoreColor.withOpacity(0.3), blurRadius: 5)],
@@ -675,7 +695,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '${_securityChecklist.where((i) => i['completed'] == true).length} of ${_securityChecklist.length} tasks completed',
+                    '${_securityChecklist.where((i) => i['completed'] == true).length} ${context.tr('boma_tasks_of')} ${_securityChecklist.length} ${context.tr('boma_tasks_completed')}',
                     style: TextStyle(fontSize: 13, color: Colors.white.withOpacity(0.5)),
                   ),
                 ],
@@ -748,7 +768,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          item['title'] as String,
+                                          context.tr(item['titleKey'] as String),
                                           style: TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.w600,
@@ -766,7 +786,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                                             borderRadius: BorderRadius.circular(6),
                                           ),
                                           child: Text(
-                                            'AUTO',
+                                            context.tr('boma_auto'),
                                             style: TextStyle(
                                               fontSize: 9, fontWeight: FontWeight.w800,
                                               color: const Color(0xFF00E5FF).withOpacity(0.8), letterSpacing: 0.5,
@@ -777,7 +797,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    item['subtitle'] as String,
+                                    context.tr(item['subtitleKey'] as String),
                                     style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.4)),
                                   ),
                                   if (!isCompleted && !isAutoDetect)
@@ -789,7 +809,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                                           const SizedBox(width: 4),
                                           Expanded(
                                             child: Text(
-                                              'Tap to configure',
+                                              context.tr('', fallback: 'Tap to configure'),
                                               style: TextStyle(
                                                 fontSize: 11, fontWeight: FontWeight.w500,
                                                 color: const Color(0xFFFF9100).withOpacity(0.8),
@@ -885,9 +905,9 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Protection Guides', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text(context.tr('', fallback: 'Protection Guides'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
-                        Text('${ProtectionGuidesScreen.guides.length} guides to keep you safe', style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.5))),
+                        Text('6 ${context.tr('', fallback: 'guides to keep you safe')}', style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.5))),
                       ],
                     ),
                   ),
