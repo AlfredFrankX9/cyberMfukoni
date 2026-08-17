@@ -90,7 +90,7 @@ class _MainShellState extends State<MainShell> {
               const AgentScreen(), // 5: Cyber Agent
               const SizedBox.shrink(), // 6: placeholder (Chonjo uses Navigator.push)
               const BomaScreen(), // 7: Boma
-              const PlannerScreen(), // 8: Planner
+              PlannerScreen(onNavigate: _onDockTap), // 8: Planner
             ],
           ),
 

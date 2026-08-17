@@ -6,7 +6,8 @@ import '../services/planner_service.dart';
 import '../utils/translations.dart';
 
 class PlannerScreen extends StatefulWidget {
-  const PlannerScreen({super.key});
+  final ValueChanged<int>? onNavigate;
+  const PlannerScreen({super.key, this.onNavigate});
 
   @override
   State<PlannerScreen> createState() => _PlannerScreenState();
@@ -219,6 +220,20 @@ class _PlannerScreenState extends State<PlannerScreen>
       ),
       child: Row(
         children: [
+          IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios_new,
+              color: Colors.white70,
+              size: 20,
+            ),
+            onPressed: () {
+              if (widget.onNavigate != null) {
+                widget.onNavigate!(3); // Go back to Dashboard
+              } else {
+                Navigator.pop(context);
+              }
+            },
+          ),
           const SizedBox(width: 4),
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
