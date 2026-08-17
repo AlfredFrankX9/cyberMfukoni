@@ -219,14 +219,6 @@ class _PlannerScreenState extends State<PlannerScreen>
       ),
       child: Row(
         children: [
-          IconButton(
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              color: Colors.white70,
-              size: 20,
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
           const SizedBox(width: 4),
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
