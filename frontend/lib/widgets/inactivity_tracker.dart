@@ -64,7 +64,9 @@ class _InactivityTrackerState extends State<InactivityTracker>
       if (_backgroundedAt != null) {
         final elapsed = DateTime.now().difference(_backgroundedAt!);
         _backgroundedAt = null;
-        if (elapsed >= widget.backgroundTimeout) {
+        
+        final auth = Provider.of<AuthService>(context, listen: false);
+        if (elapsed >= widget.backgroundTimeout && auth.isAuthenticated) {
           _performLogout();
           return;
         }
@@ -90,6 +92,10 @@ class _InactivityTrackerState extends State<InactivityTracker>
 
   void _showWarningDialog() {
     if (_warningShown || !mounted) return;
+    
+    final auth = Provider.of<AuthService>(context, listen: false);
+    if (!auth.isAuthenticated) return; // Do not warn if already logged out
+
     _warningShown = true;
 
     showDialog(
@@ -114,7 +120,9 @@ class _InactivityTrackerState extends State<InactivityTracker>
   void _performLogout() {
     if (!mounted) return;
     final auth = Provider.of<AuthService>(context, listen: false);
-    auth.logout();
+    if (auth.isAuthenticated) {
+      auth.logout();
+    }
   }
 
   // ── Build ───────────────────────────────────────────────────────────────
