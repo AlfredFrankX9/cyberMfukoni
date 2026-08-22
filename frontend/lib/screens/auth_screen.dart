@@ -90,6 +90,44 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
+  Future<void> _submitOffline() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    final username = _usernameController.text.trim();
+    final identifier = _isLogin ? email : username;
+
+    if (identifier.isEmpty || password.isEmpty) {
+      _snack(context.tr('auth_fill_fields'));
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    final auth = Provider.of<AuthService>(context, listen: false);
+    
+    final error = await auth.forceOfflineLogin(identifier, password);
+    
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+
+    if (error == 'offline_success') {
+      GuardianDialog.show(
+        context,
+        title: 'Offline Mode',
+        message: context.tr('auth_offline_login') ?? 'Logged in offline',
+        icon: Icons.wifi_off_rounded,
+        color: const Color(0xFF00FFCC),
+        primaryButtonText: 'OK',
+      );
+    } else {
+      GuardianDialog.show(
+        context,
+        title: 'Login Failed',
+        message: error ?? 'Invalid offline credentials.',
+        icon: Icons.error_outline,
+      );
+    }
+  }
+
   void _snack(String msg) {
     GuardianDialog.show(
       context,
@@ -455,6 +493,34 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
             SizedBox(height: isDesktop ? 13 : 8),
+            
+            // Explicit Offline Login Button
+            if (_isLogin)
+              Padding(
+                padding: EdgeInsets.only(bottom: isDesktop ? 13 : 8),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: isDesktop ? 42 : 38,
+                  child: OutlinedButton.icon(
+                    onPressed: _isLoading ? null : _submitOffline,
+                    icon: const Icon(Icons.wifi_off_rounded, size: 16),
+                    label: Text(
+                      context.tr('auth_login_offline') ?? 'Log in Offline',
+                      style: TextStyle(
+                        fontSize: isDesktop ? 13.5 : 12.5,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.orangeAccent,
+                      side: const BorderSide(color: Colors.orangeAccent),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(11),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
 
             // OR divider
             Row(
