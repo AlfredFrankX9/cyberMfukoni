@@ -501,7 +501,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 child: SizedBox(
                   width: double.infinity,
                   height: isDesktop ? 42 : 38,
-                  child: OutlinedButton.icon(
+                  child: ElevatedButton.icon(
                     onPressed: _isLoading ? null : _submitOffline,
                     icon: const Icon(Icons.wifi_off_rounded, size: 16),
                     label: Text(
@@ -511,9 +511,10 @@ class _AuthScreenState extends State<AuthScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.orangeAccent,
-                      side: const BorderSide(color: Colors.orangeAccent),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                      foregroundColor: Colors.black,
+                      elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(11),
                       ),
