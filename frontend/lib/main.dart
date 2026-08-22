@@ -53,14 +53,11 @@ class CyberMfukoniApp extends StatelessWidget {
           },
         ),
       ),
-      home: InactivityTracker(
-        inactivityTimeout: const Duration(minutes: 10),
-        backgroundTimeout: const Duration(minutes: 3),
-        child: Consumer<AuthService>(
-          builder: (context, auth, _) {
-            return AnimatedSwitcher(
-              duration: const Duration(milliseconds: 600),
-              switchInCurve: Curves.easeOutCubic,
+      home: Consumer<AuthService>(
+        builder: (context, auth, _) {
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 600),
+            switchInCurve: Curves.easeOutCubic,
             switchOutCurve: Curves.easeInCubic,
             transitionBuilder: (child, animation) {
               return FadeTransition(
