@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../utils/translations.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../widgets/guardian_dialog.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -66,21 +67,38 @@ class _AuthScreenState extends State<AuthScreen> {
     }
 
     if (error == 'offline_success') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.tr('auth_offline_login')),
-          backgroundColor: Color(0xFF00FFCC),
-        ),
+      GuardianDialog.show(
+        context,
+        title: 'Offline Mode',
+        message: context.tr('auth_offline_login') ?? 'Logged in offline',
+        icon: Icons.wifi_off_rounded,
+        color: const Color(0xFF00FFCC),
+        primaryButtonText: 'OK',
       );
+    } else if (error != null && 
+              (error.toLowerCase().contains('unreachable') || 
+               error.toLowerCase().contains('connection') || 
+               error.toLowerCase().contains('internet'))) {
+      // Suggest offline login if the error smells like a network issue
+      GuardianDialog.showOfflineLogin(context, username.isEmpty ? email : username, password);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error), backgroundColor: Colors.red.shade800),
+      GuardianDialog.show(
+        context,
+        title: 'Login Failed',
+        message: error ?? 'Unknown error',
       );
     }
   }
 
-  void _snack(String msg) =>
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  void _snack(String msg) {
+    GuardianDialog.show(
+      context,
+      title: 'Attention',
+      message: msg,
+      icon: Icons.info_outline,
+      color: Colors.orangeAccent,
+    );
+  }
 
   void _toggleMode() {
     setState(() {
@@ -359,11 +377,14 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
 
             _buildLabel(
-              _isLogin ? context.tr('auth_username_email') : context.tr('auth_email'),
+              _isLogin ? context.tr('auth_username') : context.tr('auth_email'),
               isDesktop,
             ),
             SizedBox(height: isDesktop ? 5 : 2),
-            _buildField(controller: _emailController, hint: 'you@example.com'),
+            _buildField(
+              controller: _emailController, 
+              hint: _isLogin ? 'cyberninja99' : 'you@example.com'
+            ),
             SizedBox(height: isDesktop ? 12 : 8),
 
             _buildLabel(context.tr('auth_password'), isDesktop),
@@ -510,21 +531,19 @@ class _AuthScreenState extends State<AuthScreen> {
                       if (!mounted) return;
                       setState(() => _isLoading = false);
                       if (error != null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(error),
-                            backgroundColor: Colors.red.shade800,
-                          ),
+                        GuardianDialog.show(
+                          context,
+                          title: 'Google Login Failed',
+                          message: error,
                         );
                       }
                     } catch (e) {
                       if (mounted) {
                         setState(() => _isLoading = false);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('${context.tr('auth_google_failed')} $e'),
-                            backgroundColor: Colors.red.shade800,
-                          ),
+                        GuardianDialog.show(
+                          context,
+                          title: 'Google Login Failed',
+                          message: '${context.tr('auth_google_failed')} $e',
                         );
                       }
                     }

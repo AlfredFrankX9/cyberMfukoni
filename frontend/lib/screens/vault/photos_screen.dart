@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/vault_storage_service.dart';
 import '../../utils/translations.dart';
+import '../../widgets/guardian_dialog.dart';
 
 class PhotosScreen extends StatefulWidget {
   const PhotosScreen({super.key});
@@ -51,8 +52,10 @@ class _PhotosScreenState extends State<PhotosScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${context.tr('vault_error_pick_photo')} $e')),
+        GuardianDialog.show(
+          context,
+          title: 'Error',
+          message: '${context.tr('vault_error_pick_photo')} $e',
         );
       }
     } finally {
@@ -88,8 +91,13 @@ class _PhotosScreenState extends State<PhotosScreen> {
                   setState(() => _isLoading = true);
                   await VaultStorageService.removeHiddenFile(photo['id'], true, deleteCompletely: false);
                   if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(context.tr('vault_photo_restored'))),
+                    GuardianDialog.show(
+                      context,
+                      title: 'Success',
+                      message: context.tr('vault_photo_restored') ?? 'Restored',
+                      icon: Icons.check_circle_outline,
+                      color: Colors.green,
+                      primaryButtonText: 'OK',
                     );
                   }
                   _loadData();
@@ -103,8 +111,13 @@ class _PhotosScreenState extends State<PhotosScreen> {
                   setState(() => _isLoading = true);
                   await VaultStorageService.removeHiddenFile(photo['id'], true, deleteCompletely: true);
                   if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(context.tr('vault_photo_deleted'))),
+                    GuardianDialog.show(
+                      context,
+                      title: 'Success',
+                      message: context.tr('vault_photo_deleted') ?? 'Deleted',
+                      icon: Icons.delete_outline,
+                      color: Colors.redAccent,
+                      primaryButtonText: 'OK',
                     );
                   }
                   _loadData();

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
+import '../widgets/guardian_dialog.dart';
 
 /// Utility to gate access to sensitive screens behind device authentication
 /// (fingerprint, face, PIN, pattern, etc.).
@@ -20,12 +21,13 @@ class AuthHelper {
       if (!isDeviceSupported) {
         // No lock screen configured — let them through with a warning.
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('No device security set up. Please enable a lock screen.'),
-              backgroundColor: Colors.orange.shade800,
-              behavior: SnackBarBehavior.floating,
-            ),
+          GuardianDialog.show(
+            context,
+            title: 'No Device Security',
+            message: 'No device security set up. Please enable a lock screen.',
+            icon: Icons.lock_open_rounded,
+            color: Colors.orange.shade800,
+            primaryButtonText: 'OK',
           );
         }
         return true;
@@ -33,15 +35,14 @@ class AuthHelper {
 
       final didAuthenticate = await _localAuth.authenticate(
         localizedReason: 'Authenticate to access this secure feature',
+        biometricOnly: false,
       );
 
       if (!didAuthenticate && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Authentication failed or cancelled.'),
-            backgroundColor: Colors.red.shade800,
-            behavior: SnackBarBehavior.floating,
-          ),
+        GuardianDialog.show(
+          context,
+          title: 'Authentication Failed',
+          message: 'Authentication failed or was cancelled.',
         );
       }
 

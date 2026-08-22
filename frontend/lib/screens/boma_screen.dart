@@ -8,6 +8,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:android_intent_plus/android_intent.dart';
+import '../widgets/guardian_dialog.dart';
 import 'protection_guides_screen.dart';
 import 'permission_auditor_screen.dart';
 import 'package:installed_apps/installed_apps.dart';
@@ -219,13 +220,13 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
       if (!item['completed']) {
         _openSettings(item['actionData'] as String?);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.tr('boma_already_enabled')),
-            backgroundColor: const Color(0xFF00FF40).withOpacity(0.9),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
+        GuardianDialog.show(
+          context,
+          title: 'Notice',
+          message: context.tr('boma_already_enabled') ?? 'Already enabled',
+          icon: Icons.info_outline,
+          color: Colors.orangeAccent,
+          primaryButtonText: 'OK',
         );
       }
       return;
@@ -318,33 +319,37 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('boma_link_failed'))));
+        GuardianDialog.show(
+          context,
+          title: 'Error',
+          message: context.tr('boma_link_failed') ?? 'Link failed',
+        );
       }
     } else if (actionType == 'stk') {
       if (defaultTargetPlatform == TargetPlatform.android) {
         try {
           final bool success = await InstalledApps.startApp('com.android.stk') ?? false;
           if (!success) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('boma_no_sim_toolkit'))));
+            GuardianDialog.show(context, title: 'Error', message: context.tr('boma_no_sim_toolkit') ?? 'No SIM toolkit found');
           }
         } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('boma_no_sim_toolkit'))));
+          GuardianDialog.show(context, title: 'Error', message: context.tr('boma_no_sim_toolkit') ?? 'No SIM toolkit found');
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('boma_not_supported'))));
+        GuardianDialog.show(context, title: 'Error', message: context.tr('boma_not_supported') ?? 'Not supported on this platform');
       }
     } else if (actionType == 'playstore') {
       if (defaultTargetPlatform == TargetPlatform.android) {
         try {
           final bool success = await InstalledApps.startApp('com.android.vending') ?? false;
           if (!success) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('boma_no_playstore'))));
+            GuardianDialog.show(context, title: 'Error', message: context.tr('boma_no_playstore') ?? 'Play Store not found');
           }
         } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('boma_no_playstore'))));
+          GuardianDialog.show(context, title: 'Error', message: context.tr('boma_no_playstore') ?? 'Play Store not found');
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('boma_not_supported'))));
+        GuardianDialog.show(context, title: 'Error', message: context.tr('boma_not_supported') ?? 'Not supported on this platform');
       }
     } else if (actionType == 'permission_manager') {
        Navigator.push(context, MaterialPageRoute(builder: (_) => const PermissionAuditorScreen()));
@@ -377,7 +382,7 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
     if (!mounted) return;
 
     if (installedSocials.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('boma_no_social_apps'))));
+      GuardianDialog.show(context, title: 'Error', message: context.tr('boma_no_social_apps') ?? 'No social apps found');
       return;
     }
 
@@ -404,10 +409,10 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
                     try {
                       final bool success = await InstalledApps.startApp(s['package'] as String) ?? false;
                       if (!success) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${context.tr('boma_launch_failed')} ${s['name']}')));
+                        GuardianDialog.show(context, title: 'Error', message: '${context.tr('boma_launch_failed')} ${s['name']}');
                       }
                     } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${context.tr('boma_launch_failed')} ${s['name']}')));
+                      GuardianDialog.show(context, title: 'Error', message: '${context.tr('boma_launch_failed')} ${s['name']}');
                     }
                   }
                 },
@@ -473,13 +478,13 @@ class _BomaScreenState extends State<BomaScreen> with TickerProviderStateMixin {
   }
 
   void _showManualTip() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(context.tr('boma_manual_tip')),
-        backgroundColor: const Color(0xFFFFD600).withOpacity(0.9),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
+    GuardianDialog.show(
+      context,
+      title: 'Notice',
+      message: context.tr('boma_manual_tip') ?? 'Follow manual steps to continue',
+      icon: Icons.info_outline,
+      color: Colors.orangeAccent,
+      primaryButtonText: 'OK',
     );
   }
 

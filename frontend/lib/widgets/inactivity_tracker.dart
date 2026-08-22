@@ -121,11 +121,11 @@ class _InactivityTrackerState extends State<InactivityTracker>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Listener(
       behavior: HitTestBehavior.translucent,
-      onTap: _onUserInteraction,
-      onPanDown: (_) => _onUserInteraction(),
-      onScaleStart: (_) => _onUserInteraction(),
+      onPointerDown: (_) => _onUserInteraction(),
+      onPointerMove: (_) => _onUserInteraction(),
+      onPointerUp: (_) => _onUserInteraction(),
       child: widget.child,
     );
   }

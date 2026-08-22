@@ -893,8 +893,8 @@ const Map<String, Map<String, String>> _translations = {
   'intel_filter_high': {'en': 'High', 'sw': 'Juu'},
   'intel_filter_medium': {'en': 'Medium', 'sw': 'Wastani'},
   'intel_welcome': {
-    'en': 'Welcome, Agent Franklin',
-    'sw': 'Karibu, Wakala Franklin',
+    'en': 'Welcome, Agent',
+    'sw': 'Karibu, Wakala',
   },
   'intel_live': {'en': 'LIVE', 'sw': 'MOJA KWA MOJA'},
   'intel_latest': {'en': 'LATEST INTEL', 'sw': 'TAARIFA MPYA'},

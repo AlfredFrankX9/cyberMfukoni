@@ -6,7 +6,9 @@ import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../widgets/guardian_dialog.dart';
 import '../utils/translations.dart';
+import '../services/auth_service.dart';
 
 class IntelFeedScreen extends StatefulWidget {
   const IntelFeedScreen({super.key});
@@ -18,6 +20,7 @@ class IntelFeedScreen extends StatefulWidget {
 class _IntelFeedScreenState extends State<IntelFeedScreen> {
   List<dynamic> _scams = [];
   bool _isLoading = true;
+  String _displayName = '';
 
   /// Assigns a stable, non-repeating fallback image to every article.
   /// The sequence is seeded daily so it changes each day.
@@ -45,6 +48,9 @@ class _IntelFeedScreenState extends State<IntelFeedScreen> {
   void initState() {
     super.initState();
     _fetchIntel();
+    AuthService().getDisplayName().then((name) {
+      if (mounted) setState(() => _displayName = name ?? '');
+    });
   }
 
   Future<void> _fetchIntel() async {
@@ -79,12 +85,13 @@ class _IntelFeedScreenState extends State<IntelFeedScreen> {
           _isLoading = false;
         });
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(context.tr('intel_offline_msg')),
-              backgroundColor: Colors.orange,
-              duration: const Duration(seconds: 3),
-            ),
+          GuardianDialog.show(
+            context,
+            title: 'Offline Mode',
+            message: context.tr('intel_offline_msg') ?? 'Viewing cached intel.',
+            icon: Icons.wifi_off_rounded,
+            color: Colors.orange,
+            primaryButtonText: 'OK',
           );
         }
         return;
@@ -159,11 +166,17 @@ class _IntelFeedScreenState extends State<IntelFeedScreen> {
   @override
   Widget build(BuildContext context) {
     final isWide = MediaQuery.of(context).size.width > 800;
-    return isWide ? _buildWideLayout() : _buildMobileLayout();
+    
+    String welcomeText = context.tr('intel_welcome');
+    if (!AuthService().isOfflineMode && _displayName.isNotEmpty) {
+      welcomeText = '$welcomeText $_displayName';
+    }
+
+    return isWide ? _buildWideLayout(welcomeText) : _buildMobileLayout(welcomeText);
   }
 
   // ── Wide / desktop layout ──────────────────────────────────────────────────
-  Widget _buildWideLayout() {
+  Widget _buildWideLayout(String welcomeText) {
     return Scaffold(
       body: Stack(
         children: [
@@ -486,7 +499,7 @@ class _IntelFeedScreenState extends State<IntelFeedScreen> {
   }
 
   // ── Mobile layout ──────────────────────────────────────────────────────────
-  Widget _buildMobileLayout() {
+  Widget _buildMobileLayout(String welcomeText) {
     return Scaffold(
       backgroundColor: const Color(0xFF0F1217),
       body: SafeArea(
@@ -498,7 +511,7 @@ class _IntelFeedScreenState extends State<IntelFeedScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    context.tr('intel_welcome'),
+                    welcomeText,
                     style: const TextStyle(
                       fontFamily: 'monospace',
                       color: Color(0xFF00FF55),

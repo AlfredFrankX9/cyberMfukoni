@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/api_service.dart';
+import '../widgets/guardian_dialog.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../utils/translations.dart';
 
@@ -77,14 +78,13 @@ class _AgentScreenState extends State<AgentScreen>
 
   void _copyToClipboard(String text) {
     Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(context.tr('copied_to_clipboard')),
-        duration: const Duration(seconds: 2),
-        backgroundColor: kCyberGreen.withOpacity(0.9),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
+    GuardianDialog.show(
+      context,
+      title: 'Success',
+      message: context.tr('copied_to_clipboard') ?? 'Copied to clipboard',
+      icon: Icons.check_circle_outline,
+      color: Colors.green,
+      primaryButtonText: 'OK',
     );
   }
 

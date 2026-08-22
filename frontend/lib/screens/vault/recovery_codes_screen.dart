@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import '../../services/vault_storage_service.dart';
 import '../../utils/translations.dart';
+import '../../widgets/guardian_dialog.dart';
 
 class RecoveryCodesScreen extends StatefulWidget {
   const RecoveryCodesScreen({super.key});
@@ -172,7 +173,14 @@ class _RecoveryCodesScreenState extends State<RecoveryCodesScreen> {
                               icon: const Icon(Icons.copy, color: Colors.white54, size: 20),
                               onPressed: () {
                                 Clipboard.setData(ClipboardData(text: item['code']));
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('vault_code_copied'))));
+                                GuardianDialog.show(
+                                  context,
+                                  title: 'Success',
+                                  message: context.tr('vault_code_copied') ?? 'Copied',
+                                  icon: Icons.check_circle_outline,
+                                  color: Colors.green,
+                                  primaryButtonText: 'OK',
+                                );
                               },
                             ),
                             IconButton(

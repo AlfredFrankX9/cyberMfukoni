@@ -23,6 +23,7 @@ import 'planner_screen.dart';
 import '../utils/auth_helper.dart';
 import '../utils/translations.dart';
 import '../providers/locale_provider.dart';
+import '../widgets/guardian_dialog.dart';
 
 class DashboardScreen extends StatefulWidget {
   final ValueChanged<int>? onNavigate;
@@ -152,6 +153,21 @@ class _DashboardScreenState extends State<DashboardScreen>
   }
 
   void _navigateTo(int index) {
+    if (AuthService().isOfflineMode) {
+      // 2: Mulika, 5: Agent, 8: Planner
+      if (index == 2 || index == 5 || index == 8) {
+        GuardianDialog.show(
+          context,
+          title: 'Feature Unavailable',
+          message: 'You are currently offline. Please connect to the internet and log in online to use this feature.',
+          icon: Icons.wifi_off_rounded,
+          color: Colors.orangeAccent,
+          primaryButtonText: 'OK',
+        );
+        return;
+      }
+    }
+
     if (widget.onNavigate != null) {
       widget.onNavigate!(index);
     }

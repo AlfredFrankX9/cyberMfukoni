@@ -9,6 +9,7 @@ import 'package:installed_apps/app_info.dart';
 import 'package:installed_apps/installed_apps.dart';
 import 'package:crypto/crypto.dart';
 import 'package:file_picker/file_picker.dart';
+import '../widgets/guardian_dialog.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import '../services/api_service.dart';
@@ -173,11 +174,10 @@ class _MulikaScreenState extends State<MulikaScreen>
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${context.tr('mulika_error_camera')} $e'),
-              backgroundColor: const Color(0xFFFF1744),
-            ),
+          GuardianDialog.show(
+            context,
+            title: 'Error',
+            message: '${context.tr('mulika_error_camera')} $e',
           );
         }
       }
@@ -736,31 +736,20 @@ class _MulikaScreenState extends State<MulikaScreen>
         final errorData = json.decode(response.body);
         final errorMessage = errorData['detail'] ?? 'Unknown error occurred.';
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                errorMessage,
-                style: GoogleFonts.inter(color: Colors.white),
-              ),
-              backgroundColor: const Color(0xFFFF1744),
-              behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 4),
-            ),
+          GuardianDialog.show(
+            context,
+            title: 'Error',
+            message: errorMessage,
           );
         }
       }
     } catch (e) {
       debugPrint('Mulika analysis failed: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Network error. Please check your connection.',
-              style: GoogleFonts.inter(color: Colors.white),
-            ),
-            backgroundColor: const Color(0xFFFF1744),
-            behavior: SnackBarBehavior.floating,
-          ),
+        GuardianDialog.show(
+          context,
+          title: 'Error',
+          message: 'Network error. Please check your connection.',
         );
       }
     }

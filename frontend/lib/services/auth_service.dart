@@ -22,6 +22,7 @@ class AuthService extends ChangeNotifier {
   );
 
   bool _isAuthenticated = false;
+  String? _currentToken;
   bool get isAuthenticated => _isAuthenticated;
 
   String _hashPassword(String password) {
@@ -33,6 +34,7 @@ class AuthService extends ChangeNotifier {
   Future<void> checkAuthStatus() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt_token');
+    _currentToken = token;
     _isAuthenticated = token != null;
     notifyListeners();
     syncOfflineData();
@@ -64,6 +66,8 @@ class AuthService extends ChangeNotifier {
 
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('jwt_token', token);
+        await prefs.setString('cached_display_name', username);
+        _currentToken = token;
         // Cache hashed credentials so a genuine offline session works later.
         await prefs.setString(
           'offline_user_$username',
@@ -84,11 +88,15 @@ class AuthService extends ChangeNotifier {
       }
     } on SocketException {
       // No internet — safe to try cached credentials.
-      return _attemptOfflineLogin(username, password);
+      return forceOfflineLogin(username, password);
     } on TimeoutException {
       // Server unreachable — safe to try cached credentials.
-      return _attemptOfflineLogin(username, password);
+      return forceOfflineLogin(username, password);
     } catch (e) {
+      final errorStr = e.toString().toLowerCase();
+      if (errorStr.contains('connection') || errorStr.contains('socket') || errorStr.contains('host lookup') || errorStr.contains('timeout') || errorStr.contains('clientexception')) {
+        return forceOfflineLogin(username, password);
+      }
       // Any other error (SSL, malformed response, etc.) — do NOT silently
       // fall back to offline; surface the real problem to the user.
       debugPrint('Login unexpected error: $e');
@@ -96,20 +104,21 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  /// Only called when we are genuinely offline (SocketException / Timeout).
-  Future<String?> _attemptOfflineLogin(String username, String password) async {
+  /// Can be called publicly if the user chooses to skip waiting for timeout.
+  Future<String?> forceOfflineLogin(String username, String password) async {
     final prefs = await SharedPreferences.getInstance();
     final storedHash = prefs.getString('offline_user_$username');
 
     if (storedHash != null && storedHash == _hashPassword(password)) {
       await prefs.setString('jwt_token', 'offline_token_$username');
+      await prefs.setString('cached_display_name', username);
+      _currentToken = 'offline_token_$username';
       _isAuthenticated = true;
       notifyListeners();
       return 'offline_success';
     }
 
-    return 'Cannot reach the server and no offline session was found. '
-        'Please check your connection.';
+    return 'Incorrect password or no offline session found for this user.';
   }
 
   // ---------------------------------------------------------------------------
@@ -135,6 +144,8 @@ class AuthService extends ChangeNotifier {
 
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('jwt_token', token);
+        await prefs.setString('cached_display_name', username);
+        _currentToken = token;
         await prefs.setString(
           'offline_user_$username',
           _hashPassword(password),
@@ -155,6 +166,10 @@ class AuthService extends ChangeNotifier {
     } on TimeoutException {
       return _attemptOfflineRegister(username, email, password);
     } catch (e) {
+      final errorStr = e.toString().toLowerCase();
+      if (errorStr.contains('connection') || errorStr.contains('socket') || errorStr.contains('host lookup') || errorStr.contains('timeout') || errorStr.contains('clientexception')) {
+        return _attemptOfflineRegister(username, email, password);
+      }
       debugPrint('Register unexpected error: $e');
       return 'Something went wrong. Please try again.';
     }
@@ -177,6 +192,8 @@ class AuthService extends ChangeNotifier {
     await prefs.setStringList('pending_sync_accounts', pendingSyncs);
 
     await prefs.setString('jwt_token', 'offline_token_$username');
+    await prefs.setString('cached_display_name', username);
+    _currentToken = 'offline_token_$username';
     _isAuthenticated = true;
     notifyListeners();
     return 'offline_success';
@@ -236,6 +253,8 @@ class AuthService extends ChangeNotifier {
 
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('jwt_token', token);
+        await prefs.setString('cached_display_name', username);
+        _currentToken = token;
         _isAuthenticated = true;
         notifyListeners();
         return null;
@@ -248,7 +267,11 @@ class AuthService extends ChangeNotifier {
     } on TimeoutException {
       return 'Server unreachable. Please try again.';
     } catch (e) {
-      debugPrint('Google login error: $e');
+      final errorStr = e.toString().toLowerCase();
+      if (errorStr.contains('connection') || errorStr.contains('socket') || errorStr.contains('host lookup') || errorStr.contains('timeout') || errorStr.contains('clientexception')) {
+        return 'Network error. Please check your connection.';
+      }
+      debugPrint('Google Login error: $e');
       return 'Something went wrong. Please try again.';
     }
   }
@@ -274,6 +297,7 @@ class AuthService extends ChangeNotifier {
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('jwt_token');
+    _currentToken = null;
 
     // FIX: logout() previously only cleared the app's own JWT and left the
     // Google SDK's cached account in place. That meant tapping "Continue
@@ -290,6 +314,15 @@ class AuthService extends ChangeNotifier {
   // ---------------------------------------------------------------------------
   // Helpers
   // ---------------------------------------------------------------------------
+
+  Future<String?> getDisplayName() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('cached_display_name');
+  }
+
+  bool get isOfflineMode {
+    return _currentToken?.startsWith('offline_token_') ?? false;
+  }
 
   /// Safely decode a JSON response body; returns empty map on failure.
   Map<String, dynamic> _decodeJson(String body) {
